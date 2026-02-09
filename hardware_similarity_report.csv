@@ -1,0 +1,6 @@
+,CNN-Accelerator-Based-on-Eyeriss-v2,NeuroSpector,rt,tiny-tpu,Tiny_LeViT_Hardware_Accelerator
+CNN-Accelerator-Based-on-Eyeriss-v2,100.0,0.0,83.0,79.78,70.7
+NeuroSpector,0.0,0.0,0.0,0.0,0.0
+rt,83.0,0.0,100.0,41.52,64.21
+tiny-tpu,79.78,0.0,41.52,100.0,78.65
+Tiny_LeViT_Hardware_Accelerator,70.7,0.0,64.21,78.65,100.0
