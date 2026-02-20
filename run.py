@@ -69,7 +69,8 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--github-max", type=int, default=30,
-        help="Maximum number of GitHub repos to clone (default: 30)",
+        help="Maximum number of NEW repos to clone per run (default: 30). "
+             "Previously discovered repos are queued and cloned on future runs.",
     )
     p.add_argument(
         "--no-anomaly", action="store_true",
