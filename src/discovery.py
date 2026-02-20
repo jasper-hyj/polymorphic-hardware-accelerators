@@ -384,25 +384,13 @@ class ProjectDiscovery:
                         remaining = int(resp.headers.get("X-RateLimit-Remaining", 0))
                         reset_ts  = int(resp.headers.get("X-RateLimit-Reset", 0))
                         data = json.loads(resp.read().decode())
-                    # Proactively slow down when close to the rate limit.
-                    # Default 0 is safe when the header is absent.
+                    # Only sleep proactively when quota is fully exhausted
+                    # (the next request would 403 for certain). Lower values
+                    # are handled reactively by the 403 retry path below.
                     if remaining == 0:
-                        # Fully exhausted – sleep until the window resets.
                         wait = max(0, reset_ts - int(time.time())) + 2
-                        log.info(
-                            "Rate limit exhausted; sleeping %ds \u2026", wait,
-                        )
+                        log.info("Rate limit exhausted; sleeping %ds \u2026", wait)
                         time.sleep(wait)
-                    elif remaining < 10:
-                        # Still have quota – pace requests proportionally
-                        # instead of sleeping the whole window.
-                        time_left = max(1, reset_ts - int(time.time()))
-                        per_req = time_left / remaining
-                        log.info(
-                            "Rate limit low (%d remaining, %ds left in window); "
-                            "pacing at %.1fs/request \u2026", remaining, time_left, per_req,
-                        )
-                        time.sleep(min(per_req, 10))  # cap at 10s
                     items = data.get("items", [])
                     for item in items:
                         urls.append(item["clone_url"])
@@ -462,18 +450,8 @@ class ProjectDiscovery:
                         urls.append(item["clone_url"])
                 if remaining == 0:
                     wait = max(0, reset_ts - int(time.time())) + 2
-                    log.info(
-                        "Org sweep rate limit exhausted; sleeping %ds \u2026", wait,
-                    )
+                    log.info("Org sweep rate limit exhausted; sleeping %ds \u2026", wait)
                     time.sleep(wait)
-                elif remaining < 10:
-                    time_left = max(1, reset_ts - int(time.time()))
-                    per_req = time_left / remaining
-                    log.info(
-                        "Org sweep rate limit low (%d remaining); "
-                        "pacing at %.1fs/request \u2026", remaining, per_req,
-                    )
-                    time.sleep(min(per_req, 10))
                 if len(items) < 100:
                     break
             except urllib.error.HTTPError as exc:
