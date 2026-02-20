@@ -33,7 +33,7 @@ from .config import AnalysisConfig
 
 log = logging.getLogger(__name__)
 
-REGISTRY_FILE = ".discovery_registry.json"   # stored inside project_dir
+REGISTRY_FILE = ".discovery_registry.json"  # stored inside project_dir
 
 # ── Curated seed list ─────────────────────────────────────────────────
 CURATED_REPOS = [
@@ -128,81 +128,81 @@ HARDWARE_ORGS = [
 # Verilog and SystemVerilog.
 GITHUB_SEARCH_QUERIES: List[Tuple[str, str]] = [
     # ── CPU / Processor ──────────────────────────────────────────────
-    ("cpu",         "language:verilog topic:cpu stars:>5"),
-    ("cpu-sv",      "language:systemverilog topic:cpu stars:>5"),
-    ("riscv",       "language:verilog topic:risc-v stars:>5"),
-    ("riscv-sv",    "language:systemverilog topic:risc-v stars:>5"),
-    ("mips",        "language:verilog mips processor stars:>5"),
-    ("arm",         "language:verilog arm processor stars:>5"),
-    ("pipeline",    "language:verilog pipeline processor stars:>5"),
+    ("cpu", "language:verilog topic:cpu stars:>5"),
+    ("cpu-sv", "language:systemverilog topic:cpu stars:>5"),
+    ("riscv", "language:verilog topic:risc-v stars:>5"),
+    ("riscv-sv", "language:systemverilog topic:risc-v stars:>5"),
+    ("mips", "language:verilog mips processor stars:>5"),
+    ("arm", "language:verilog arm processor stars:>5"),
+    ("pipeline", "language:verilog pipeline processor stars:>5"),
     # ── ML / Accelerator ─────────────────────────────────────────────
-    ("nn-acc",      "language:verilog topic:neural-network stars:>3"),
-    ("systolic",    "language:verilog systolic accelerator stars:>3"),
-    ("tpu",         "language:verilog tpu accelerator stars:>3"),
-    ("cnn-fpga",    "language:verilog cnn fpga stars:>3"),
-    ("ml-sv",       "language:systemverilog neural accelerator stars:>3"),
+    ("nn-acc", "language:verilog topic:neural-network stars:>3"),
+    ("systolic", "language:verilog systolic accelerator stars:>3"),
+    ("tpu", "language:verilog tpu accelerator stars:>3"),
+    ("cnn-fpga", "language:verilog cnn fpga stars:>3"),
+    ("ml-sv", "language:systemverilog neural accelerator stars:>3"),
     # ── DSP / Signal Processing ───────────────────────────────────────
-    ("dsp",         "language:verilog topic:dsp stars:>5"),
-    ("fft",         "language:verilog fft processor stars:>3"),
-    ("fir",         "language:verilog fir filter stars:>3"),
-    ("iir",         "language:verilog iir filter stars:>3"),
-    ("cordic",      "language:verilog cordic stars:>3"),
-    ("image",       "language:verilog image processing fpga stars:>3"),
+    ("dsp", "language:verilog topic:dsp stars:>5"),
+    ("fft", "language:verilog fft processor stars:>3"),
+    ("fir", "language:verilog fir filter stars:>3"),
+    ("iir", "language:verilog iir filter stars:>3"),
+    ("cordic", "language:verilog cordic stars:>3"),
+    ("image", "language:verilog image processing fpga stars:>3"),
     # ── Arithmetic / FPU ─────────────────────────────────────────────
-    ("fpu",         "language:verilog fpu floating point stars:>5"),
-    ("fpu-sv",      "language:systemverilog floating point unit stars:>5"),
-    ("alu",         "language:verilog alu arithmetic stars:>3"),
-    ("posit",       "language:verilog posit arithmetic stars:>1"),
-    ("divider",     "language:verilog integer divider stars:>3"),
-    ("multiplier",  "language:verilog multiplier booth stars:>3"),
+    ("fpu", "language:verilog fpu floating point stars:>5"),
+    ("fpu-sv", "language:systemverilog floating point unit stars:>5"),
+    ("alu", "language:verilog alu arithmetic stars:>3"),
+    ("posit", "language:verilog posit arithmetic stars:>1"),
+    ("divider", "language:verilog integer divider stars:>3"),
+    ("multiplier", "language:verilog multiplier booth stars:>3"),
     # ── Memory / Cache ────────────────────────────────────────────────
-    ("cache",       "language:verilog cache controller stars:>5"),
-    ("sdram",       "language:verilog sdram controller stars:>3"),
-    ("ddr",         "language:verilog ddr memory controller stars:>5"),
-    ("fifo",        "language:verilog fifo stars:>5"),
-    ("sram",        "language:verilog sram stars:>3"),
+    ("cache", "language:verilog cache controller stars:>5"),
+    ("sdram", "language:verilog sdram controller stars:>3"),
+    ("ddr", "language:verilog ddr memory controller stars:>5"),
+    ("fifo", "language:verilog fifo stars:>5"),
+    ("sram", "language:verilog sram stars:>3"),
     # ── Communication / IO ────────────────────────────────────────────
-    ("axi",         "language:verilog topic:axi stars:>10"),
-    ("ethernet",    "language:verilog ethernet stars:>10"),
-    ("pcie",        "language:verilog pcie stars:>10"),
-    ("uart",        "language:verilog uart stars:>5"),
-    ("spi",         "language:verilog spi controller stars:>5"),
-    ("i2c",         "language:verilog i2c controller stars:>5"),
-    ("usb",         "language:verilog usb controller stars:>5"),
-    ("can",         "language:verilog can bus controller stars:>3"),
-    ("wishbone",    "language:verilog wishbone bus stars:>5"),
-    ("apb",         "language:verilog apb bus stars:>3"),
-    ("ahb",         "language:verilog ahb bus stars:>3"),
+    ("axi", "language:verilog topic:axi stars:>10"),
+    ("ethernet", "language:verilog ethernet stars:>10"),
+    ("pcie", "language:verilog pcie stars:>10"),
+    ("uart", "language:verilog uart stars:>5"),
+    ("spi", "language:verilog spi controller stars:>5"),
+    ("i2c", "language:verilog i2c controller stars:>5"),
+    ("usb", "language:verilog usb controller stars:>5"),
+    ("can", "language:verilog can bus controller stars:>3"),
+    ("wishbone", "language:verilog wishbone bus stars:>5"),
+    ("apb", "language:verilog apb bus stars:>3"),
+    ("ahb", "language:verilog ahb bus stars:>3"),
     # ── Crypto / Security ─────────────────────────────────────────────
-    ("aes",         "language:verilog aes encryption stars:>5"),
-    ("sha",         "language:verilog sha hash stars:>3"),
-    ("rsa",         "language:verilog rsa cryptography stars:>3"),
-    ("chacha",      "language:verilog chacha cipher stars:>1"),
-    ("ecc",         "language:verilog elliptic curve stars:>3"),
+    ("aes", "language:verilog aes encryption stars:>5"),
+    ("sha", "language:verilog sha hash stars:>3"),
+    ("rsa", "language:verilog rsa cryptography stars:>3"),
+    ("chacha", "language:verilog chacha cipher stars:>1"),
+    ("ecc", "language:verilog elliptic curve stars:>3"),
     # ── GPU / Parallel ────────────────────────────────────────────────
-    ("gpu",         "language:verilog gpu shader stars:>5"),
-    ("gpu-sv",      "language:systemverilog gpu parallel stars:>5"),
+    ("gpu", "language:verilog gpu shader stars:>5"),
+    ("gpu-sv", "language:systemverilog gpu parallel stars:>5"),
     # ── NoC / Interconnect ────────────────────────────────────────────
-    ("noc",         "language:verilog network on chip stars:>3"),
-    ("crossbar",    "language:verilog crossbar switch stars:>3"),
-    ("router",      "language:verilog router arbiter stars:>3"),
+    ("noc", "language:verilog network on chip stars:>3"),
+    ("crossbar", "language:verilog crossbar switch stars:>3"),
+    ("router", "language:verilog router arbiter stars:>3"),
     # ── SoC / Platform ────────────────────────────────────────────────
-    ("soc",         "language:verilog topic:soc stars:>10"),
-    ("fpga-soc",    "language:verilog soc fpga stars:>5"),
-    ("embedded",    "language:verilog embedded system stars:>5"),
+    ("soc", "language:verilog topic:soc stars:>10"),
+    ("fpga-soc", "language:verilog soc fpga stars:>5"),
+    ("embedded", "language:verilog embedded system stars:>5"),
     # ── FPGA / EDA Tools ─────────────────────────────────────────────
-    ("fpga",        "language:verilog topic:fpga stars:>10"),
-    ("fpga-sv",     "language:systemverilog topic:fpga stars:>10"),
-    ("rtl",         "language:verilog rtl design stars:>5"),
+    ("fpga", "language:verilog topic:fpga stars:>10"),
+    ("fpga-sv", "language:systemverilog topic:fpga stars:>10"),
+    ("rtl", "language:verilog rtl design stars:>5"),
     # ── Video / Display ───────────────────────────────────────────────
-    ("hdmi",        "language:verilog hdmi transmitter stars:>3"),
-    ("vga",         "language:verilog vga controller stars:>3"),
+    ("hdmi", "language:verilog hdmi transmitter stars:>3"),
+    ("vga", "language:verilog vga controller stars:>3"),
     # ── RF / Analog Interface ─────────────────────────────────────────
-    ("adc",         "language:verilog adc interface stars:>3"),
-    ("dac",         "language:verilog dac interface stars:>3"),
+    ("adc", "language:verilog adc interface stars:>3"),
+    ("dac", "language:verilog dac interface stars:>3"),
     # ── Catch-all broad sweeps ────────────────────────────────────────
     ("verilog-top", "language:verilog stars:>50"),
-    ("sv-top",      "language:systemverilog stars:>50"),
+    ("sv-top", "language:systemverilog stars:>50"),
 ]
 
 
@@ -225,15 +225,16 @@ class ProjectDiscovery:
 
     def _save_registry(self, registry: Dict[str, dict]) -> None:
         self.cfg.project_dir.mkdir(parents=True, exist_ok=True)
-        self._registry_path.write_text(
-            json.dumps(registry, indent=2), encoding="utf-8"
-        )
+        self._registry_path.write_text(json.dumps(registry, indent=2), encoding="utf-8")
 
     def registry_stats(self) -> dict:
         reg = self._load_registry()
-        cloned   = sum(1 for v in reg.values() if v.get("cloned"))
-        return {"total_discovered": len(reg), "cloned": cloned,
-                "pending": len(reg) - cloned}
+        cloned = sum(1 for v in reg.values() if v.get("cloned"))
+        return {
+            "total_discovered": len(reg),
+            "cloned": cloned,
+            "pending": len(reg) - cloned,
+        }
 
     # ── Local scan ────────────────────────────────────────────────────
 
@@ -243,8 +244,11 @@ class ProjectDiscovery:
             log.warning("Project directory %s does not exist", self.cfg.project_dir)
             return projects
         for child in sorted(self.cfg.project_dir.iterdir()):
-            if child.is_dir() and not child.name.startswith(".") \
-                    and self._has_verilog(child):
+            if (
+                child.is_dir()
+                and not child.name.startswith(".")
+                and self._has_verilog(child)
+            ):
                 projects.append(child)
         log.info("Found %d local projects in %s", len(projects), self.cfg.project_dir)
         return projects
@@ -266,16 +270,20 @@ class ProjectDiscovery:
         stats_before = sum(1 for v in registry.values() if v.get("cloned"))
 
         # ── Collect candidates ────────────────────────────────────────
-        candidates: List[Tuple[str, str]] = []   # (clone_url, source_label)
+        candidates: List[Tuple[str, str]] = []  # (clone_url, source_label)
 
         if query:
             log.info("Running custom GitHub query: %s", query)
-            for url in self._search_github(query, max_results=self.cfg.github_max_repos):
+            for url in self._search_github(
+                query, max_results=self.cfg.github_max_repos
+            ):
                 candidates.append((url, "custom"))
         else:
             # Strategy 1: keyword/topic queries
             log.info("Running %d GitHub search queries …", len(GITHUB_SEARCH_QUERIES))
-            per_q = max(10, self.cfg.github_max_repos // max(len(GITHUB_SEARCH_QUERIES), 1))
+            per_q = max(
+                10, self.cfg.github_max_repos // max(len(GITHUB_SEARCH_QUERIES), 1)
+            )
             for label, q in GITHUB_SEARCH_QUERIES:
                 for url in self._search_github(q, max_results=per_q):
                     candidates.append((url, label))
@@ -300,16 +308,17 @@ class ProjectDiscovery:
                 seen_urls.add(url)
                 name = url.rstrip("/").rsplit("/", 1)[-1].replace(".git", "")
                 registry[url] = {
-                    "name":          name,
-                    "source":        source,
-                    "cloned":        False,
+                    "name": name,
+                    "source": source,
+                    "cloned": False,
                     "discovered_at": datetime.now(timezone.utc).isoformat(),
                 }
                 new_count += 1
 
         log.info(
             "Registry: %d total (+%d new this run), %d already cloned, %d pending.",
-            len(registry), new_count,
+            len(registry),
+            new_count,
             sum(1 for v in registry.values() if v.get("cloned")),
             sum(1 for v in registry.values() if not v.get("cloned")),
         )
@@ -317,17 +326,18 @@ class ProjectDiscovery:
         # ── Clone pending repos ───────────────────────────────────────
         if clone:
             pending = [
-                (url, meta) for url, meta in registry.items()
-                if not meta.get("cloned")
+                (url, meta) for url, meta in registry.items() if not meta.get("cloned")
             ]
             # Curated first, then by discovery time (oldest first)
-            pending.sort(key=lambda x: (x[1]["source"] != "curated",
-                                        x[1]["discovered_at"]))
+            pending.sort(
+                key=lambda x: (x[1]["source"] != "curated", x[1]["discovered_at"])
+            )
             to_clone = pending[: self.cfg.github_max_repos]
 
             log.info(
                 "Cloning %d repo(s) this run (%d more queued for future runs) …",
-                len(to_clone), max(0, len(pending) - len(to_clone)),
+                len(to_clone),
+                max(0, len(pending) - len(to_clone)),
             )
             for url, _meta in to_clone:
                 dest = self._clone_repo(url)
@@ -339,7 +349,8 @@ class ProjectDiscovery:
             log.info(
                 "Done. Total cloned: %d (+%d this run). "
                 "Still pending: %d (run --github again to clone more).",
-                stats_after, stats_after - stats_before,
+                stats_after,
+                stats_after - stats_before,
                 sum(1 for v in registry.values() if not v.get("cloned")),
             )
 
@@ -366,7 +377,7 @@ class ProjectDiscovery:
         headers = self._github_headers()
         urls: List[str] = []
 
-        for page in range(1, 5):   # up to 4 pages = 120 results per query
+        for page in range(1, 5):  # up to 4 pages = 120 results per query
             if len(urls) >= max_results:
                 break
             api_url = (
@@ -382,15 +393,31 @@ class ProjectDiscovery:
                     with urllib.request.urlopen(req, timeout=15) as resp:
                         # Read headers and body before doing anything slow.
                         remaining = int(resp.headers.get("X-RateLimit-Remaining", 0))
-                        reset_ts  = int(resp.headers.get("X-RateLimit-Reset", 0))
+                        reset_ts = int(resp.headers.get("X-RateLimit-Reset", 0))
                         data = json.loads(resp.read().decode())
-                    # Only sleep proactively when quota is fully exhausted
-                    # (the next request would 403 for certain). Lower values
-                    # are handled reactively by the 403 retry path below.
+                    # Proactively slow down when close to the rate limit.
+                    # Default 0 is safe when the header is absent.
                     if remaining == 0:
+                        # Fully exhausted – sleep until the window resets.
                         wait = max(0, reset_ts - int(time.time())) + 2
-                        log.info("Rate limit exhausted; sleeping %ds \u2026", wait)
+                        log.info(
+                            "Rate limit exhausted; sleeping %ds \u2026",
+                            wait,
+                        )
                         time.sleep(wait)
+                    elif remaining < 10:
+                        # Still have quota – pace requests proportionally
+                        # instead of sleeping the whole window.
+                        time_left = max(1, reset_ts - int(time.time()))
+                        per_req = time_left / remaining
+                        log.info(
+                            "Rate limit low (%d remaining, %ds left in window); "
+                            "pacing at %.1fs/request \u2026",
+                            remaining,
+                            time_left,
+                            per_req,
+                        )
+                        time.sleep(min(per_req, 10))  # cap at 10s
                     items = data.get("items", [])
                     for item in items:
                         urls.append(item["clone_url"])
@@ -403,7 +430,9 @@ class ProjectDiscovery:
                         wait = max(10, reset_ts - int(time.time())) + 2
                         log.warning(
                             "GitHub rate-limited (query='%s'); waiting %ds before retry %d/3 …",
-                            query, wait, retry + 1,
+                            query,
+                            wait,
+                            retry + 1,
                         )
                         time.sleep(wait)
                         retry += 1
@@ -416,7 +445,9 @@ class ProjectDiscovery:
                     last_page = True
                     break
             else:
-                log.warning("Giving up on query='%s' after 3 rate-limit retries.", query)
+                log.warning(
+                    "Giving up on query='%s' after 3 rate-limit retries.", query
+                )
                 return urls
             if last_page:
                 break
@@ -440,7 +471,7 @@ class ProjectDiscovery:
             try:
                 with urllib.request.urlopen(req, timeout=15) as resp:
                     remaining = int(resp.headers.get("X-RateLimit-Remaining", 0))
-                    reset_ts  = int(resp.headers.get("X-RateLimit-Reset", 0))
+                    reset_ts = int(resp.headers.get("X-RateLimit-Reset", 0))
                     items = json.loads(resp.read().decode())
                 if not isinstance(items, list):
                     break
@@ -450,8 +481,21 @@ class ProjectDiscovery:
                         urls.append(item["clone_url"])
                 if remaining == 0:
                     wait = max(0, reset_ts - int(time.time())) + 2
-                    log.info("Org sweep rate limit exhausted; sleeping %ds \u2026", wait)
+                    log.info(
+                        "Org sweep rate limit exhausted; sleeping %ds \u2026",
+                        wait,
+                    )
                     time.sleep(wait)
+                elif remaining < 10:
+                    time_left = max(1, reset_ts - int(time.time()))
+                    per_req = time_left / remaining
+                    log.info(
+                        "Org sweep rate limit low (%d remaining); "
+                        "pacing at %.1fs/request \u2026",
+                        remaining,
+                        per_req,
+                    )
+                    time.sleep(min(per_req, 10))
                 if len(items) < 100:
                     break
             except urllib.error.HTTPError as exc:
@@ -482,15 +526,21 @@ class ProjectDiscovery:
 
         self.cfg.project_dir.mkdir(parents=True, exist_ok=True)
         cmd = [
-            "git", "clone",
-            "--depth", str(self.cfg.clone_depth),
+            "git",
+            "clone",
+            "--depth",
+            str(self.cfg.clone_depth),
             "--single-branch",
             url,
             str(dest),
         ]
         try:
             subprocess.run(
-                cmd, capture_output=True, text=True, timeout=120, check=True,
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                check=True,
             )
             log.info("Cloned %s", name)
             return dest
