@@ -1,0 +1,15 @@
+services:
+  rtl-analyzer:
+    build: .
+    image: rtl-analyzer:latest
+    volumes:
+      # Writable so --github can clone new repos into the directory
+      - ./verilog_proj:/app/verilog_proj
+      # Reports and figures land here on the host
+      - ./output:/app/output
+    environment:
+      # Optional: set your GitHub token for higher API rate limits
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+    # Default: analyse whatever is in verilog_proj/
+    # Override at `docker compose run rtl-analyzer --github` etc.
+    command: []

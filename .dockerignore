@@ -1,0 +1,7 @@
+.git
+.gitignore
+output/
+__pycache__/
+*.pyc
+verilog_proj/*/
+*.md
