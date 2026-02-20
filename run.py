@@ -229,6 +229,7 @@ def main() -> int:
         log.info("Running interface compatibility analysis …")
         interface_report = InterfaceAnalyzer(
             min_compatibility=args.min_compat,
+            max_workers=cfg.max_workers,
         ).analyse(analysed)
         if interface_report.compatible_pairs:
             top = interface_report.compatible_pairs[0]

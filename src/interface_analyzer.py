@@ -17,8 +17,10 @@ only work required to reuse one inside the other project is a thin
 from __future__ import annotations
 
 import logging
+import os
 import re
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -352,6 +354,38 @@ def _explain_pair(cp: CompatibilityPair) -> str:
     return "".join(parts)
 
 
+# ── Parallel comparison worker (module-level for pickling) ───────────
+
+def _compare_proj_pair(
+    args: Tuple[List["ModuleInfo"], List["ModuleInfo"], float],
+) -> List[Tuple[float, "ModuleInfo", "ModuleInfo", float, float, list, list]]:
+    """Compare every module-pair between two projects; return qualifying hits.
+
+    Upper-bound pre-filter: the best possible norm_score for a pair is
+    ``min(|ports_a|, |ports_b|) / max(|ports_a|, |ports_b|)``.  If that
+    ceiling is already below *min_compatibility* the pair is skipped before
+    any dict lookups are performed — this alone eliminates the vast majority
+    of pairs for typical mixed-size module sets.
+    """
+    mods_a, mods_b, min_compatibility = args
+    hits: List[Tuple] = []
+    for ma in mods_a:
+        len_a = len(ma.ports)
+        if len_a == 0:
+            continue
+        for mb in mods_b:
+            len_b = len(mb.ports)
+            if len_b == 0:
+                continue
+            # Cheap ceiling check before any dict work
+            if min(len_a, len_b) / max(len_a, len_b) < min_compatibility:
+                continue
+            exact, norm, renames, resizes = _match_ports(ma.ports, mb.ports)
+            if norm >= min_compatibility:
+                hits.append((norm, ma, mb, exact, norm, renames, resizes))
+    return hits
+
+
 # ── Reusability scoring ───────────────────────────────────────────────
 
 def _reusability_score(mi: ModuleInfo, sig_size: int, total_modules: int) -> float:
@@ -377,10 +411,13 @@ class InterfaceAnalyzer:
         min_ports: int = 2,
         min_compatibility: float = 0.40,
         max_pairs: int = 300,
+        max_workers: int = 0,
     ):
         self.min_ports = min_ports
         self.min_compatibility = min_compatibility
         self.max_pairs = max_pairs
+        # 0 → use all logical CPUs
+        self.max_workers = max_workers or os.cpu_count() or 1
 
     def analyse(self, projects: List[ProjectAnalysis]) -> InterfaceReport:
         log.info("Parsing Verilog module port interfaces …")
@@ -467,33 +504,40 @@ class InterfaceAnalyzer:
             total_proj_pairs, total_mod_comparisons,
         )
 
+        # Build work items: one per project-pair (embarrassingly parallel)
+        work_items = [
+            (
+                mods_by_proj[proj_list[i]],
+                mods_by_proj[proj_list[j]],
+                self.min_compatibility,
+            )
+            for i in range(len(proj_list))
+            for j in range(i + 1, len(proj_list))
+        ]
+
+        log.info(
+            "  Dispatching %d project-pair jobs across %d worker(s) …",
+            len(work_items), self.max_workers,
+        )
+
         scored: list = []
-        _LOG_EVERY = max(1, total_proj_pairs // 10)   # log ~10 progress lines
-        for i in range(len(proj_list)):
-            for j in range(i + 1, len(proj_list)):
-                pair_idx = i * (len(proj_list) - 1) - i * (i - 1) // 2 + (j - i - 1)
-                if pair_idx % _LOG_EVERY == 0:
+        completed = 0
+        _LOG_EVERY = max(1, len(work_items) // 10)
+        with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
+            # chunksize batches small tasks to reduce IPC overhead
+            chunksize = max(1, len(work_items) // (self.max_workers * 4))
+            for result in executor.map(
+                _compare_proj_pair, work_items, chunksize=chunksize
+            ):
+                scored.extend(result)
+                completed += 1
+                if completed % _LOG_EVERY == 0:
                     log.info(
-                        "    Comparing project pair %d/%d: %s vs %s "
-                        "(%d × %d modules) …",
-                        pair_idx + 1, total_proj_pairs,
-                        proj_list[i], proj_list[j],
-                        len(mods_by_proj[proj_list[i]]),
-                        len(mods_by_proj[proj_list[j]]),
-                    )
-                hits_this_pair = 0
-                for ma in mods_by_proj[proj_list[i]]:
-                    for mb in mods_by_proj[proj_list[j]]:
-                        exact, norm, renames, resizes = _match_ports(
-                            ma.ports, mb.ports
-                        )
-                        if norm >= self.min_compatibility:
-                            scored.append((norm, ma, mb, exact, norm, renames, resizes))
-                            hits_this_pair += 1
-                if hits_this_pair:
-                    log.debug(
-                        "      → %d compatible pair(s) found (%s vs %s)",
-                        hits_this_pair, proj_list[i], proj_list[j],
+                        "    %d/%d project-pair jobs done (%.0f%%) — "
+                        "%d hit(s) so far …",
+                        completed, len(work_items),
+                        100 * completed / len(work_items),
+                        len(scored),
                     )
 
         log.info(

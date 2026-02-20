@@ -120,6 +120,20 @@ Each run writes to a timestamped subfolder, e.g. `output/run_2026-02-20_17-06-21
 | `fig_surprise_map.png`          | Scatter plot of surprise score vs combined similarity *(only if pairs found)* |
 | `fig_interface_reusability.png` | Module reusability score chart *(only if pairs found)*                        |
 
+## Performance tips
+
+The interface compatibility analysis is the most expensive step (O(P² × M²) where P = projects, M = modules/project). With 49 projects and 11 000+ modules the default run can take 10–30 minutes in a single-threaded baseline. Strategies to speed it up:
+
+| Strategy | Command | Effect |
+|---|---|---|
+| Skip interface analysis entirely | `--no-interface` | Removes the slow step completely; all other analyses still run |
+| Raise the compatibility threshold | `--min-compat 0.60` | The pre-filter prunes more pairs before any work; fewer results too |
+| Skip surprise analysis | `--no-surprise` | Saves n-gram bag recomputation for 49 projects |
+| Limit projects analysed | Place only a subset in `verilog_proj/` | Quadratic win — halving projects cuts interface work by 4× |
+| Run with more CPUs | Docker: increase host CPUs; bare-metal: automatic | Project-pair jobs are dispatched in parallel via `ProcessPoolExecutor` using all logical CPUs (`cfg.max_workers`) |
+
+The code already applies a **port-count upper-bound pre-filter** before calling `_match_ports`: if `min(|ports_a|, |ports_b|) / max(|ports_a|, |ports_b|) < --min-compat`, the pair is dropped without any dictionary lookups. This eliminates the majority of pairs for free at the default threshold of 0.40.
+
 ## How it works
 
 1. **Discovery** — `discovery.py` maintains an additive registry (`verilog_proj/.discovery_registry.json`) across runs. GitHub searches use 62 curated keyword/topic queries plus 21 hardware-org sweeps and a hand-picked seed list. Rate-limit responses (HTTP 403) are handled by reading `X-RateLimit-Reset` and retrying up to 3 times; the code also proactively sleeps when fewer than 5 requests remain.
