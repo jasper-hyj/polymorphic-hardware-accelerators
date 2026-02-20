@@ -386,19 +386,33 @@ class InterfaceAnalyzer:
         log.info("Parsing Verilog module port interfaces …")
         all_modules: List[ModuleInfo] = []
 
-        for pa in projects:
-            for src in pa.source_files:
+        for p_idx, pa in enumerate(projects, 1):
+            verilog_srcs = [
+                Path(src) for src in pa.source_files
+                if Path(src).suffix.lower() in {".v", ".sv", ".vh", ".svh"}
+            ]
+            proj_modules_before = len(all_modules)
+            log.debug(
+                "  [%d/%d] Parsing %s (%d source file(s)) …",
+                p_idx, len(projects), pa.name, len(verilog_srcs),
+            )
+            for src in verilog_srcs:
                 path = Path(src)
-                if path.suffix.lower() not in {".v", ".sv", ".vh", ".svh"}:
-                    continue
                 for mi in _parse_verilog_modules(path):
                     mi.project = pa.name
                     if mi.port_count >= self.min_ports:
                         mi.protocols = detect_protocols(mi)
                         all_modules.append(mi)
+            proj_mods = len(all_modules) - proj_modules_before
+            log.debug(
+                "    → %d module interface(s) found in %s",
+                proj_mods, pa.name,
+            )
 
-        log.info("  %d parseable module interfaces across %d projects.",
-                 len(all_modules), len(projects))
+        log.info(
+            "  %d parseable module interfaces across %d projects.",
+            len(all_modules), len(projects),
+        )
 
         # Protocol coverage
         proto_coverage: Dict[str, List[str]] = defaultdict(list)
@@ -441,9 +455,33 @@ class InterfaceAnalyzer:
             mods_by_proj[mi.project].append(mi)
 
         proj_list = list(mods_by_proj.keys())
+        total_proj_pairs = len(proj_list) * (len(proj_list) - 1) // 2
+        total_mod_comparisons = sum(
+            len(mods_by_proj[proj_list[i]]) * len(mods_by_proj[proj_list[j]])
+            for i in range(len(proj_list))
+            for j in range(i + 1, len(proj_list))
+        )
+        log.info(
+            "  Cross-project compatibility: %d project-pair(s), "
+            "~%d module-pair comparisons to run …",
+            total_proj_pairs, total_mod_comparisons,
+        )
+
         scored: list = []
+        _LOG_EVERY = max(1, total_proj_pairs // 10)   # log ~10 progress lines
         for i in range(len(proj_list)):
             for j in range(i + 1, len(proj_list)):
+                pair_idx = i * (len(proj_list) - 1) - i * (i - 1) // 2 + (j - i - 1)
+                if pair_idx % _LOG_EVERY == 0:
+                    log.info(
+                        "    Comparing project pair %d/%d: %s vs %s "
+                        "(%d × %d modules) …",
+                        pair_idx + 1, total_proj_pairs,
+                        proj_list[i], proj_list[j],
+                        len(mods_by_proj[proj_list[i]]),
+                        len(mods_by_proj[proj_list[j]]),
+                    )
+                hits_this_pair = 0
                 for ma in mods_by_proj[proj_list[i]]:
                     for mb in mods_by_proj[proj_list[j]]:
                         exact, norm, renames, resizes = _match_ports(
@@ -451,7 +489,16 @@ class InterfaceAnalyzer:
                         )
                         if norm >= self.min_compatibility:
                             scored.append((norm, ma, mb, exact, norm, renames, resizes))
+                            hits_this_pair += 1
+                if hits_this_pair:
+                    log.debug(
+                        "      → %d compatible pair(s) found (%s vs %s)",
+                        hits_this_pair, proj_list[i], proj_list[j],
+                    )
 
+        log.info(
+            "  Sorting %d candidate compatible pair(s) …", len(scored)
+        )
         scored.sort(key=lambda x: x[0], reverse=True)
         pairs: List[CompatibilityPair] = []
         for _, ma, mb, exact, norm, renames, resizes in scored[: self.max_pairs]:

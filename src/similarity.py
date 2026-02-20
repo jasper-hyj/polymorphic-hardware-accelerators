@@ -197,15 +197,39 @@ class SimilarityEngine:
         """
         names = [p.name for p in projects]
         n = len(projects)
+        total_pairs = n * (n - 1) // 2
+        log.info(
+            "  Building feature vectors for %d project(s) …", n
+        )
 
-        gate_vecs   = [_gate_vector(p)       for p in projects]
-        struct_vecs = [_graph_features(p)    for p in projects]
-        ngram_bags  = [_extract_ngrams(p, ngram_n) for p in projects]
+        log.info("  Extracting gate-type vectors …")
+        gate_vecs = [_gate_vector(p) for p in projects]
+
+        log.info("  Extracting structural graph feature vectors …")
+        struct_vecs = [_graph_features(p) for p in projects]
+
+        log.info(
+            "  Extracting gate n-gram bags (n=%d) for %d project(s) …",
+            ngram_n, n,
+        )
+        ngram_bags: list = []
+        for idx, p in enumerate(projects, 1):
+            bag = _extract_ngrams(p, ngram_n)
+            ngram_bags.append(bag)
+            log.debug(
+                "    [%d/%d] %s: %d distinct n-gram type(s)",
+                idx, n, p.name, len(bag),
+            )
 
         gate_mat   = np.eye(n, dtype=float)
         struct_mat = np.eye(n, dtype=float)
         ngram_mat  = np.eye(n, dtype=float)
 
+        log.info(
+            "  Computing %d pairwise similarity scores …", total_pairs
+        )
+        _LOG_EVERY = max(1, total_pairs // 10)
+        done = 0
         for i in range(n):
             for j in range(i + 1, n):
                 gs = _cosine_sim(gate_vecs[i], gate_vecs[j])
@@ -214,6 +238,12 @@ class SimilarityEngine:
                 gate_mat[i, j]   = gate_mat[j, i]   = gs
                 struct_mat[i, j] = struct_mat[j, i] = ss
                 ngram_mat[i, j]  = ngram_mat[j, i]  = ns
+                done += 1
+                if done % _LOG_EVERY == 0:
+                    log.info(
+                        "    %d/%d pairs done (%.0f%%) …",
+                        done, total_pairs, 100 * done / total_pairs,
+                    )
 
         # Combined: split weights 3 ways if partial_weight is defined,
         # otherwise fall back to gate + structural only.
@@ -241,15 +271,36 @@ class SimilarityEngine:
         Columns: project_a, project_b, jaccard, shared_pattern, count_a, count_b
         """
         names = [p.name for p in projects]
-        ngram_bags = [_extract_ngrams(p, ngram_n) for p in projects]
 
+        n_proj = len(projects)
+        total_pairs = n_proj * (n_proj - 1) // 2
+        log.info(
+            "  Extracting n-gram bags for partial-match table (%d project(s)) …",
+            n_proj,
+        )
+        ngram_bags = []
+        for idx, p in enumerate(projects, 1):
+            bag = _extract_ngrams(p, ngram_n)
+            ngram_bags.append(bag)
+            log.debug(
+                "    [%d/%d] %s: %d distinct n-gram type(s)",
+                idx, n_proj, p.name, len(bag),
+            )
+
+        log.info(
+            "  Scoring %d n-gram pair(s) for partial gate-pattern matches …",
+            total_pairs,
+        )
         pair_scores = []
-        for i in range(len(projects)):
-            for j in range(i + 1, len(projects)):
+        for i in range(n_proj):
+            for j in range(i + 1, n_proj):
                 score = _jaccard_sim(ngram_bags[i], ngram_bags[j])
                 if score > 0:
                     pair_scores.append((score, i, j))
 
+        log.info(
+            "  Sorting %d non-zero n-gram pairs …", len(pair_scores)
+        )
         pair_scores.sort(reverse=True)
         rows = []
         for score, i, j in pair_scores[:top_pairs]:

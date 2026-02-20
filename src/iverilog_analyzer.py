@@ -110,19 +110,31 @@ class IVerilogAnalyzer:
     def analyze_project(self, project_path: Path) -> ProjectAnalysis:
         """Analyse one RTL project directory, return ProjectAnalysis."""
         pa = ProjectAnalysis(name=project_path.name, path=project_path)
+        log.debug("  Collecting source files in %s …", project_path)
         pa.source_files = self._collect_sources(project_path)
 
         if not pa.source_files:
             pa.error = "No Verilog source files found"
+            log.debug("  %s: no Verilog sources found, skipping.", project_path.name)
             return pa
 
+        log.debug(
+            "  %s: %d source file(s) found; counting lines …",
+            project_path.name, len(pa.source_files),
+        )
         pa.line_count = self._count_lines(pa.source_files)
+        log.debug("  %s: %d lines of RTL.", project_path.name, pa.line_count)
 
         if self._iverilog_available:
+            log.debug("  %s: running iverilog compilation …", project_path.name)
             self._iverilog_pass(pa)
 
         if not pa.used_iverilog:
             # Either iverilog unavailable or compilation failed
+            log.debug(
+                "  %s: falling back to regex gate analysis …",
+                project_path.name,
+            )
             self._regex_pass(pa)
 
         log.info(

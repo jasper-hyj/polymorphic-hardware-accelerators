@@ -21,11 +21,14 @@ shift-register backbone" or "both implement a carry-propagate adder cell").
 
 from __future__ import annotations
 
+import logging
 import re
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple
 
 import pandas as pd
+
+log = logging.getLogger(__name__)
 
 from .iverilog_analyzer import ProjectAnalysis
 from .similarity import _extract_ngrams, _jaccard_sim, _shared_patterns
@@ -223,18 +226,45 @@ class SurpriseAnalyzer:
         projects: List[ProjectAnalysis],
         df_combined: pd.DataFrame,
     ) -> SurpriseReport:
+        log.info("  Classifying %d project(s) into hardware domains …", len(projects))
         domain_map = {p.name: classify_domain(p) for p in projects}
+        for pname, domain in domain_map.items():
+            log.debug("    %s → %s", pname, domain)
+
         name_to_proj = {p.name: p for p in projects}
         names = list(df_combined.columns)
-        ngram_bags = {
-            p.name: _extract_ngrams(p, self.ngram_n) for p in projects
-        }
+        total_pairs = len(names) * (len(names) - 1) // 2
 
+        log.info(
+            "  Extracting gate n-gram bags (n=%d) for %d project(s) …",
+            self.ngram_n, len(projects),
+        )
+        ngram_bags = {}
+        for idx, p in enumerate(projects, 1):
+            bag = _extract_ngrams(p, self.ngram_n)
+            ngram_bags[p.name] = bag
+            log.debug(
+                "    [%d/%d] %s: %d distinct n-gram type(s)",
+                idx, len(projects), p.name, len(bag),
+            )
+
+        log.info(
+            "  Scanning %d cross-domain project pair(s) for surprise …",
+            total_pairs,
+        )
         pairs: List[SurprisingPair] = []
+        _LOG_EVERY = max(1, total_pairs // 10)
+        done = 0
         for i, a in enumerate(names):
             for j, b in enumerate(names):
                 if j <= i:
                     continue
+                done += 1
+                if done % _LOG_EVERY == 0:
+                    log.info(
+                        "    %d/%d pairs scanned (%.0f%%) …",
+                        done, total_pairs, 100 * done / total_pairs,
+                    )
                 sim = float(df_combined.loc[a, b])
                 if sim < self.min_similarity:
                     continue
@@ -274,6 +304,11 @@ class SurpriseAnalyzer:
                 )
 
         pairs.sort(key=lambda p: p.surprise_score, reverse=True)
+        log.info(
+            "  Surprise analysis complete: %d surprising pair(s) found "
+            "(min_surprise=%.2f, min_similarity=%.2f).",
+            len(pairs), self.min_surprise, self.min_similarity,
+        )
         return SurpriseReport(
             domain_map=domain_map,
             pairs=pairs,
