@@ -279,6 +279,7 @@ class ProjectDiscovery:
             for label, q in GITHUB_SEARCH_QUERIES:
                 for url in self._search_github(q, max_results=per_q):
                     candidates.append((url, label))
+                time.sleep(1.0)  # inter-query delay to avoid rate-limiting
 
             # Strategy 2: org sweeps
             log.info("Sweeping %d hardware organisations …", len(HARDWARE_ORGS))
@@ -374,22 +375,47 @@ class ProjectDiscovery:
                 f"&sort=stars&order=desc&per_page=30&page={page}"
             )
             req = urllib.request.Request(api_url, headers=headers)
-            try:
-                with urllib.request.urlopen(req, timeout=15) as resp:
-                    data = json.loads(resp.read().decode())
-                items = data.get("items", [])
-                for item in items:
-                    urls.append(item["clone_url"])
-                if len(items) < 30:
+            last_page = False
+            retry = 0
+            while retry <= 3:
+                try:
+                    with urllib.request.urlopen(req, timeout=15) as resp:
+                        # Proactively slow down when close to the rate limit
+                        remaining = int(resp.headers.get("X-RateLimit-Remaining", 10))
+                        if remaining < 5:
+                            reset_ts = int(resp.headers.get("X-RateLimit-Reset", 0))
+                            wait = max(0, reset_ts - int(time.time())) + 2
+                            log.info("Rate limit nearly exhausted; sleeping %ds …", wait)
+                            time.sleep(wait)
+                        data = json.loads(resp.read().decode())
+                    items = data.get("items", [])
+                    for item in items:
+                        urls.append(item["clone_url"])
+                    if len(items) < 30:
+                        last_page = True
+                    break  # success – exit retry loop
+                except urllib.error.HTTPError as exc:
+                    if exc.code == 403:
+                        reset_ts = int(exc.headers.get("X-RateLimit-Reset", 0))
+                        wait = max(10, reset_ts - int(time.time())) + 2
+                        log.warning(
+                            "GitHub rate-limited (query='%s'); waiting %ds before retry %d/3 …",
+                            query, wait, retry + 1,
+                        )
+                        time.sleep(wait)
+                        retry += 1
+                        continue
+                    log.warning("GitHub API error %s for query '%s'.", exc.code, query)
+                    last_page = True
                     break
-            except urllib.error.HTTPError as exc:
-                if exc.code == 403:
-                    log.warning("GitHub rate-limited (query='%s'); skipping.", query)
-                    return urls
-                log.warning("GitHub API error %s for query '%s'.", exc.code, query)
-                break
-            except Exception as exc:
-                log.warning("GitHub request failed: %s", exc)
+                except Exception as exc:
+                    log.warning("GitHub request failed: %s", exc)
+                    last_page = True
+                    break
+            else:
+                log.warning("Giving up on query='%s' after 3 rate-limit retries.", query)
+                return urls
+            if last_page:
                 break
             time.sleep(0.5)
 
@@ -420,7 +446,13 @@ class ProjectDiscovery:
                 if len(items) < 100:
                     break
             except urllib.error.HTTPError as exc:
-                if exc.code in (403, 404):
+                if exc.code == 403:
+                    reset_ts = int(exc.headers.get("X-RateLimit-Reset", 0))
+                    wait = max(10, reset_ts - int(time.time())) + 2
+                    log.debug("Org '%s' rate-limited; waiting %ds …", org, wait)
+                    time.sleep(wait)
+                    continue
+                if exc.code == 404:
                     log.debug("Org '%s' not accessible: HTTP %s", org, exc.code)
                     return urls
                 break
