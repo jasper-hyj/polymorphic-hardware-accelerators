@@ -1,4 +1,20 @@
-"""Discover and clone Verilog / RTL projects from GitHub."""
+"""Discover and clone Verilog / RTL projects from GitHub.
+
+Discovery is *additive*: a registry file (``verilog_proj/.discovery_registry.json``)
+records every repo ever found.  Each ``--github`` run only clones repos that
+have not been cloned yet, so the dataset grows with every invocation.
+
+Three complementary search strategies are used:
+  1. **Keyword / topic queries** — broad GitHub Search API queries across many
+     hardware domains with deliberately low star thresholds.
+  2. **Organisation sweeps** — enumerate repos from hardware-focused GitHub
+     orgs (pulp-platform, openhwgroup, ucb-bar, …).
+  3. **Curated seed list** — hand-picked repos that are known to be
+     interesting and may not surface via automated search.
+
+The combined candidate list is deduped, filtered against the registry, and
+up to ``github_max_repos`` new repos are cloned per run.
+"""
 
 from __future__ import annotations
 
@@ -9,8 +25,9 @@ import subprocess
 import time
 import urllib.request
 import urllib.error
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from .config import AnalysisConfig
 

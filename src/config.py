@@ -44,7 +44,7 @@ class AnalysisConfig:
     colormap: str = "YlOrRd"
 
     # --- Misc -----------------------------------------------------------
-    max_workers: int = 4
+    max_workers: int = field(default_factory=lambda: os.cpu_count() or 4)
     verbose: bool = False
 
     def __post_init__(self):

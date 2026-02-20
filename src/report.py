@@ -33,6 +33,7 @@ import seaborn as sns
 
 from .anomaly import Anomaly, AnomalyDetector
 from .config import AnalysisConfig
+from .interface_analyzer import InterfaceAnalyzer, InterfaceReport
 from .iverilog_analyzer import GATE_TYPES, ProjectAnalysis
 from .similarity import SimilarityEngine
 from .surprise import SurpriseAnalyzer, SurpriseReport
@@ -75,6 +76,7 @@ class ReportGenerator:
         partial_matches: pd.DataFrame,
         anomalies: List[Anomaly],
         surprise_report: Optional[SurpriseReport] = None,
+        interface_report: Optional[InterfaceReport] = None,
     ) -> None:
         if not projects:
             log.warning("No projects to report.")
@@ -85,16 +87,19 @@ class ReportGenerator:
         self._write_csv(
             projects, df_combined, df_gate, df_struct, df_ngram,
             top_pairs, partial_matches, anomalies, surprise_report,
+            interface_report,
         )
         self._write_verbal(
             projects, df_combined, df_ngram, partial_matches,
-            top_pairs, anomalies, surprise_report,
+            top_pairs, anomalies, surprise_report, interface_report,
         )
         self._write_heatmaps(df_combined, df_gate, df_struct, df_ngram)
         self._write_gate_distribution(projects)
         self._write_partial_match_chart(partial_matches)
         if surprise_report and surprise_report.pairs:
             self._write_surprise_scatter(surprise_report)
+        if interface_report and interface_report.compatible_pairs:
+            self._write_interface_chart(interface_report)
         if anomalies:
             self._write_anomaly_chart(anomalies)
 
@@ -113,6 +118,7 @@ class ReportGenerator:
         partial_matches: pd.DataFrame,
         anomalies: List[Anomaly],
         surprise_report: Optional[SurpriseReport] = None,
+        interface_report: Optional[InterfaceReport] = None,
     ) -> None:
         out = self.cfg.output_dir
 
@@ -153,6 +159,15 @@ class ReportGenerator:
                 out / "domain_classification.csv", index=False
             )
 
+        if interface_report:
+            ia = InterfaceAnalyzer()
+            ia.pairs_to_dataframe(interface_report).to_csv(
+                out / "interface_compatibility.csv", index=False
+            )
+            interface_report.reusability_scores.to_csv(
+                out / "module_reusability.csv", index=False
+            )
+
     # ── Verbal report ─────────────────────────────────────────────────
 
     def _write_verbal(
@@ -164,6 +179,7 @@ class ReportGenerator:
         top_pairs: pd.DataFrame,
         anomalies: List[Anomaly],
         surprise_report: Optional[SurpriseReport] = None,
+        interface_report: Optional[InterfaceReport] = None,
     ) -> None:
         lines: List[str] = []
         ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M UTC")
@@ -370,8 +386,119 @@ class ReportGenerator:
         else:
             lines.append("  (Surprise analysis was not run.)")
 
-        # ── 7. Methodology note ────────────────────────────────────
-        h1("7. METHODOLOGY")
+        # ── 7. Interface compatibility & reusability ──────────────────────
+        h1("7. INTERFACE COMPATIBILITY & REUSABILITY ANALYSIS")
+        if interface_report and interface_report.compatible_pairs:
+            total_mods = len(interface_report.modules)
+            total_pairs = len(interface_report.compatible_pairs)
+            proto_projects = {
+                proto: projs
+                for proto, projs in interface_report.protocol_coverage.items()
+                if projs
+            }
+            para(
+                f"Port-level interface analysis parsed {total_mods} module "
+                f"declarations across {len(projects)} projects and identified "
+                f"{total_pairs} cross-project module pairs with ≥40\u202f% port "
+                f"compatibility after signal-name normalisation.  These pairs "
+                f"can potentially be reused in each other\u2019s designs by "
+                f"changing only the top-level signal connections."
+            )
+
+            # Protocol coverage
+            if proto_projects:
+                lines.append("")
+                h2("Standard Protocol Coverage")
+                para(
+                    "Modules speaking documented bus protocols are directly "
+                    "interoperable on a shared bus without any adapter layer."
+                )
+                for proto, projs in sorted(
+                    proto_projects.items(), key=lambda kv: -len(kv[1])
+                ):
+                    lines.append(
+                        f"  {proto:<20} detected in {len(projs)} project(s): "
+                        + ", ".join(projs[:6])
+                        + ("\u2026" if len(projs) > 6 else "")
+                    )
+
+            # Top reusable modules (score-ranked)
+            lines.append("")
+            h2("Top Reusable Modules (by reusability score)")
+            df_r = interface_report.reusability_scores
+            top_mods = df_r.head(15)
+            col_mod  = max(len(str(r["module"]))  for _, r in top_mods.iterrows()) + 2
+            col_proj = max(len(str(r["project"])) for _, r in top_mods.iterrows()) + 2
+            lines.append(
+                f"  {'Module':<{col_mod}} {'Project':<{col_proj}} "
+                f"{'Score':>6}  {'Ports':>5}  {'Protocol'}"
+            )
+            lines.append(f"  {'-'*(col_mod+col_proj+30)}")
+            for _, row in top_mods.iterrows():
+                lines.append(
+                    f"  {str(row['module']):<{col_mod}} "
+                    f"{str(row['project']):<{col_proj}} "
+                    f"{row['reusability_score']:>6.3f}  "
+                    f"{int(row['port_count']):>5}  "
+                    f"{row['protocols'] or '(no standard protocol)'}"
+                )
+
+            # Compatible pairs
+            lines.append("")
+            h2("Top Compatible Module Pairs (ranked by port match score)")
+            effort_order = {"zero": 0, "low": 1, "medium": 2, "high": 3}
+            sorted_pairs = sorted(
+                interface_report.compatible_pairs[:20],
+                key=lambda cp: (effort_order[cp.effort], -cp.name_match_score)
+            )
+            for rank, cp in enumerate(sorted_pairs, 1):
+                lines.append(
+                    f"\n  [{rank}] {cp.module_a.project}::{cp.module_a.name}  "
+                    f"↔  {cp.module_b.project}::{cp.module_b.name}"
+                )
+                lines.append(
+                    f"      Compatibility : {cp.name_match_score:.1%}  "
+                    f"(exact={cp.port_match_score:.1%})   "
+                    f"Effort : {cp.effort.upper()}"
+                )
+                if cp.shared_protocols:
+                    lines.append(
+                        f"      Shared protocol: {', '.join(cp.shared_protocols)}"
+                    )
+                if cp.rename_recipe:
+                    top_r = cp.rename_recipe[:4]
+                    lines.append(
+                        f"      Rename recipe ({len(cp.rename_recipe)} signal(s)): "
+                        + ", ".join(f"'{a}'→'{b}'" for a, b in top_r)
+                        + ("\u2026" if len(cp.rename_recipe) > 4 else "")
+                    )
+                if cp.resize_recipe:
+                    top_w = cp.resize_recipe[:3]
+                    lines.append(
+                        f"      Width changes  ({len(cp.resize_recipe)} signal(s)): "
+                        + ", ".join(f"'{n}' {wa}b→{wb}b" for n, wa, wb in top_w)
+                    )
+                lines.append("")
+                for expl_line in cp.explanation.split("  "):
+                    if expl_line.strip():
+                        lines.append(
+                            "      " + textwrap.fill(
+                                expl_line.strip(), width=68,
+                                subsequent_indent="      ",
+                            )
+                        )
+                lines.append("")
+        elif interface_report:
+            para(
+                "No cross-project module pairs exceeded the compatibility threshold. "
+                "All modules may have idiosyncratic port naming conventions or "
+                "very different port counts.  Consider lowering --min-compat."
+            )
+        else:
+            lines.append("  (Interface analysis was not run.)")
+
+        # ── 8. Methodology note ───────────────────────────────────────────
+        h1("8. METHODOLOGY")
         para(
             "Gate-level information was extracted by compiling each project "
             "with Icarus Verilog (iverilog -g2012) and parsing the resulting "
@@ -531,6 +658,123 @@ class ReportGenerator:
         plt.yticks(rotation=0)
         fig.tight_layout()
         path = self.cfg.output_dir / f"fig_partial_patterns.{self.cfg.figure_format}"
+        fig.savefig(path)
+        plt.close(fig)
+        log.info("Figure → %s", path)
+
+    def _write_interface_chart(self, interface_report: "InterfaceReport") -> None:
+        """Two-panel figure: (top) reusability scatter per module;
+        (bottom) protocol coverage bar chart."""
+        import numpy as np
+
+        df = interface_report.reusability_scores
+        if df.empty:
+            return
+
+        proto_cov = {
+            p: projs
+            for p, projs in interface_report.protocol_coverage.items()
+            if projs
+        }
+
+        fig, (ax_top, ax_bot) = plt.subplots(
+            2, 1, figsize=(13, 12),
+            gridspec_kw={"height_ratios": [3, 1]},
+        )
+
+        # ── Top panel: reusability scatter ───────────────────────────
+        # Assign unique colour per protocol; grey for "none"
+        all_protos = sorted(proto_cov.keys())
+        cmap_vals  = plt.cm.tab10(np.linspace(0, 0.9, max(len(all_protos), 1)))
+        proto_color = {p: cmap_vals[i] for i, p in enumerate(all_protos)}
+        proto_color["(none)"] = (0.7, 0.7, 0.7, 0.85)
+
+        def _proto_label(row_protos: str) -> str:
+            if not row_protos:
+                return "(none)"
+            return row_protos.split(",")[0].strip()
+
+        df = df.copy()
+        df["_proto_label"] = df["protocols"].apply(_proto_label)
+        df["_color"] = df["_proto_label"].map(
+            lambda p: proto_color.get(p, proto_color["(none)"])
+        )
+        sizes = 80 + 400 * (
+            df["same_signature_modules"] /
+            max(df["same_signature_modules"].max(), 1)
+        )
+
+        scatter = ax_top.scatter(
+            df["port_count"], df["reusability_score"],
+            s=sizes, c=list(df["_color"]),
+            alpha=0.82, edgecolors="white", linewidths=0.5,
+        )
+
+        # Label top-15 by reusability score
+        for _, row in df.head(15).iterrows():
+            ax_top.annotate(
+                f"{row['project'][:10]}::{row['module'][:14]}",
+                (row["port_count"], row["reusability_score"]),
+                fontsize=6.5, ha="left", va="bottom",
+                xytext=(4, 3), textcoords="offset points",
+            )
+
+        ax_top.set_xlabel("Port count", fontsize=10)
+        ax_top.set_ylabel("Reusability score", fontsize=10)
+        ax_top.set_title(
+            "Module Reusability Map  "
+            "(upper-left = small interface + standard protocol = most reusable)",
+            fontweight="bold",
+        )
+        ax_top.set_ylim(-0.05, 1.05)
+
+        # Legend for protocols
+        legend_handles = [
+            plt.Line2D(
+                [0], [0], marker="o", color="w",
+                markerfacecolor=proto_color.get(p, proto_color["(none)"]),
+                markersize=8, label=p,
+            )
+            for p in all_protos + (["(none)"] if "(none)" in df["_proto_label"].values else [])
+        ]
+        if legend_handles:
+            ax_top.legend(
+                handles=legend_handles, title="Protocol",
+                fontsize=8, title_fontsize=8,
+                loc="upper right", framealpha=0.85,
+            )
+
+        # Bubble-size legend
+        for sz_label, sz_val in [(1, 80), (5, 280), (10, 480)]:
+            ax_top.scatter([], [], s=sz_val, color="grey", alpha=0.5,
+                           label=f"{sz_label} sharing same port shape")
+        ax_top.legend(
+            *ax_top.get_legend_handles_labels(),
+            fontsize=7, loc="lower right", framealpha=0.8,
+        )
+
+        # ── Bottom panel: protocol project coverage ──────────────────
+        if proto_cov:
+            protos  = sorted(proto_cov, key=lambda p: -len(proto_cov[p]))
+            counts  = [len(proto_cov[p]) for p in protos]
+            colors  = [proto_color.get(p, proto_color["(none)"]) for p in protos]
+            bars    = ax_bot.barh(protos, counts, color=colors,
+                                  edgecolor="white", linewidth=0.7)
+            for bar, cnt in zip(bars, counts):
+                ax_bot.text(
+                    bar.get_width() + 0.1, bar.get_y() + bar.get_height() / 2,
+                    str(cnt), va="center", fontsize=8,
+                )
+            ax_bot.set_xlabel("Number of projects with this protocol", fontsize=9)
+            ax_bot.set_title("Standard Protocol Coverage", fontweight="bold")
+            ax_bot.set_xlim(0, max(counts) + 2)
+        else:
+            ax_bot.text(0.5, 0.5, "No standard protocols detected",
+                        ha="center", va="center", transform=ax_bot.transAxes)
+            ax_bot.axis("off")
+
+        fig.tight_layout(pad=3.0)
+        path = self.cfg.output_dir / f"fig_interface_reusability.{self.cfg.figure_format}"
         fig.savefig(path)
         plt.close(fig)
         log.info("Figure → %s", path)

@@ -10,6 +10,38 @@ services:
     environment:
       # Optional: set your GitHub token for higher API rate limits
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      # Let Python multiprocessing use all logical CPUs
+      - OMP_NUM_THREADS=0
     # Default: analyse whatever is in verilog_proj/
     # Override at `docker compose run rtl-analyzer --github` etc.
     command: []
+
+    # ── Resource policy: use everything available ──────────────────
+    # No CPU or memory caps → container can consume 100 % of host
+    # resources.  cpu_shares gives it the highest scheduling priority
+    # relative to any other containers that happen to be running.
+    cpu_shares: 1024        # range 2-1024; 1024 = highest priority
+
+    # Shared-memory pool for Python multiprocessing queues / numpy
+    shm_size: "2g"
+
+    # Raise kernel file-descriptor and memory-lock limits so large
+    # analysis runs (thousands of Verilog files, many open sockets
+    # during GitHub cloning) don't hit the default OS caps.
+    ulimits:
+      nofile:
+        soft: 1048576
+        hard: 1048576
+      memlock:
+        soft: -1            # unlimited memory lock
+        hard: -1
+
+    deploy:
+      resources:
+        # No limits section → container is uncapped.
+        # Reservations tell the scheduler to prefer a host that can
+        # actually supply these resources (relevant if you ever move
+        # to Swarm or a multi-node setup).
+        reservations:
+          cpus: "1.0"
+          memory: "512m"
