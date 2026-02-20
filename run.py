@@ -27,13 +27,17 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from src.config import AnalysisConfig
 from src.discovery import ProjectDiscovery
 from src.iverilog_analyzer import IVerilogAnalyzer
 from src.similarity import SimilarityEngine
 from src.anomaly import AnomalyDetector
+from src.surprise import SurpriseAnalyzer, SurpriseReport
+from src.interface_analyzer import InterfaceAnalyzer, InterfaceReport
 from src.report import ReportGenerator
 
 
@@ -48,7 +52,8 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--output-dir", default="output",
-        help="Where to write reports and figures (default: output/)",
+        help="Base directory for reports and figures (default: output/). "
+             "Each run creates a timestamped subfolder, e.g. output/run_2026-02-20_08-15-00.",
     )
     p.add_argument(
         "--github", action="store_true",
@@ -69,6 +74,22 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--no-anomaly", action="store_true",
         help="Skip anomaly detection",
+    )
+    p.add_argument(
+        "--no-surprise", action="store_true",
+        help="Skip surprise / cross-domain analysis",
+    )
+    p.add_argument(
+        "--min-surprise", type=float, default=0.15,
+        help="Minimum surprise score to report a pair (default: 0.15)",
+    )
+    p.add_argument(
+        "--no-interface", action="store_true",
+        help="Skip interface / port-compatibility analysis",
+    )
+    p.add_argument(
+        "--min-compat", type=float, default=0.40,
+        help="Minimum normalised port-match score to report a pair (default: 0.40)",
     )
     p.add_argument(
         "--gate-weight", type=float, default=0.50,
@@ -117,9 +138,12 @@ def main() -> int:
     log = logging.getLogger(__name__)
 
     # ── Build config ──────────────────────────────────────────────────
+    run_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    run_output_dir = Path(args.output_dir) / f"run_{run_stamp}"
+
     cfg = AnalysisConfig(
         project_dir=Path(args.project_dir),
-        output_dir=Path(args.output_dir),
+        output_dir=run_output_dir,
         github_max_repos=args.github_max,
         gate_type_weight=args.gate_weight,
         structural_weight=args.struct_weight,
@@ -179,6 +203,46 @@ def main() -> int:
         analysed, ngram_n=cfg.ngram_n, top_pairs=15, top_patterns=8
     )
 
+    # ── Surprise / cross-domain analysis ────────────────────────────
+    surprise_report: Optional[SurpriseReport] = None
+    if not args.no_surprise and len(analysed) >= 3:
+        log.info("Running cross-domain surprise analysis …")
+        surprise_report = SurpriseAnalyzer(
+            min_surprise=args.min_surprise,
+            ngram_n=cfg.ngram_n,
+        ).analyse(analysed, df_combined)
+        if surprise_report.pairs:
+            log.info(
+                "Found %d surprising cross-domain pair(s) (top: %s ↔ %s, score=%.3f)",
+                len(surprise_report.pairs),
+                surprise_report.pairs[0].project_a,
+                surprise_report.pairs[0].project_b,
+                surprise_report.pairs[0].surprise_score,
+            )
+        else:
+            log.info("No surprising pairs found above threshold %.2f.", args.min_surprise)
+
+    # ── Interface compatibility analysis ────────────────────────────
+    interface_report: Optional[InterfaceReport] = None
+    if not args.no_interface and len(analysed) >= 2:
+        log.info("Running interface compatibility analysis …")
+        interface_report = InterfaceAnalyzer(
+            min_compatibility=args.min_compat,
+        ).analyse(analysed)
+        if interface_report.compatible_pairs:
+            top = interface_report.compatible_pairs[0]
+            log.info(
+                "Found %d compatible module pairs (top: %s::%s ↔ %s::%s, "
+                "norm=%.2f, effort=%s)",
+                len(interface_report.compatible_pairs),
+                top.module_a.project, top.module_a.name,
+                top.module_b.project, top.module_b.name,
+                top.name_match_score, top.effort,
+            )
+        else:
+            log.info("No compatible module pairs found above threshold %.0f%%.",
+                     args.min_compat * 100)
+
     # ── Anomaly detection ─────────────────────────────────────────────
     anomalies = []
     if not args.no_anomaly and len(analysed) >= 3:
@@ -198,7 +262,7 @@ def main() -> int:
     reporter = ReportGenerator(cfg)
     reporter.generate(
         analysed, df_combined, df_gate, df_struct, df_ngram,
-        partial_matches, anomalies,
+        partial_matches, anomalies, surprise_report, interface_report,
     )
 
     log.info("Done.")

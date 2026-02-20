@@ -16,28 +16,58 @@ from .config import AnalysisConfig
 
 log = logging.getLogger(__name__)
 
-# ── Curated seed list of well-known open-source RTL projects ──────────
+# ── Curated seed list — deliberately spans many different domains ─────
 CURATED_REPOS = [
-    "YosysHQ/yosys",
+    # CPU / Processor
+    "cliffordwolf/picorv32",
+    "stnolting/neorv32",
     "ZipCPU/zipcpu",
-    "openhwgroup/cva6",
-    "chipsalliance/rocket-chip",
     "lowRISC/ibex",
-    "lowRISC/opentitan",
-    "SpinalHDL/VexRiscv",
     "ultraembedded/biriscv",
-    "steveicarus/iverilog",
+    "SpinalHDL/VexRiscv",
+    "SI-RISCV/e200_opensource",
+    "Wren6991/Hazard3",
     "olofk/serv",
-    "enjoy-digital/litex",
-    "freechipsproject/chisel3",
-    "parallella/oh",
+    # ML / Neural Accelerator
+    "ucb-bar/chipyard",          # SoC + accelerators
+    "nvdla/hw",                  # deep-learning accelerator
+    # Signal / Image Processing
+    "alexforencich/verilog-dsp",
+    # Arithmetic
+    "openhwgroup/cvfpu",         # FPU
+    # Communication / IO
     "alexforencich/verilog-ethernet",
     "alexforencich/verilog-axi",
-    "stnolting/neorv32",
-    "cliffordwolf/picorv32",
-    "darklife/darern",
-    "ucb-bar/chipyard",
+    "alexforencich/verilog-pcie",
+    "corundum/corundum",
+    # FPGA Tool / Framework
+    "YosysHQ/yosys",
+    "enjoy-digital/litex",
+    "lnis-uofu/OpenFPGA",
+    # GPU / Parallel
+    "vortexgpgpu/vortex",
+    # SoC / Platform
     "pulp-platform/pulpissimo",
+    "lowRISC/opentitan",
+    "XUANTIE-RV/openc910",
+    "analogdevicesinc/hdl",
+    # Misc
+    "parallella/oh",
+    "ultraembedded/riscv",
+    "pConst/basic_verilog",
+    "darklife/darkriscv",
+]
+
+# Multi-domain search queries — cast a wide net across different hardware areas
+GITHUB_SEARCH_QUERIES = [
+    "language:verilog topic:risc-v stars:>80",
+    "language:verilog topic:fpga stars:>80",
+    "language:verilog topic:neural-network stars:>50",
+    "language:systemverilog topic:processor stars:>60",
+    "language:verilog topic:dsp stars:>40",
+    "language:verilog arithmetic accelerator stars:>30",
+    "language:verilog image processing fpga stars:>30",
+    "language:verilog ethernet axi stars:>60",
 ]
 
 
@@ -66,15 +96,41 @@ class ProjectDiscovery:
         query: Optional[str] = None,
         clone: bool = True,
     ) -> List[str]:
-        """Search GitHub for Verilog repos and optionally clone them.
+        """Search GitHub across multiple domain-specific queries and
+        optionally clone the results.
 
-        Returns list of clone URLs that were found / cloned.
+        When *query* is provided it is used exclusively; otherwise all
+        queries in GITHUB_SEARCH_QUERIES are run to maximise domain
+        diversity.  Returns list of clone URLs found.
         """
-        repos = self._search_github(query)
+        if query:
+            queries = [query]
+        else:
+            queries = GITHUB_SEARCH_QUERIES
+
+        all_urls: List[str] = []
+        seen: set = set()
+        per_query = max(5, self.cfg.github_max_repos // len(queries))
+
+        for q in queries:
+            urls = self._search_github(q, max_results=per_query)
+            for u in urls:
+                if u not in seen:
+                    seen.add(u)
+                    all_urls.append(u)
+            if len(all_urls) >= self.cfg.github_max_repos:
+                break
+
+        all_urls = all_urls[: self.cfg.github_max_repos]
+        log.info(
+            "Discovered %d unique GitHub repositories across %d queries",
+            len(all_urls), len(queries),
+        )
+
         if clone:
-            for url in repos:
+            for url in all_urls:
                 self._clone_repo(url)
-        return repos
+        return all_urls
 
     # ── Private helpers ───────────────────────────────────────────────
     @staticmethod
@@ -84,10 +140,13 @@ class ProjectDiscovery:
                 return True
         return False
 
-    def _search_github(self, query: Optional[str] = None) -> List[str]:
+    def _search_github(self, query: Optional[str] = None,
+                       max_results: Optional[int] = None) -> List[str]:
         """Use the GitHub REST API to find Verilog repositories."""
         if query is None:
             query = f"language:verilog stars:>{self.cfg.github_min_stars}"
+        if max_results is None:
+            max_results = self.cfg.github_max_repos
 
         headers = {"Accept": "application/vnd.github.v3+json"}
         if self.cfg.github_token:
@@ -95,8 +154,10 @@ class ProjectDiscovery:
 
         urls: List[str] = []
 
-        # Page through results (max 3 pages → ~90 repos)
+        # Page through results
         for page in range(1, 4):
+            if len(urls) >= max_results:
+                break
             api_url = (
                 f"https://api.github.com/search/repositories"
                 f"?q={urllib.request.quote(query)}"
@@ -113,25 +174,21 @@ class ProjectDiscovery:
                     break
             except urllib.error.HTTPError as exc:
                 if exc.code == 403:
-                    log.warning("GitHub rate-limited; using curated list instead")
-                    return [
-                        f"https://github.com/{r}.git" for r in CURATED_REPOS
-                    ]
+                    log.warning("GitHub rate-limited on query '%s'; skipping", query)
+                    return []
                 log.warning("GitHub API error %s: %s", exc.code, exc.reason)
                 break
             except Exception as exc:
                 log.warning("GitHub request failed: %s", exc)
                 break
-            time.sleep(1.0)  # be polite
+            time.sleep(0.8)
 
         if not urls:
-            log.info("Falling back to curated repo list (%d repos)", len(CURATED_REPOS))
+            # Per-query fallback: return matching curated repos
+            log.debug("No results for query '%s'; using curated fallback", query)
             urls = [f"https://github.com/{r}.git" for r in CURATED_REPOS]
 
-        # Limit
-        urls = urls[: self.cfg.github_max_repos]
-        log.info("Discovered %d GitHub repositories", len(urls))
-        return urls
+        return urls[:max_results]
 
     def _clone_repo(self, url: str) -> Optional[Path]:
         """Shallow-clone *url* into project_dir if not already present."""

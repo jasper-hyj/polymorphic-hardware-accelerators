@@ -35,6 +35,7 @@ from .anomaly import Anomaly, AnomalyDetector
 from .config import AnalysisConfig
 from .iverilog_analyzer import GATE_TYPES, ProjectAnalysis
 from .similarity import SimilarityEngine
+from .surprise import SurpriseAnalyzer, SurpriseReport
 
 log = logging.getLogger(__name__)
 
@@ -73,6 +74,7 @@ class ReportGenerator:
         df_ngram: pd.DataFrame,
         partial_matches: pd.DataFrame,
         anomalies: List[Anomaly],
+        surprise_report: Optional[SurpriseReport] = None,
     ) -> None:
         if not projects:
             log.warning("No projects to report.")
@@ -82,12 +84,17 @@ class ReportGenerator:
 
         self._write_csv(
             projects, df_combined, df_gate, df_struct, df_ngram,
-            top_pairs, partial_matches, anomalies,
+            top_pairs, partial_matches, anomalies, surprise_report,
         )
-        self._write_verbal(projects, df_combined, df_ngram, partial_matches, top_pairs, anomalies)
+        self._write_verbal(
+            projects, df_combined, df_ngram, partial_matches,
+            top_pairs, anomalies, surprise_report,
+        )
         self._write_heatmaps(df_combined, df_gate, df_struct, df_ngram)
         self._write_gate_distribution(projects)
         self._write_partial_match_chart(partial_matches)
+        if surprise_report and surprise_report.pairs:
+            self._write_surprise_scatter(surprise_report)
         if anomalies:
             self._write_anomaly_chart(anomalies)
 
@@ -105,10 +112,10 @@ class ReportGenerator:
         top_pairs: pd.DataFrame,
         partial_matches: pd.DataFrame,
         anomalies: List[Anomaly],
+        surprise_report: Optional[SurpriseReport] = None,
     ) -> None:
         out = self.cfg.output_dir
 
-        # Round matrices for readability
         df_combined.round(4).to_csv(out / "similarity_combined.csv")
         df_gate.round(4).to_csv(out / "similarity_gate_type.csv")
         df_struct.round(4).to_csv(out / "similarity_structural.csv")
@@ -127,17 +134,23 @@ class ReportGenerator:
             rows.append(row)
         pd.DataFrame(rows).to_csv(out / "gate_counts.csv", index=False)
 
-        # Top pairs
         top_pairs.to_csv(out / "top_similar_pairs.csv")
 
-        # Partial gate-pattern matches
         if not partial_matches.empty:
             partial_matches.to_csv(out / "partial_gate_patterns.csv", index=False)
 
-        # Anomalies
         if anomalies:
             AnomalyDetector(self.cfg).to_dataframe(anomalies).to_csv(
                 out / "anomalies.csv", index=False
+            )
+
+        if surprise_report:
+            analyzer = SurpriseAnalyzer()
+            analyzer.to_dataframe(surprise_report).to_csv(
+                out / "surprise_findings.csv", index=False
+            )
+            analyzer.domain_summary(surprise_report).to_csv(
+                out / "domain_classification.csv", index=False
             )
 
     # ── Verbal report ─────────────────────────────────────────────────
@@ -150,6 +163,7 @@ class ReportGenerator:
         partial_matches: pd.DataFrame,
         top_pairs: pd.DataFrame,
         anomalies: List[Anomaly],
+        surprise_report: Optional[SurpriseReport] = None,
     ) -> None:
         lines: List[str] = []
         ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M UTC")
@@ -292,8 +306,72 @@ class ReportGenerator:
                 "of the feature-space median."
             )
 
-        # ── 6. Methodology note ────────────────────────────────────
-        h1("6. METHODOLOGY")
+        # ── 6. Surprising cross-domain similarities ────────────────
+        h1("6. SURPRISING SIMILARITIES (CROSS-DOMAIN ANALYSIS)")
+        if surprise_report and surprise_report.pairs:
+            para(
+                "The following project pairs are structurally similar despite "
+                "coming from different hardware domains.  The surprise score "
+                "= combined_similarity × domain_dissimilarity; pairs near 1.0 "
+                "are the most unexpected findings.  Shared gate-sequence patterns "
+                "are mapped to known functional circuit blocks to explain WHY "
+                "the similarity exists."
+            )
+            lines.append("")
+
+            # Domain classification table
+            h2("Domain Classification")
+            col_w = max(len(n) for n in surprise_report.domain_map) + 2
+            lines.append(f"  {'Project':<{col_w}} Domain")
+            lines.append(f"  {'-' * col_w} {'-' * 30}")
+            for proj, domain in sorted(surprise_report.domain_map.items()):
+                lines.append(f"  {proj:<{col_w}} {domain}")
+
+            lines.append("")
+            h2("Top Surprising Pairs (ranked by surprise score)")
+
+            for rank, sp in enumerate(surprise_report.pairs, 1):
+                lines.append(f"\n  [{rank}] {sp.project_a}  ↔  {sp.project_b}")
+                lines.append(f"      Domain A : {sp.domain_a}")
+                lines.append(f"      Domain B : {sp.domain_b}")
+                lines.append(
+                    f"      Similarity : {sp.combined_similarity:.4f}   "
+                    f"Domain distance : {sp.domain_dissimilarity:.2f}   "
+                    f"Surprise score : {sp.surprise_score:.4f}"
+                )
+                if sp.pattern_interpretations:
+                    lines.append("      Shared functional blocks identified:")
+                    seen: set = set()
+                    for pat, meaning in sp.pattern_interpretations[:5]:
+                        if meaning in seen:
+                            continue
+                        seen.add(meaning)
+                        lines.append(f"        • [{pat}]  {meaning}")
+                lines.append("")
+                # Full explanation, wrapped
+                for expl_line in sp.explanation.split("  "):
+                    if expl_line.strip():
+                        lines.append(
+                            "      " + textwrap.fill(
+                                expl_line.strip(), width=68,
+                                subsequent_indent="      "
+                            )
+                        )
+                lines.append("")
+        elif surprise_report:
+            para(
+                "No cross-domain pairs exceeded the surprise score threshold. "
+                "This may indicate that all projects in the current dataset "
+                "share the same hardware domain, or that no pair has both high "
+                "structural similarity and high domain dissimilarity. "
+                "Try adding projects from more diverse domains (e.g. mix CPUs, "
+                "image codecs, crypto cores, and communication IPs)."
+            )
+        else:
+            lines.append("  (Surprise analysis was not run.)")
+
+        # ── 7. Methodology note ────────────────────────────────────
+        h1("7. METHODOLOGY")
         para(
             "Gate-level information was extracted by compiling each project "
             "with Icarus Verilog (iverilog -g2012) and parsing the resulting "
@@ -310,7 +388,10 @@ class ReportGenerator:
             "topology features (density, clustering, degree-entropy, component "
             "count), and (3) weighted Jaccard similarity over gate-type n-gram "
             "bags (default n=3) extracted via BFS traversal of the gate graph. "
-            "The combined score is a weighted average of all three."
+            "The combined score is a weighted average of all three.  "
+            "The surprise score multiplies combined similarity by domain "
+            "dissimilarity (Jaccard distance of domain label sets) to surface "
+            "structurally similar but architecturally unrelated project pairs."
         )
         lines.extend(["", _SECTION])
 
@@ -450,6 +531,61 @@ class ReportGenerator:
         plt.yticks(rotation=0)
         fig.tight_layout()
         path = self.cfg.output_dir / f"fig_partial_patterns.{self.cfg.figure_format}"
+        fig.savefig(path)
+        plt.close(fig)
+        log.info("Figure → %s", path)
+
+    def _write_surprise_scatter(self, surprise_report: "SurpriseReport") -> None:
+        """Scatter plot: combined_similarity (x) vs domain_dissimilarity (y),
+        bubble size ∝ surprise_score, colour-mapped to surprise_score."""
+        pairs = surprise_report.pairs
+        if not pairs:
+            return
+
+        import numpy as np
+
+        xs    = [p.combined_similarity   for p in pairs]
+        ys    = [p.domain_dissimilarity  for p in pairs]
+        ss    = [p.surprise_score        for p in pairs]
+        names = [
+            f"{p.project_a[:10]}↔{p.project_b[:10]}" for p in pairs
+        ]
+
+        ss_arr  = np.array(ss)
+        sizes   = 200 + 1800 * (ss_arr / ss_arr.max() if ss_arr.max() > 0 else ss_arr)
+
+        fig, ax = plt.subplots(figsize=(9, 7))
+        sc = ax.scatter(
+            xs, ys, s=sizes, c=ss_arr,
+            cmap="YlOrRd", edgecolors="grey", linewidths=0.6, alpha=0.85,
+        )
+        cbar = fig.colorbar(sc, ax=ax, pad=0.02)
+        cbar.set_label("Surprise score", fontsize=9)
+
+        for name, x, y in zip(names, xs, ys):
+            ax.annotate(
+                name, (x, y),
+                fontsize=7.5, ha="center", va="bottom",
+                xytext=(0, 6), textcoords="offset points",
+            )
+
+        ax.set_xlabel("Combined Similarity", fontsize=10)
+        ax.set_ylabel("Domain Dissimilarity", fontsize=10)
+        ax.set_title(
+            "Surprise Map — High Surprise = upper-right corner",
+            fontweight="bold",
+        )
+        ax.set_xlim(-0.05, 1.05)
+        ax.set_ylim(-0.05, 1.05)
+
+        # Reference lines
+        ax.axhline(0.5, color="steelblue", linestyle=":", linewidth=0.8, alpha=0.6)
+        ax.axvline(0.5, color="steelblue", linestyle=":", linewidth=0.8, alpha=0.6)
+        ax.text(0.97, 0.97, "High\nSurprise", transform=ax.transAxes,
+                ha="right", va="top", fontsize=8, color="firebrick", alpha=0.7)
+
+        fig.tight_layout()
+        path = self.cfg.output_dir / f"fig_surprise_map.{self.cfg.figure_format}"
         fig.savefig(path)
         plt.close(fig)
         log.info("Figure → %s", path)

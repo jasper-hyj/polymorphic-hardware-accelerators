@@ -96,6 +96,8 @@ python run.py --github --verbose       # with debug output
 1. **Compilation** — each project is compiled with `iverilog -g2012` into an intermediate VVP netlist  
 2. **VVP parsing** — `.functor` directives are parsed to extract gate types (AND/OR/NOT/XOR/DFF/…) and their input wiring; this builds a real directed gate-level graph  
 3. **Fallback** — projects that fail to compile are analysed by regex-scanning the raw RTL source  
-4. **Similarity** — gate-type cosine similarity + structural graph metrics are combined (default 60 % / 40 %)  
-5. **Anomaly detection** — robust Z-score (median ± MAD) flags outlier projects  
-6. **Reporting** — verbal report, publication-quality figures (300 DPI), and CSV tables
+4. **Gate-type cosine similarity** (50%) — each project becomes a 12-dim gate-count vector; cosine distance measures compositional similarity  
+5. **Structural graph similarity** (25%) — density, clustering, degree-entropy, component count compared via L1 distance  
+6. **Partial gate-pattern matching** (25%) — gate-type n-grams (default length 3, e.g. `AND→XOR→DFF`) extracted via BFS on the gate graph; Jaccard overlap detects shared sub-circuits and design idioms even when total sizes differ  
+7. **Anomaly detection** — robust Z-score (median ± MAD) flags outlier projects  
+8. **Reporting** — verbal report, publication-quality figures (300 DPI), CSV tables including `partial_gate_patterns.csv`
