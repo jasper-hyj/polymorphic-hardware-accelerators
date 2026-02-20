@@ -380,14 +380,20 @@ class ProjectDiscovery:
             while retry <= 3:
                 try:
                     with urllib.request.urlopen(req, timeout=15) as resp:
-                        # Proactively slow down when close to the rate limit
-                        remaining = int(resp.headers.get("X-RateLimit-Remaining", 10))
-                        if remaining < 5:
-                            reset_ts = int(resp.headers.get("X-RateLimit-Reset", 0))
-                            wait = max(0, reset_ts - int(time.time())) + 2
-                            log.info("Rate limit nearly exhausted; sleeping %ds …", wait)
-                            time.sleep(wait)
+                        # Read headers and body before doing anything slow.
+                        remaining = int(resp.headers.get("X-RateLimit-Remaining", 0))
+                        reset_ts  = int(resp.headers.get("X-RateLimit-Reset", 0))
                         data = json.loads(resp.read().decode())
+                    # Proactively slow down when close to the rate limit.
+                    # Threshold of 10 gives breathing room; default 0 is safe
+                    # when the header is absent.
+                    if remaining < 10:
+                        wait = max(0, reset_ts - int(time.time())) + 2
+                        log.info(
+                            "Rate limit nearly exhausted (%d remaining); "
+                            "sleeping %ds …", remaining, wait,
+                        )
+                        time.sleep(wait)
                     items = data.get("items", [])
                     for item in items:
                         urls.append(item["clone_url"])
@@ -436,6 +442,8 @@ class ProjectDiscovery:
             req = urllib.request.Request(api_url, headers=headers)
             try:
                 with urllib.request.urlopen(req, timeout=15) as resp:
+                    remaining = int(resp.headers.get("X-RateLimit-Remaining", 0))
+                    reset_ts  = int(resp.headers.get("X-RateLimit-Reset", 0))
                     items = json.loads(resp.read().decode())
                 if not isinstance(items, list):
                     break
@@ -443,6 +451,13 @@ class ProjectDiscovery:
                     lang = (item.get("language") or "").lower()
                     if lang in ("verilog", "systemverilog"):
                         urls.append(item["clone_url"])
+                if remaining < 10:
+                    wait = max(0, reset_ts - int(time.time())) + 2
+                    log.info(
+                        "Org sweep rate limit nearly exhausted (%d remaining); "
+                        "sleeping %ds …", remaining, wait,
+                    )
+                    time.sleep(wait)
                 if len(items) < 100:
                     break
             except urllib.error.HTTPError as exc:
