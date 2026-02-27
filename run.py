@@ -38,6 +38,7 @@ from src.similarity import SimilarityEngine
 from src.anomaly import AnomalyDetector
 from src.surprise import SurpriseAnalyzer, SurpriseReport
 from src.interface_analyzer import InterfaceAnalyzer, InterfaceReport
+from src.pha_analyzer import PHAAnalyzer, PHAReport
 from src.report import ReportGenerator
 
 
@@ -91,6 +92,18 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--min-compat", type=float, default=0.40,
         help="Minimum normalised port-match score to report a pair (default: 0.40)",
+    )
+    p.add_argument(
+        "--no-pha", action="store_true",
+        help="Skip Polymorphic Heterogeneous Architecture (PHA) synthesis analysis",
+    )
+    p.add_argument(
+        "--pha-threshold", type=float, default=0.35,
+        help="Minimum pairwise similarity to cluster DSAs for PHA merging (default: 0.35)",
+    )
+    p.add_argument(
+        "--pha-merge-jaccard", type=float, default=0.60,
+        help="Minimum n-gram Jaccard to merge components in a PHA (default: 0.60)",
     )
     p.add_argument(
         "--gate-weight", type=float, default=0.50,
@@ -245,6 +258,28 @@ def main() -> int:
             log.info("No compatible module pairs found above threshold %.0f%%.",
                      args.min_compat * 100)
 
+    # ── PHA synthesis analysis ─────────────────────────────────────────
+    pha_report: Optional[PHAReport] = None
+    if not args.no_pha and len(analysed) >= 2:
+        log.info("Running Polymorphic Heterogeneous Architecture (PHA) synthesis …")
+        pha_report = PHAAnalyzer(
+            cluster_threshold=args.pha_threshold,
+            merge_jaccard=args.pha_merge_jaccard,
+            ngram_n=cfg.ngram_n,
+        ).analyse(analysed, df_combined, interface_report)
+        if pha_report.clusters:
+            top = pha_report.clusters[0]
+            log.info(
+                "Proposed %d PHA cluster(s) (top: %d DSAs, "
+                "%.1f%% area savings)",
+                len(pha_report.clusters),
+                len(top.member_projects),
+                top.area_savings_pct,
+            )
+        else:
+            log.info("No PHA clusters found above threshold %.2f.",
+                     args.pha_threshold)
+
     # ── Anomaly detection ─────────────────────────────────────────────
     anomalies = []
     if not args.no_anomaly and len(analysed) >= 3:
@@ -265,6 +300,7 @@ def main() -> int:
     reporter.generate(
         analysed, df_combined, df_gate, df_struct, df_ngram,
         partial_matches, anomalies, surprise_report, interface_report,
+        pha_report,
     )
 
     log.info("Done.")

@@ -35,6 +35,7 @@ from .anomaly import Anomaly, AnomalyDetector
 from .config import AnalysisConfig
 from .interface_analyzer import InterfaceAnalyzer, InterfaceReport
 from .iverilog_analyzer import GATE_TYPES, ProjectAnalysis
+from .pha_analyzer import PHAAnalyzer, PHAReport
 from .similarity import SimilarityEngine
 from .surprise import SurpriseAnalyzer, SurpriseReport
 
@@ -77,6 +78,7 @@ class ReportGenerator:
         anomalies: List[Anomaly],
         surprise_report: Optional[SurpriseReport] = None,
         interface_report: Optional[InterfaceReport] = None,
+        pha_report: Optional[PHAReport] = None,
     ) -> None:
         if not projects:
             log.warning("No projects to report.")
@@ -87,11 +89,12 @@ class ReportGenerator:
         self._write_csv(
             projects, df_combined, df_gate, df_struct, df_ngram,
             top_pairs, partial_matches, anomalies, surprise_report,
-            interface_report,
+            interface_report, pha_report,
         )
         self._write_verbal(
             projects, df_combined, df_ngram, partial_matches,
             top_pairs, anomalies, surprise_report, interface_report,
+            pha_report,
         )
         self._write_heatmaps(df_combined, df_gate, df_struct, df_ngram)
         self._write_gate_distribution(projects)
@@ -102,6 +105,8 @@ class ReportGenerator:
             self._write_interface_chart(interface_report)
         if anomalies:
             self._write_anomaly_chart(anomalies)
+        if pha_report and pha_report.clusters:
+            self._write_pha_charts(pha_report)
 
         log.info("Reports written to %s", self.cfg.output_dir)
 
@@ -119,6 +124,7 @@ class ReportGenerator:
         anomalies: List[Anomaly],
         surprise_report: Optional[SurpriseReport] = None,
         interface_report: Optional[InterfaceReport] = None,
+        pha_report: Optional[PHAReport] = None,
     ) -> None:
         out = self.cfg.output_dir
 
@@ -168,6 +174,18 @@ class ReportGenerator:
                 out / "module_reusability.csv", index=False
             )
 
+        if pha_report and pha_report.clusters:
+            pha = PHAAnalyzer()
+            pha.clusters_to_dataframe(pha_report).to_csv(
+                out / "pha_clusters.csv", index=False
+            )
+            df_comp = pha.components_to_dataframe(pha_report)
+            if not df_comp.empty:
+                df_comp.to_csv(out / "pha_components.csv", index=False)
+            df_iface = pha.interfaces_to_dataframe(pha_report)
+            if not df_iface.empty:
+                df_iface.to_csv(out / "pha_unified_interfaces.csv", index=False)
+
     # ── Verbal report ─────────────────────────────────────────────────
 
     def _write_verbal(
@@ -180,6 +198,7 @@ class ReportGenerator:
         anomalies: List[Anomaly],
         surprise_report: Optional[SurpriseReport] = None,
         interface_report: Optional[InterfaceReport] = None,
+        pha_report: Optional[PHAReport] = None,
     ) -> None:
         lines: List[str] = []
         ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M UTC")
@@ -497,8 +516,135 @@ class ReportGenerator:
         else:
             lines.append("  (Interface analysis was not run.)")
 
-        # ── 8. Methodology note ───────────────────────────────────────────
-        h1("8. METHODOLOGY")
+        # ── 8. PHA synthesis ──────────────────────────────────────────────
+        h1("8. POLYMORPHIC HETEROGENEOUS ARCHITECTURE (PHA) SYNTHESIS")
+        if pha_report and pha_report.clusters:
+            para(
+                f"The PHA synthesis analysis clustered {pha_report.total_projects} "
+                f"Domain-Specific Accelerators into {len(pha_report.clusters)} "
+                f"candidate Polymorphic Heterogeneous Architecture(s).  For each "
+                f"cluster, shared gate-pattern components are instantiated once, "
+                f"similar components are merged into configurable blocks with "
+                f"mode-select multiplexers, and unique components are retained "
+                f"behind a configuration layer.  Per-DSA interconnect interfaces "
+                f"are unified into a single polymorphic port block."
+            )
+            lines.append(f"  Clustering threshold : {pha_report.clustering_threshold:.2f}")
+            lines.append(f"  Merge Jaccard threshold : {pha_report.merge_jaccard_threshold:.2f}")
+            if pha_report.unclustered_projects:
+                lines.append(
+                    f"  Unclustered projects ({len(pha_report.unclustered_projects)}): "
+                    + ", ".join(pha_report.unclustered_projects[:10])
+                    + ("\u2026" if len(pha_report.unclustered_projects) > 10 else "")
+                )
+
+            for c in pha_report.clusters:
+                h2(f"PHA Cluster {c.cluster_id} — {len(c.member_projects)} DSAs")
+                lines.append(f"  Members : {', '.join(c.member_projects)}")
+                lines.append(
+                    f"  Domains : {', '.join(sorted(set(c.member_domains.values())))}"
+                )
+                lines.append(f"  Avg similarity : {c.avg_similarity:.4f}")
+                lines.append("")
+
+                # Component breakdown
+                lines.append(f"  Component Decomposition:")
+                lines.append(
+                    f"    Shared (identical across all members) : "
+                    f"{len(c.shared_components)} block(s)"
+                )
+                if c.shared_components:
+                    for fc in c.shared_components[:8]:
+                        label = f" — {fc.semantic_label}" if fc.semantic_label else ""
+                        lines.append(
+                            f"      • [{fc.pattern_str}]{label}  "
+                            f"(×{sum(fc.occurrences.values())} total)"
+                        )
+
+                lines.append(
+                    f"    Merged (folded with mux) : "
+                    f"{len(c.merged_components)} pair(s)"
+                )
+                if c.merged_components:
+                    for mc in c.merged_components[:5]:
+                        lines.append(
+                            f"      • {mc.merged_name}  "
+                            f"Jaccard={mc.jaccard:.3f}  "
+                            f"mux overhead={mc.mux_overhead:.1%}  "
+                            f"projects: {', '.join(mc.projects_involved)}"
+                        )
+
+                total_unique = sum(len(v) for v in c.unique_components.values())
+                lines.append(
+                    f"    Unique (DSA-specific) : {total_unique} block(s) "
+                    f"across {len(c.unique_components)} project(s)"
+                )
+                for pname, comps in list(c.unique_components.items())[:3]:
+                    lines.append(f"      {pname}: {len(comps)} block(s)")
+                    for fc in comps[:3]:
+                        label = f" — {fc.semantic_label}" if fc.semantic_label else ""
+                        lines.append(f"        • [{fc.pattern_str}]{label}")
+
+                # Unified interface
+                if c.unified_interface:
+                    ui = c.unified_interface
+                    lines.append("")
+                    lines.append(f"  Unified Interface (J+K+L → J+K+L):")
+                    lines.append(
+                        f"    Common signals (pass-through) : "
+                        f"{len(ui.common_signals)}"
+                    )
+                    lines.append(
+                        f"    Muxed signals (mode-dependent) : "
+                        f"{len(ui.muxed_signals)}"
+                    )
+                    lines.append(
+                        f"    Total port count : {ui.total_port_count}"
+                    )
+                    if ui.protocol:
+                        lines.append(f"    Common protocol : {ui.protocol}")
+
+                # Area estimates
+                lines.append("")
+                lines.append(f"  Resource Estimation:")
+                lines.append(
+                    f"    Individual DSA total : {c.individual_gate_total:,} gates"
+                )
+                lines.append(
+                    f"    PHA estimated total  : {c.pha_gate_total:,} gates"
+                )
+                lines.append(
+                    f"    Area savings         : {c.area_savings_pct:.1f}%"
+                )
+                lines.append(
+                    f"    Breakdown — shared: {c.shared_gate_count:,}  "
+                    f"merged: {c.merged_gate_count:,}  "
+                    f"unique: {c.unique_gate_count:,}"
+                )
+
+                # Full explanation
+                lines.append("")
+                for expl_line in c.explanation.split("  "):
+                    if expl_line.strip():
+                        lines.append(
+                            "    " + textwrap.fill(
+                                expl_line.strip(), width=68,
+                                subsequent_indent="    "
+                            )
+                        )
+                lines.append("")
+        elif pha_report:
+            para(
+                "No PHA clusters could be formed.  No project pair exceeded "
+                f"the clustering threshold of {pha_report.clustering_threshold:.2f}.  "
+                "Consider lowering --pha-threshold or adding more structurally "
+                "similar projects."
+            )
+        else:
+            lines.append("  (PHA synthesis analysis was not run.)")
+
+        # ── 9. Methodology note ───────────────────────────────────────────
+        h1("9. METHODOLOGY")
         para(
             "Gate-level information was extracted by compiling each project "
             "with Icarus Verilog (iverilog -g2012) and parsing the resulting "
@@ -858,6 +1004,122 @@ class ReportGenerator:
         plt.xticks(rotation=30, ha="right")
         fig.tight_layout()
         path = self.cfg.output_dir / f"fig_anomaly_scores.{self.cfg.figure_format}"
+        fig.savefig(path)
+        plt.close(fig)
+        log.info("Figure → %s", path)
+
+    def _write_pha_charts(self, pha_report: "PHAReport") -> None:
+        """Multi-panel figure for PHA synthesis results.
+
+        Panel 1: Stacked bar chart showing shared/merged/unique gate breakdown
+                 per cluster.
+        Panel 2: Area savings comparison (individual vs PHA).
+        Panel 3: Unified interface composition per cluster.
+        """
+        clusters = pha_report.clusters
+        if not clusters:
+            return
+
+        n_panels = 2 + (1 if any(c.unified_interface for c in clusters) else 0)
+        fig, axes = plt.subplots(
+            n_panels, 1,
+            figsize=(max(10, len(clusters) * 2.5), 5 * n_panels),
+            gridspec_kw={"height_ratios": [2, 2] + ([1.5] if n_panels == 3 else [])},
+        )
+        if n_panels == 1:
+            axes = [axes]
+
+        # ── Panel 1: Component breakdown stacked bar ─────────────────
+        ax = axes[0]
+        labels = [f"PHA-{c.cluster_id}\n({len(c.member_projects)} DSAs)"
+                  for c in clusters]
+        shared_vals  = [c.shared_gate_count  for c in clusters]
+        merged_vals  = [c.merged_gate_count  for c in clusters]
+        unique_vals  = [c.unique_gate_count  for c in clusters]
+        x = np.arange(len(clusters))
+        w = 0.5
+
+        ax.bar(x, shared_vals, w, label="Shared (1× instance)", color="#4CAF50")
+        ax.bar(x, merged_vals, w, bottom=shared_vals,
+               label="Merged (configurable + mux)", color="#FF9800")
+        bottoms_2 = [s + m for s, m in zip(shared_vals, merged_vals)]
+        ax.bar(x, unique_vals, w, bottom=bottoms_2,
+               label="Unique (DSA-specific)", color="#F44336")
+
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels, fontsize=9)
+        ax.set_ylabel("Estimated gate count")
+        ax.set_title(
+            "PHA Component Decomposition\n"
+            "(Shared hardware counted once → area savings)",
+            fontweight="bold",
+        )
+        ax.legend(fontsize=8, loc="upper right")
+        for i, c in enumerate(clusters):
+            ax.text(i, shared_vals[i] + merged_vals[i] + unique_vals[i] + 5,
+                    f"{c.pha_gate_total:,}g",
+                    ha="center", va="bottom", fontsize=8, fontweight="bold")
+
+        # ── Panel 2: Individual vs PHA area comparison ───────────────
+        ax2 = axes[1]
+        indiv = [c.individual_gate_total for c in clusters]
+        pha   = [c.pha_gate_total         for c in clusters]
+        x2 = np.arange(len(clusters))
+        w2 = 0.35
+
+        bars_i = ax2.bar(x2 - w2/2, indiv, w2, label="Individual DSAs (sum)",
+                         color="#78909C", edgecolor="white")
+        bars_p = ax2.bar(x2 + w2/2, pha,   w2, label="PHA (merged)",
+                         color="#26A69A", edgecolor="white")
+
+        for i, c in enumerate(clusters):
+            ax2.annotate(
+                f"-{c.area_savings_pct:.0f}%",
+                xy=(i + w2/2, pha[i]),
+                xytext=(0, 8), textcoords="offset points",
+                ha="center", fontsize=10, fontweight="bold", color="#D32F2F",
+            )
+
+        ax2.set_xticks(x2)
+        ax2.set_xticklabels(labels, fontsize=9)
+        ax2.set_ylabel("Total gate count")
+        ax2.set_title(
+            "Area Efficiency: Individual DSAs vs. Polymorphic Architecture",
+            fontweight="bold",
+        )
+        ax2.legend(fontsize=8)
+
+        # ── Panel 3: Unified interface composition ───────────────────
+        if n_panels == 3:
+            ax3 = axes[2]
+            common_counts = []
+            muxed_counts = []
+            c_labels = []
+            for c in clusters:
+                if c.unified_interface:
+                    common_counts.append(len(c.unified_interface.common_signals))
+                    muxed_counts.append(len(c.unified_interface.muxed_signals))
+                    proto_str = (f"\n({c.unified_interface.protocol})"
+                                 if c.unified_interface.protocol else "")
+                    c_labels.append(f"PHA-{c.cluster_id}{proto_str}")
+
+            if c_labels:
+                x3 = np.arange(len(c_labels))
+                ax3.bar(x3, common_counts, 0.5,
+                        label="Common (pass-through)", color="#42A5F5")
+                ax3.bar(x3, muxed_counts, 0.5, bottom=common_counts,
+                        label="Muxed (mode-dependent)", color="#FFA726")
+                ax3.set_xticks(x3)
+                ax3.set_xticklabels(c_labels, fontsize=9)
+                ax3.set_ylabel("Signal count")
+                ax3.set_title(
+                    "Unified Interface Composition (J+K+L merged port block)",
+                    fontweight="bold",
+                )
+                ax3.legend(fontsize=8)
+
+        fig.tight_layout(pad=3.0)
+        path = self.cfg.output_dir / f"fig_pha_synthesis.{self.cfg.figure_format}"
         fig.savefig(path)
         plt.close(fig)
         log.info("Figure → %s", path)

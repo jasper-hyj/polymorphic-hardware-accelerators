@@ -1,0 +1,3456 @@
+{
+  "https://github.com/SI-RISCV/e200_opensource.git": {
+    "name": "e200_opensource",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610341+00:00",
+    "cloned_at": "2026-02-20T17:58:57.818021+00:00"
+  },
+  "https://github.com/riscv-mcu/e203_hbirdv2.git": {
+    "name": "e203_hbirdv2",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610475+00:00",
+    "cloned_at": "2026-02-20T17:58:57.819226+00:00"
+  },
+  "https://github.com/ultraembedded/riscv.git": {
+    "name": "riscv",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610481+00:00",
+    "cloned_at": "2026-02-20T17:58:57.820313+00:00"
+  },
+  "https://github.com/ZipCPU/zipcpu.git": {
+    "name": "zipcpu",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610484+00:00",
+    "cloned_at": "2026-02-20T17:58:57.821428+00:00"
+  },
+  "https://github.com/ultraembedded/biriscv.git": {
+    "name": "biriscv",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610488+00:00",
+    "cloned_at": "2026-02-20T17:58:57.823212+00:00"
+  },
+  "https://github.com/splinedrive/kianRiscV.git": {
+    "name": "kianRiscV",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610491+00:00",
+    "cloned_at": "2026-02-20T17:58:57.824513+00:00"
+  },
+  "https://github.com/rejunity/z80-open-silicon.git": {
+    "name": "z80-open-silicon",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610496+00:00",
+    "cloned_at": "2026-02-20T17:59:08.446805+00:00"
+  },
+  "https://github.com/risclite/R8051.git": {
+    "name": "R8051",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610501+00:00",
+    "cloned_at": "2026-02-20T17:59:11.727489+00:00"
+  },
+  "https://github.com/rafaelcalcada/rvx.git": {
+    "name": "rvx",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610508+00:00",
+    "cloned_at": "2026-02-20T17:59:17.431136+00:00"
+  },
+  "https://github.com/MaxXSoft/Fuxi.git": {
+    "name": "Fuxi",
+    "source": "cpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610513+00:00",
+    "cloned_at": "2026-02-20T17:59:24.680708+00:00"
+  },
+  "https://github.com/trivialmips/nontrivial-mips.git": {
+    "name": "nontrivial-mips",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610518+00:00",
+    "cloned_at": "2026-02-20T17:59:40.302111+00:00"
+  },
+  "https://github.com/WangXuan95/USTC-RVSoC.git": {
+    "name": "USTC-RVSoC",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610522+00:00",
+    "cloned_at": "2026-02-20T17:59:43.929586+00:00"
+  },
+  "https://github.com/RoaLogic/RV12.git": {
+    "name": "RV12",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610525+00:00",
+    "cloned_at": "2026-02-20T17:59:51.275653+00:00"
+  },
+  "https://github.com/mathis-s/SoomRV.git": {
+    "name": "SoomRV",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610528+00:00",
+    "cloned_at": "2026-02-20T17:59:56.288722+00:00"
+  },
+  "https://github.com/iammituraj/pequeno_riscv.git": {
+    "name": "pequeno_riscv",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610532+00:00",
+    "cloned_at": "2026-02-20T18:00:01.356283+00:00"
+  },
+  "https://github.com/trivialmips/TrivialMIPS.git": {
+    "name": "TrivialMIPS",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610537+00:00",
+    "cloned_at": "2026-02-20T18:00:08.000728+00:00"
+  },
+  "https://github.com/ben-marshall/croyde-riscv.git": {
+    "name": "croyde-riscv",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610542+00:00",
+    "cloned_at": "2026-02-20T18:00:12.563147+00:00"
+  },
+  "https://github.com/riscv-tests-intro/riscv-tests-intro.git": {
+    "name": "riscv-tests-intro",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610547+00:00",
+    "cloned_at": "2026-02-20T18:00:19.074525+00:00"
+  },
+  "https://github.com/Dmitriy0111/nanoFOX.git": {
+    "name": "nanoFOX",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610556+00:00",
+    "cloned_at": "2026-02-20T18:00:23.196102+00:00"
+  },
+  "https://github.com/LunaQu4kez/SUSTech_CS202_MineCPU.git": {
+    "name": "SUSTech_CS202_MineCPU",
+    "source": "cpu-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610561+00:00",
+    "cloned_at": "2026-02-20T18:00:29.081137+00:00"
+  },
+  "https://github.com/darklife/darkriscv.git": {
+    "name": "darkriscv",
+    "source": "riscv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610567+00:00",
+    "cloned_at": "2026-02-20T18:00:29.082607+00:00"
+  },
+  "https://github.com/olofk/serv.git": {
+    "name": "serv",
+    "source": "riscv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610571+00:00",
+    "cloned_at": "2026-02-20T18:00:29.083774+00:00"
+  },
+  "https://github.com/chili-chips-ba/wireguard-fpga.git": {
+    "name": "wireguard-fpga",
+    "source": "riscv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610575+00:00",
+    "cloned_at": "2026-02-20T18:00:29.085192+00:00"
+  },
+  "https://github.com/Wren6991/Hazard3.git": {
+    "name": "Hazard3",
+    "source": "riscv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610578+00:00",
+    "cloned_at": "2026-02-20T18:00:29.086393+00:00"
+  },
+  "https://github.com/T-K-233/RISC-V-Single-Cycle-CPU.git": {
+    "name": "RISC-V-Single-Cycle-CPU",
+    "source": "riscv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610581+00:00",
+    "cloned_at": "2026-02-20T18:00:33.302358+00:00"
+  },
+  "https://github.com/damdoy/ice40_ultraplus_examples.git": {
+    "name": "ice40_ultraplus_examples",
+    "source": "riscv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610584+00:00",
+    "cloned_at": "2026-02-20T18:00:36.185521+00:00"
+  },
+  "https://github.com/lowRISC/ibex.git": {
+    "name": "ibex",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610587+00:00",
+    "cloned_at": "2026-02-20T18:00:36.187045+00:00"
+  },
+  "https://github.com/hughperkins/VeriGPU.git": {
+    "name": "VeriGPU",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610590+00:00",
+    "cloned_at": "2026-02-20T18:00:43.122912+00:00"
+  },
+  "https://github.com/syntacore/scr1.git": {
+    "name": "scr1",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610593+00:00",
+    "cloned_at": "2026-02-20T18:00:46.581022+00:00"
+  },
+  "https://github.com/chipsalliance/Cores-VeeR-EH1.git": {
+    "name": "Cores-VeeR-EH1",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610595+00:00",
+    "cloned_at": "2026-02-20T18:00:46.582441+00:00"
+  },
+  "https://github.com/chipsalliance/Cores-VeeR-EL2.git": {
+    "name": "Cores-VeeR-EL2",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610598+00:00",
+    "cloned_at": "2026-02-20T18:00:46.584188+00:00"
+  },
+  "https://github.com/tilk/riscv-simple-sv.git": {
+    "name": "riscv-simple-sv",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610602+00:00",
+    "cloned_at": "2026-02-20T18:00:50.073441+00:00"
+  },
+  "https://github.com/ic-lab-duth/RISC-V-Vector.git": {
+    "name": "RISC-V-Vector",
+    "source": "riscv-sv",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610606+00:00",
+    "cloned_at": "2026-02-20T18:00:53.717655+00:00"
+  },
+  "https://github.com/mhyousefi/MIPS-pipeline-processor.git": {
+    "name": "MIPS-pipeline-processor",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610608+00:00",
+    "cloned_at": "2026-02-20T18:00:56.604406+00:00"
+  },
+  "https://github.com/neelkshah/MIPS-Processor.git": {
+    "name": "MIPS-Processor",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610611+00:00",
+    "cloned_at": "2026-02-20T18:00:59.220313+00:00"
+  },
+  "https://github.com/gupta409/Processor-UVM-Verification.git": {
+    "name": "Processor-UVM-Verification",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610614+00:00",
+    "cloned_at": "2026-02-20T18:01:01.935298+00:00"
+  },
+  "https://github.com/valar1234/MIPS.git": {
+    "name": "MIPS",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610618+00:00",
+    "cloned_at": "2026-02-20T18:01:06.212862+00:00"
+  },
+  "https://github.com/grantae/mips32r1_xum.git": {
+    "name": "mips32r1_xum",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610621+00:00",
+    "cloned_at": "2026-02-20T18:01:12.981045+00:00"
+  },
+  "https://github.com/maze1377/pipeline-mips-verilog.git": {
+    "name": "pipeline-mips-verilog",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610624+00:00",
+    "cloned_at": "2026-02-20T18:01:15.006986+00:00"
+  },
+  "https://github.com/ljlin/MIPS48PipelineCPU.git": {
+    "name": "MIPS48PipelineCPU",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610627+00:00",
+    "cloned_at": "2026-02-20T18:01:18.283653+00:00"
+  },
+  "https://github.com/Caskman/MIPS-Processor-in-Verilog.git": {
+    "name": "MIPS-Processor-in-Verilog",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610630+00:00",
+    "cloned_at": "2026-02-20T18:01:19.975874+00:00"
+  },
+  "https://github.com/ustb-owl/Uranus.git": {
+    "name": "Uranus",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610635+00:00",
+    "cloned_at": "2026-02-20T18:01:23.945930+00:00"
+  },
+  "https://github.com/nju-mips/noop-lo.git": {
+    "name": "noop-lo",
+    "source": "mips",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610639+00:00",
+    "cloned_at": "2026-02-20T18:01:32.405568+00:00"
+  },
+  "https://github.com/chsasank/ARM7.git": {
+    "name": "ARM7",
+    "source": "arm",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610645+00:00",
+    "cloned_at": "2026-02-20T18:01:34.975531+00:00"
+  },
+  "https://github.com/yasnakateb/PipelinedARM.git": {
+    "name": "PipelinedARM",
+    "source": "arm",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610650+00:00",
+    "cloned_at": "2026-02-20T18:01:37.595507+00:00"
+  },
+  "https://github.com/kalhorghazal/ARM-Processor.git": {
+    "name": "ARM-Processor",
+    "source": "arm",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610655+00:00",
+    "cloned_at": "2026-02-20T18:01:39.403951+00:00"
+  },
+  "https://github.com/tharunchitipolu/RISC-V-32I-based-core-with-Advanced-Extensible-Interface.git": {
+    "name": "RISC-V-32I-based-core-with-Advanced-Extensible-Interface",
+    "source": "arm",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610660+00:00",
+    "cloned_at": "2026-02-20T18:01:43.787619+00:00"
+  },
+  "https://github.com/Ahmadreza-SY/arm-verilog.git": {
+    "name": "arm-verilog",
+    "source": "arm",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610665+00:00",
+    "cloned_at": "2026-02-20T18:01:45.829600+00:00"
+  },
+  "https://github.com/jasonlin316/RISC-V-CPU.git": {
+    "name": "RISC-V-CPU",
+    "source": "pipeline",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610671+00:00",
+    "cloned_at": "2026-02-20T18:01:52.330804+00:00"
+  },
+  "https://github.com/gzzyyxh/Quafu.git": {
+    "name": "Quafu",
+    "source": "pipeline",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610676+00:00",
+    "cloned_at": "2026-02-20T18:01:55.540852+00:00"
+  },
+  "https://github.com/BrunoLevy/TordBoyau.git": {
+    "name": "TordBoyau",
+    "source": "pipeline",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610679+00:00",
+    "cloned_at": "2026-02-20T18:01:58.460485+00:00"
+  },
+  "https://github.com/cameronshinn/tiny-tpu.git": {
+    "name": "tiny-tpu",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610684+00:00",
+    "cloned_at": "2026-02-20T18:01:58.462533+00:00"
+  },
+  "https://github.com/boaaaang/CNN-Implementation-in-Verilog.git": {
+    "name": "CNN-Implementation-in-Verilog",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610688+00:00",
+    "cloned_at": "2026-02-20T18:01:58.464170+00:00"
+  },
+  "https://github.com/KyleParkJong/Network-on-Chip-Simulator.git": {
+    "name": "Network-on-Chip-Simulator",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610693+00:00",
+    "cloned_at": "2026-02-20T18:02:02.587685+00:00"
+  },
+  "https://github.com/roboticslab-uc3m/fpga-nn.git": {
+    "name": "fpga-nn",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610698+00:00",
+    "cloned_at": "2026-02-20T18:02:05.154331+00:00"
+  },
+  "https://github.com/Merterm/BRAIN-M.git": {
+    "name": "BRAIN-M",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610704+00:00",
+    "cloned_at": "2026-02-20T18:02:08.104132+00:00"
+  },
+  "https://github.com/FSq-Poplar/FPGA_NN.git": {
+    "name": "FPGA_NN",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610707+00:00",
+    "cloned_at": "2026-02-20T18:02:13.250578+00:00"
+  },
+  "https://github.com/andywag/NeuralHDL.git": {
+    "name": "NeuralHDL",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610710+00:00",
+    "cloned_at": "2026-02-20T18:02:23.499105+00:00"
+  },
+  "https://github.com/nitheeshkm/sigmoid_tanh_verilog.git": {
+    "name": "sigmoid_tanh_verilog",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610714+00:00",
+    "cloned_at": "2026-02-20T18:02:25.114244+00:00"
+  },
+  "https://github.com/BrosnanYuen/tt07-Neuromorphic-ASIC-with-96-Neurons.git": {
+    "name": "tt07-Neuromorphic-ASIC-with-96-Neurons",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610718+00:00",
+    "cloned_at": "2026-02-20T18:02:29.300851+00:00"
+  },
+  "https://github.com/arghavan-kpm/HDL-Neuron.git": {
+    "name": "HDL-Neuron",
+    "source": "nn-acc",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610720+00:00",
+    "cloned_at": "2026-02-20T18:02:31.953362+00:00"
+  },
+  "https://github.com/Buck008/Transformer-Accelerator-Based-on-FPGA.git": {
+    "name": "Transformer-Accelerator-Based-on-FPGA",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610724+00:00",
+    "cloned_at": "2026-02-20T18:02:35.507571+00:00"
+  },
+  "https://github.com/GuoningHuang/FPGA-CNN-accelerator-based-on-systolic-array.git": {
+    "name": "FPGA-CNN-accelerator-based-on-systolic-array",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610729+00:00",
+    "cloned_at": "2026-02-20T18:02:39.040992+00:00"
+  },
+  "https://github.com/Essenceia/Systolic_MAC_with_DFT.git": {
+    "name": "Systolic_MAC_with_DFT",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610734+00:00",
+    "cloned_at": "2026-02-20T18:02:43.514811+00:00"
+  },
+  "https://github.com/jiaaom/HPDLA.git": {
+    "name": "HPDLA",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610739+00:00",
+    "cloned_at": "2026-02-20T18:02:47.265276+00:00"
+  },
+  "https://github.com/profitmonk/tensor_accelerator.git": {
+    "name": "tensor_accelerator",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610742+00:00",
+    "cloned_at": "2026-02-20T18:03:04.213752+00:00"
+  },
+  "https://github.com/Spiritator/FPGA_LeNet5_ws_8x8.git": {
+    "name": "FPGA_LeNet5_ws_8x8",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610745+00:00",
+    "cloned_at": "2026-02-20T18:03:10.167587+00:00"
+  },
+  "https://github.com/evan199893/TPU_systolic_array_HW_accelerator.git": {
+    "name": "TPU_systolic_array_HW_accelerator",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610747+00:00",
+    "cloned_at": "2026-02-20T18:03:13.721560+00:00"
+  },
+  "https://github.com/cctvjack/Bactran_systolic_RangeBatchNormalization.git": {
+    "name": "Bactran_systolic_RangeBatchNormalization",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610751+00:00",
+    "cloned_at": "2026-02-20T18:03:16.316733+00:00"
+  },
+  "https://github.com/minhsun-c/FP32-Matrix-Multiplier.git": {
+    "name": "FP32-Matrix-Multiplier",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610754+00:00",
+    "cloned_at": "2026-02-20T18:03:18.839722+00:00"
+  },
+  "https://github.com/bondhugula/fw_fpga.git": {
+    "name": "fw_fpga",
+    "source": "systolic",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610757+00:00",
+    "cloned_at": "2026-02-20T18:03:22.166417+00:00"
+  },
+  "https://github.com/KohakuBlueleaf/HakuTPU.git": {
+    "name": "HakuTPU",
+    "source": "tpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610760+00:00",
+    "cloned_at": "2026-02-20T18:03:26.440281+00:00"
+  },
+  "https://github.com/AIC2021/AIC2021_TPU_Template.git": {
+    "name": "AIC2021_TPU_Template",
+    "source": "tpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610764+00:00",
+    "cloned_at": "2026-02-20T18:03:28.545857+00:00"
+  },
+  "https://github.com/akira2963753/tpu-accelerator-lite.git": {
+    "name": "tpu-accelerator-lite",
+    "source": "tpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610767+00:00",
+    "cloned_at": "2026-02-20T18:03:30.711332+00:00"
+  },
+  "https://github.com/InnisChen/STRAIT-Self-Test-and-Self-Recovery-for-AI-Accelerator.git": {
+    "name": "STRAIT-Self-Test-and-Self-Recovery-for-AI-Accelerator",
+    "source": "tpu",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610771+00:00",
+    "cloned_at": "2026-02-20T18:03:33.452645+00:00"
+  },
+  "https://github.com/QShen3/CNN-FPGA.git": {
+    "name": "CNN-FPGA",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610774+00:00",
+    "cloned_at": "2026-02-20T18:03:35.400036+00:00"
+  },
+  "https://github.com/omarelhedaby/CNN-FPGA.git": {
+    "name": "CNN-FPGA",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610778+00:00",
+    "cloned_at": "2026-02-20T18:03:35.407841+00:00"
+  },
+  "https://github.com/hunterlew/convolution_network_on_FPGA.git": {
+    "name": "convolution_network_on_FPGA",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610781+00:00",
+    "cloned_at": "2026-02-20T18:03:38.705934+00:00"
+  },
+  "https://github.com/suisuisi/FPGAandCNN.git": {
+    "name": "FPGAandCNN",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610784+00:00",
+    "cloned_at": "2026-02-20T18:04:00.591560+00:00"
+  },
+  "https://github.com/lirui-shanghaitech/CNN-Accelerator-VLSI.git": {
+    "name": "CNN-Accelerator-VLSI",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610787+00:00",
+    "cloned_at": "2026-02-20T18:04:04.153564+00:00"
+  },
+  "https://github.com/sumanth-kalluri/cnn_hardware_acclerator_for_fpga.git": {
+    "name": "cnn_hardware_acclerator_for_fpga",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610790+00:00",
+    "cloned_at": "2026-02-20T18:04:06.483989+00:00"
+  },
+  "https://github.com/mtmd/FPGA_Based_CNN.git": {
+    "name": "FPGA_Based_CNN",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610793+00:00",
+    "cloned_at": "2026-02-20T18:04:09.695953+00:00"
+  },
+  "https://github.com/padhi499/Image-Classification-using-CNN-on-FPGA.git": {
+    "name": "Image-Classification-using-CNN-on-FPGA",
+    "source": "cnn-fpga",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.610796+00:00",
+    "cloned_at": "2026-02-20T18:04:15.560977+00:00"
+  },
+  "https://github.com/MasLiang/CNN-On-FPGA.git": {
+    "name": "CNN-On-FPGA",
+    "source": "cnn-fpga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610799+00:00"
+  },
+  "https://github.com/StefanSredojevic/Deep-Neural-Network-Hardware-Accelerator.git": {
+    "name": "Deep-Neural-Network-Hardware-Accelerator",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610803+00:00"
+  },
+  "https://github.com/bsc-loca/sauria.git": {
+    "name": "sauria",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610805+00:00"
+  },
+  "https://github.com/pulp-platform/stream-ebpc.git": {
+    "name": "stream-ebpc",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610809+00:00"
+  },
+  "https://github.com/zwhexplorer/Spiking-Neural-Network-Accelerator-EE552-project.git": {
+    "name": "Spiking-Neural-Network-Accelerator-EE552-project",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610812+00:00"
+  },
+  "https://github.com/bautistasch/CNN-FC-accelerator.git": {
+    "name": "CNN-FC-accelerator",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610815+00:00"
+  },
+  "https://github.com/ahmed-ramsey-shahin/deep-learning-accelerator.git": {
+    "name": "deep-learning-accelerator",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610819+00:00"
+  },
+  "https://github.com/muhammadfarhan720/OnChip_SNN_Accelerator_Edge.git": {
+    "name": "OnChip_SNN_Accelerator_Edge",
+    "source": "ml-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610824+00:00"
+  },
+  "https://github.com/ZipCPU/dspfilters.git": {
+    "name": "dspfilters",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610829+00:00"
+  },
+  "https://github.com/ZipCPU/interpolation.git": {
+    "name": "interpolation",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610833+00:00"
+  },
+  "https://github.com/jasonlin316/A-Single-Path-Delay-32-Point-FFT-Processor.git": {
+    "name": "A-Single-Path-Delay-32-Point-FFT-Processor",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610839+00:00"
+  },
+  "https://github.com/MrAbhi19/OpenSiliconHub.git": {
+    "name": "OpenSiliconHub",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610867+00:00"
+  },
+  "https://github.com/cbalint13/e-verest.git": {
+    "name": "e-verest",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610873+00:00"
+  },
+  "https://github.com/mesarcik/DRFM.git": {
+    "name": "DRFM",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610877+00:00"
+  },
+  "https://github.com/myriadrf/LimeDSP.git": {
+    "name": "LimeDSP",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610880+00:00"
+  },
+  "https://github.com/Goshik92/FFTVisualizer.git": {
+    "name": "FFTVisualizer",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610883+00:00"
+  },
+  "https://github.com/mirimmad/uart-fpga.git": {
+    "name": "uart-fpga",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610887+00:00"
+  },
+  "https://github.com/mohamed/cordic.git": {
+    "name": "cordic",
+    "source": "dsp",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610889+00:00"
+  },
+  "https://github.com/abdelazeem201/Design-and-ASIC-Implementation-of-32-Point-FFT-Processor.git": {
+    "name": "Design-and-ASIC-Implementation-of-32-Point-FFT-Processor",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610893+00:00"
+  },
+  "https://github.com/hibagus/64pointFFTProcessor.git": {
+    "name": "64pointFFTProcessor",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610896+00:00"
+  },
+  "https://github.com/BriMonzZY/multi-mode-fft-processor.git": {
+    "name": "multi-mode-fft-processor",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610899+00:00"
+  },
+  "https://github.com/mnasser431998/bfu_dif_fft_rtl.git": {
+    "name": "bfu_dif_fft_rtl",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610902+00:00"
+  },
+  "https://github.com/freecores/pipelined_fft_64.git": {
+    "name": "pipelined_fft_64",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610905+00:00"
+  },
+  "https://github.com/freecores/pipelined_fft_256.git": {
+    "name": "pipelined_fft_256",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610908+00:00"
+  },
+  "https://github.com/1143stuff/audio_processing.git": {
+    "name": "audio_processing",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610911+00:00"
+  },
+  "https://github.com/freecores/pipelined_fft_128.git": {
+    "name": "pipelined_fft_128",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610914+00:00"
+  },
+  "https://github.com/Lucky8882/FFT-Processor-using-CORDIC-Algorithms.git": {
+    "name": "FFT-Processor-using-CORDIC-Algorithms",
+    "source": "fft",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610918+00:00"
+  },
+  "https://github.com/ajackevic/ELEC5882.git": {
+    "name": "ELEC5882",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610922+00:00"
+  },
+  "https://github.com/maxs-well/FIR_Implementation.git": {
+    "name": "FIR_Implementation",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610927+00:00"
+  },
+  "https://github.com/yaseensalah/Digital-Design-of-FIR-Filter.git": {
+    "name": "Digital-Design-of-FIR-Filter",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610932+00:00"
+  },
+  "https://github.com/aystmjz/Music-Spectrum.git": {
+    "name": "Music-Spectrum",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610936+00:00"
+  },
+  "https://github.com/suisuisi/AXI4-Stream-FIR-filter.git": {
+    "name": "AXI4-Stream-FIR-filter",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610941+00:00"
+  },
+  "https://github.com/mnmhdanas/DA-Based-LMS-Adaptive-filter.git": {
+    "name": "DA-Based-LMS-Adaptive-filter",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610946+00:00"
+  },
+  "https://github.com/Divyansh03/FIR-Filter-in-Verilog.git": {
+    "name": "FIR-Filter-in-Verilog",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610952+00:00"
+  },
+  "https://github.com/nour176yj/FIR-LPF-Digital-Design-.git": {
+    "name": "FIR-LPF-Digital-Design-",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610957+00:00"
+  },
+  "https://github.com/aakashvenky/ECG-signal-processing-using-ModelSim.git": {
+    "name": "ECG-signal-processing-using-ModelSim",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610961+00:00"
+  },
+  "https://github.com/AbdullahAnsarii/BandPassFilter.git": {
+    "name": "BandPassFilter",
+    "source": "fir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610964+00:00"
+  },
+  "https://github.com/amoudgl/iir-bandstop-filter.git": {
+    "name": "iir-bandstop-filter",
+    "source": "iir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610967+00:00"
+  },
+  "https://github.com/aignacio/iir_filter.git": {
+    "name": "iir_filter",
+    "source": "iir",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610971+00:00"
+  },
+  "https://github.com/cebarnes/cordic.git": {
+    "name": "cordic",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610973+00:00"
+  },
+  "https://github.com/freecores/verilog_cordic_core.git": {
+    "name": "verilog_cordic_core",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610977+00:00"
+  },
+  "https://github.com/JoshuaEbenezer/FFT-cordic-HDL.git": {
+    "name": "FFT-cordic-HDL",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610979+00:00"
+  },
+  "https://github.com/ericgineer/CORDIC.git": {
+    "name": "CORDIC",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610982+00:00"
+  },
+  "https://github.com/doitdodo/FPGA_Spiking_NN.git": {
+    "name": "FPGA_Spiking_NN",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610985+00:00"
+  },
+  "https://github.com/sadrasabouri/CORDIC.git": {
+    "name": "CORDIC",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610988+00:00"
+  },
+  "https://github.com/Muhazam-Mustapha/SqrtCORDIC.git": {
+    "name": "SqrtCORDIC",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610991+00:00"
+  },
+  "https://github.com/natanvotre/fm-transmitter.git": {
+    "name": "fm-transmitter",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610993+00:00"
+  },
+  "https://github.com/srohit0/CORDIC.git": {
+    "name": "CORDIC",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610996+00:00"
+  },
+  "https://github.com/ankitshah009/High-Radix-Adaptive-CORDIC.git": {
+    "name": "High-Radix-Adaptive-CORDIC",
+    "source": "cordic",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.610999+00:00"
+  },
+  "https://github.com/dtysky/FPGA-Imaging-Library.git": {
+    "name": "FPGA-Imaging-Library",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611002+00:00"
+  },
+  "https://github.com/suntodai/FPGA_image_processing.git": {
+    "name": "FPGA_image_processing",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611005+00:00"
+  },
+  "https://github.com/damdoy/fpga_image_processing.git": {
+    "name": "fpga_image_processing",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611008+00:00"
+  },
+  "https://github.com/jameshegarty/rigel.git": {
+    "name": "rigel",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611010+00:00"
+  },
+  "https://github.com/fivexxxxx/image_processing.git": {
+    "name": "image_processing",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611013+00:00"
+  },
+  "https://github.com/cuongtvee/Video-and-Image-Processing-Design-Using-FPGAs.git": {
+    "name": "Video-and-Image-Processing-Design-Using-FPGAs",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611016+00:00"
+  },
+  "https://github.com/ISKU/Autonomous-Drone-Design.git": {
+    "name": "Autonomous-Drone-Design",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611019+00:00"
+  },
+  "https://github.com/harshbhosale01/image-processing-fpga.git": {
+    "name": "image-processing-fpga",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611023+00:00"
+  },
+  "https://github.com/kunliu7/FPGA-based-image-processing.git": {
+    "name": "FPGA-based-image-processing",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611029+00:00"
+  },
+  "https://github.com/delhatch/Red_Tracker.git": {
+    "name": "Red_Tracker",
+    "source": "image",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611035+00:00"
+  },
+  "https://github.com/dawsonjon/fpu.git": {
+    "name": "fpu",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611040+00:00"
+  },
+  "https://github.com/danshanley/FPU.git": {
+    "name": "FPU",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611044+00:00"
+  },
+  "https://github.com/akilm/FPU-IEEE-754.git": {
+    "name": "FPU-IEEE-754",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611049+00:00"
+  },
+  "https://github.com/merldsu/SAP_FPU.git": {
+    "name": "SAP_FPU",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611054+00:00"
+  },
+  "https://github.com/SeanZarzycki/openSPARC-FPU.git": {
+    "name": "openSPARC-FPU",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611061+00:00"
+  },
+  "https://github.com/jm2000/RISCV-FPU.git": {
+    "name": "RISCV-FPU",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611066+00:00"
+  },
+  "https://github.com/chiphackers/AtomFPU.git": {
+    "name": "AtomFPU",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611069+00:00"
+  },
+  "https://github.com/honnet/LM32_FPU.git": {
+    "name": "LM32_FPU",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611072+00:00"
+  },
+  "https://github.com/freecores/fpu.git": {
+    "name": "fpu",
+    "source": "fpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611075+00:00"
+  },
+  "https://github.com/openhwgroup/cvfpu.git": {
+    "name": "cvfpu",
+    "source": "fpu-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611078+00:00"
+  },
+  "https://github.com/taneroksuz/rv-diios.git": {
+    "name": "rv-diios",
+    "source": "fpu-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611080+00:00"
+  },
+  "https://github.com/artemglukhov/FLOG_BFLOAT16.git": {
+    "name": "FLOG_BFLOAT16",
+    "source": "fpu-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611084+00:00"
+  },
+  "https://github.com/OpenBanboo/High-Performance-ALU.git": {
+    "name": "High-Performance-ALU",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611088+00:00"
+  },
+  "https://github.com/parnabghosh1004/Floating-Point-ALU.git": {
+    "name": "Floating-Point-ALU",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611094+00:00"
+  },
+  "https://github.com/BekiryY/PPA-Optimized-32-bit-Pipelined-ALU-Design.git": {
+    "name": "PPA-Optimized-32-bit-Pipelined-ALU-Design",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611098+00:00"
+  },
+  "https://github.com/07adnan/64-Bit-ALU.git": {
+    "name": "64-Bit-ALU",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611114+00:00"
+  },
+  "https://github.com/sks9691901/32bit-Floating-Point-ALU-using-Verilog.git": {
+    "name": "32bit-Floating-Point-ALU-using-Verilog",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611124+00:00"
+  },
+  "https://github.com/kairavkkp/Microprocessor-Without-Interlocked-Pipeline-Stages-8-bit-.git": {
+    "name": "Microprocessor-Without-Interlocked-Pipeline-Stages-8-bit-",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611131+00:00"
+  },
+  "https://github.com/Ishkhanants/verilog-alu-sqrt.git": {
+    "name": "verilog-alu-sqrt",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611140+00:00"
+  },
+  "https://github.com/JinBean/16bitALU.git": {
+    "name": "16bitALU",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611146+00:00"
+  },
+  "https://github.com/mfkiwl/Pipelined-ALU.git": {
+    "name": "Pipelined-ALU",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611151+00:00"
+  },
+  "https://github.com/RoheetSaha007/4bit-ALU-8Function-Verilog.git": {
+    "name": "4bit-ALU-8Function-Verilog",
+    "source": "alu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611158+00:00"
+  },
+  "https://github.com/manish-kj/PACoGen.git": {
+    "name": "PACoGen",
+    "source": "posit",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611164+00:00"
+  },
+  "https://github.com/manish-kj/Posit-HDL-Arithmetic.git": {
+    "name": "Posit-HDL-Arithmetic",
+    "source": "posit",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611169+00:00"
+  },
+  "https://github.com/brsf11/Posit-FMAU.git": {
+    "name": "Posit-FMAU",
+    "source": "posit",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611174+00:00"
+  },
+  "https://github.com/jg-fossh/Goldschmidt_Integer_Divider_Parallel.git": {
+    "name": "Goldschmidt_Integer_Divider_Parallel",
+    "source": "divider",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611178+00:00"
+  },
+  "https://github.com/wuzeyou/Multiplier16X16.git": {
+    "name": "Multiplier16X16",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611181+00:00"
+  },
+  "https://github.com/lauchinyuan/Booth4_wallace_MULT16_16.git": {
+    "name": "Booth4_wallace_MULT16_16",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611184+00:00"
+  },
+  "https://github.com/MorrisMA/Booth_Multipliers.git": {
+    "name": "Booth_Multipliers",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611187+00:00"
+  },
+  "https://github.com/pareddy113/Design-of-various-multiplier-Array-Booth-Wallace-.git": {
+    "name": "Design-of-various-multiplier-Array-Booth-Wallace-",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611192+00:00"
+  },
+  "https://github.com/KshitijLakhani/VLSI_Verilog_Projects.git": {
+    "name": "VLSI_Verilog_Projects",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611195+00:00"
+  },
+  "https://github.com/rcetin/booth_wallace_multiplier.git": {
+    "name": "booth_wallace_multiplier",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611198+00:00"
+  },
+  "https://github.com/XDWEIUSTC/32-Verilog-Mini-Projects.git": {
+    "name": "32-Verilog-Mini-Projects",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611200+00:00"
+  },
+  "https://github.com/Swingfal1/booth_multiplier_radix_4.git": {
+    "name": "booth_multiplier_radix_4",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611203+00:00"
+  },
+  "https://github.com/aekanshd/booths-multiplier-using-verilog.git": {
+    "name": "booths-multiplier-using-verilog",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611206+00:00"
+  },
+  "https://github.com/Ye-Jinhong/BoothMultiplier.git": {
+    "name": "BoothMultiplier",
+    "source": "multiplier",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611208+00:00"
+  },
+  "https://github.com/omega-rg/Cache-Controller.git": {
+    "name": "Cache-Controller",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611211+00:00"
+  },
+  "https://github.com/prasadp4009/2-way-Set-Associative-Cache-Controller.git": {
+    "name": "2-way-Set-Associative-Cache-Controller",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611214+00:00"
+  },
+  "https://github.com/shalan/MS_QSPI_XIP_CACHE.git": {
+    "name": "MS_QSPI_XIP_CACHE",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611219+00:00"
+  },
+  "https://github.com/zli87/Processor-and-Accelerator.git": {
+    "name": "Processor-and-Accelerator",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611223+00:00"
+  },
+  "https://github.com/shalan/QSPI_XIP_CTRL_DMC.git": {
+    "name": "QSPI_XIP_CTRL_DMC",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611228+00:00"
+  },
+  "https://github.com/yadav-sachin/Multilevel-Cache-Controller.git": {
+    "name": "Multilevel-Cache-Controller",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611235+00:00"
+  },
+  "https://github.com/aravinds92/Cache-Controller.git": {
+    "name": "Cache-Controller",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611240+00:00"
+  },
+  "https://github.com/pumpkinstay/cache_controller.git": {
+    "name": "cache_controller",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611245+00:00"
+  },
+  "https://github.com/semiDESIgner/Cache-Memory-Controller_project.git": {
+    "name": "Cache-Memory-Controller_project",
+    "source": "cache",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611251+00:00"
+  },
+  "https://github.com/stffrdhrn/sdram-controller.git": {
+    "name": "sdram-controller",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611257+00:00"
+  },
+  "https://github.com/WangXuan95/FPGA-DDR-SDRAM.git": {
+    "name": "FPGA-DDR-SDRAM",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611262+00:00"
+  },
+  "https://github.com/hdl-util/sdram-controller.git": {
+    "name": "sdram-controller",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611265+00:00"
+  },
+  "https://github.com/nand2mario/sdram-tang-nano-20k.git": {
+    "name": "sdram-tang-nano-20k",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611267+00:00"
+  },
+  "https://github.com/lauchinyuan/FPGA_DDR3_Ctrl.git": {
+    "name": "FPGA_DDR3_Ctrl",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611270+00:00"
+  },
+  "https://github.com/yigitbektasgursoy/SDRAM_Verilog.git": {
+    "name": "SDRAM_Verilog",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611273+00:00"
+  },
+  "https://github.com/funannoka/SoC-Design-DDR3-Controller.git": {
+    "name": "SoC-Design-DDR3-Controller",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611276+00:00"
+  },
+  "https://github.com/skristiansson/wb_sdram_ctrl.git": {
+    "name": "wb_sdram_ctrl",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611278+00:00"
+  },
+  "https://github.com/AngeloJacobo/FPGA_SDRAM_Controller.git": {
+    "name": "FPGA_SDRAM_Controller",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611281+00:00"
+  },
+  "https://github.com/yvnr4you/SDRAM-Verification.git": {
+    "name": "SDRAM-Verification",
+    "source": "sdram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611284+00:00"
+  },
+  "https://github.com/ultraembedded/core_ddr3_controller.git": {
+    "name": "core_ddr3_controller",
+    "source": "ddr",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611287+00:00"
+  },
+  "https://github.com/adibis/DDR2_Controller.git": {
+    "name": "DDR2_Controller",
+    "source": "ddr",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611290+00:00"
+  },
+  "https://github.com/buttercutter/DDR.git": {
+    "name": "DDR",
+    "source": "ddr",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611293+00:00"
+  },
+  "https://github.com/alice820621/SystemVerilog-Implementation-of-DDR3-Controller.git": {
+    "name": "SystemVerilog-Implementation-of-DDR3-Controller",
+    "source": "ddr",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611296+00:00"
+  },
+  "https://github.com/pavanmathur/DDR-SDRAM-.git": {
+    "name": "DDR-SDRAM-",
+    "source": "ddr",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611299+00:00"
+  },
+  "https://github.com/89Mods/mini-ddr2.git": {
+    "name": "mini-ddr2",
+    "source": "ddr",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611301+00:00"
+  },
+  "https://github.com/pConst/basic_verilog.git": {
+    "name": "basic_verilog",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611304+00:00"
+  },
+  "https://github.com/dpretet/async_fifo.git": {
+    "name": "async_fifo",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611307+00:00"
+  },
+  "https://github.com/WangXuan95/FPGA-ftdi245fifo.git": {
+    "name": "FPGA-ftdi245fifo",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611310+00:00"
+  },
+  "https://github.com/snbk001/Verilog-Design-Examples.git": {
+    "name": "Verilog-Design-Examples",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611312+00:00"
+  },
+  "https://github.com/olofk/fifo.git": {
+    "name": "fifo",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611317+00:00"
+  },
+  "https://github.com/rajshadow/4-way-set-associative-cache-verilog.git": {
+    "name": "4-way-set-associative-cache-verilog",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611322+00:00"
+  },
+  "https://github.com/teekamkhandelwal/asynchronous_fifo.git": {
+    "name": "asynchronous_fifo",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611327+00:00"
+  },
+  "https://github.com/mihir8181/VerilogHDL-Codes.git": {
+    "name": "VerilogHDL-Codes",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611333+00:00"
+  },
+  "https://github.com/JonathanJing/Asynchronous-FIFO.git": {
+    "name": "Asynchronous-FIFO",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611338+00:00"
+  },
+  "https://github.com/ujjwal-2001/Async_FIFO_Design.git": {
+    "name": "Async_FIFO_Design",
+    "source": "fifo",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611342+00:00"
+  },
+  "https://github.com/ultraembedded/cores.git": {
+    "name": "cores",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611346+00:00"
+  },
+  "https://github.com/wangjidwb123/AHB-SRAMC.git": {
+    "name": "AHB-SRAMC",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611350+00:00"
+  },
+  "https://github.com/RIOSLaboratory/OpenXRAM.git": {
+    "name": "OpenXRAM",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611355+00:00"
+  },
+  "https://github.com/LCAI-TIHU/HW.git": {
+    "name": "HW",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611359+00:00"
+  },
+  "https://github.com/bangonkali/sram.git": {
+    "name": "sram",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611364+00:00"
+  },
+  "https://github.com/AmeerAbdelhadi/Multiported-RAM.git": {
+    "name": "Multiported-RAM",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611369+00:00"
+  },
+  "https://github.com/mattvenn/fpga-sram.git": {
+    "name": "fpga-sram",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611374+00:00"
+  },
+  "https://github.com/fangyzh26/AHB_SRAM.git": {
+    "name": "AHB_SRAM",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611378+00:00"
+  },
+  "https://github.com/AmeerAbdelhadi/2D-Binary-Content-Addressable-Memory-BCAM.git": {
+    "name": "2D-Binary-Content-Addressable-Memory-BCAM",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611384+00:00"
+  },
+  "https://github.com/wbbbbbb123/Sram-controller-design-based-on-AHB-bus.git": {
+    "name": "Sram-controller-design-based-on-AHB-bus",
+    "source": "sram",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611389+00:00"
+  },
+  "https://github.com/ZipCPU/sdspi.git": {
+    "name": "sdspi",
+    "source": "axi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611393+00:00"
+  },
+  "https://github.com/lucky-wfw/ARM_AMBA_Design.git": {
+    "name": "ARM_AMBA_Design",
+    "source": "axi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611398+00:00"
+  },
+  "https://github.com/atfox272/AXI4-Interconnect.git": {
+    "name": "AXI4-Interconnect",
+    "source": "axi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611401+00:00"
+  },
+  "https://github.com/Wissance/QuickSPI.git": {
+    "name": "QuickSPI",
+    "source": "axi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611404+00:00"
+  },
+  "https://github.com/alexforencich/verilog-ethernet.git": {
+    "name": "verilog-ethernet",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611407+00:00"
+  },
+  "https://github.com/andres-mancera/ethernet_10ge_mac_SV_UVM_tb.git": {
+    "name": "ethernet_10ge_mac_SV_UVM_tb",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611410+00:00"
+  },
+  "https://github.com/WangXuan95/FPGA-RMII-SMII.git": {
+    "name": "FPGA-RMII-SMII",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611413+00:00"
+  },
+  "https://github.com/freecores/ethmac.git": {
+    "name": "ethmac",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611416+00:00"
+  },
+  "https://github.com/maxs-well/Ethernet-design-verilog.git": {
+    "name": "Ethernet-design-verilog",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611419+00:00"
+  },
+  "https://github.com/cjhonlyone/picorv32_Xilinx.git": {
+    "name": "picorv32_Xilinx",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611422+00:00"
+  },
+  "https://github.com/Forty-Bot/ethernet.git": {
+    "name": "ethernet",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611425+00:00"
+  },
+  "https://github.com/forconesi/nfmac10g.git": {
+    "name": "nfmac10g",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611428+00:00"
+  },
+  "https://github.com/alknvl/axis_udp.git": {
+    "name": "axis_udp",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611431+00:00"
+  },
+  "https://github.com/Essenceia/low-latency-ethernet.git": {
+    "name": "low-latency-ethernet",
+    "source": "ethernet",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611434+00:00"
+  },
+  "https://github.com/alexforencich/verilog-pcie.git": {
+    "name": "verilog-pcie",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611437+00:00"
+  },
+  "https://github.com/dom0ng/pcileech-wifi-v2.git": {
+    "name": "pcileech-wifi-v2",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611439+00:00"
+  },
+  "https://github.com/flytt-away/FPGA-Video-Capture.git": {
+    "name": "FPGA-Video-Capture",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611443+00:00"
+  },
+  "https://github.com/mgtm98/pcie5_phy.git": {
+    "name": "pcie5_phy",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611447+00:00"
+  },
+  "https://github.com/antmicro/nvme-verilog-pcie.git": {
+    "name": "nvme-verilog-pcie",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611449+00:00"
+  },
+  "https://github.com/regymm/pcie_7x.git": {
+    "name": "pcie_7x",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611452+00:00"
+  },
+  "https://github.com/dom0ng/pcileech-cardreader.git": {
+    "name": "pcileech-cardreader",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611455+00:00"
+  },
+  "https://github.com/thinkoco/microsoft_fpga.git": {
+    "name": "microsoft_fpga",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611458+00:00"
+  },
+  "https://github.com/brown9804/PCIe-Physical-Layer.git": {
+    "name": "PCIe-Physical-Layer",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611461+00:00"
+  },
+  "https://github.com/dom0ng/pcileech-audio.git": {
+    "name": "pcileech-audio",
+    "source": "pcie",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611464+00:00"
+  },
+  "https://github.com/alexforencich/verilog-uart.git": {
+    "name": "verilog-uart",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611468+00:00"
+  },
+  "https://github.com/ZipCPU/wbuart32.git": {
+    "name": "wbuart32",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611471+00:00"
+  },
+  "https://github.com/WangXuan95/FPGA-UART.git": {
+    "name": "FPGA-UART",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611474+00:00"
+  },
+  "https://github.com/jamieiles/uart.git": {
+    "name": "uart",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611476+00:00"
+  },
+  "https://github.com/ben-marshall/uart.git": {
+    "name": "uart",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611479+00:00"
+  },
+  "https://github.com/hell03end/verilog-uart.git": {
+    "name": "verilog-uart",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611482+00:00"
+  },
+  "https://github.com/MIPSfpga/mipsfpga-plus.git": {
+    "name": "mipsfpga-plus",
+    "source": "uart",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611485+00:00"
+  },
+  "https://github.com/ZipCPU/qspiflash.git": {
+    "name": "qspiflash",
+    "source": "spi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611488+00:00"
+  },
+  "https://github.com/Angelic47/GowinDDR3_AXI4_SpinalHDL.git": {
+    "name": "GowinDDR3_AXI4_SpinalHDL",
+    "source": "spi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611491+00:00"
+  },
+  "https://github.com/drom/spi.git": {
+    "name": "spi",
+    "source": "spi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611495+00:00"
+  },
+  "https://github.com/regymm/mit_sd_controller_improved.git": {
+    "name": "mit_sd_controller_improved",
+    "source": "spi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611499+00:00"
+  },
+  "https://github.com/redchenjs/neopixel_led_controller_max10.git": {
+    "name": "neopixel_led_controller_max10",
+    "source": "spi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611503+00:00"
+  },
+  "https://github.com/efabless/EF_PSRAM_CTRL_OLD-DONT-USE-.git": {
+    "name": "EF_PSRAM_CTRL_OLD-DONT-USE-",
+    "source": "spi",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611506+00:00"
+  },
+  "https://github.com/ZipCPU/wbi2c.git": {
+    "name": "wbi2c",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611509+00:00"
+  },
+  "https://github.com/freecores/i2c.git": {
+    "name": "i2c",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611512+00:00"
+  },
+  "https://github.com/joelagnel/i2c-master.git": {
+    "name": "i2c-master",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611515+00:00"
+  },
+  "https://github.com/trondd/oc-i2c.git": {
+    "name": "oc-i2c",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611518+00:00"
+  },
+  "https://github.com/mcgodfrey/i2c-eeprom.git": {
+    "name": "i2c-eeprom",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611521+00:00"
+  },
+  "https://github.com/Sudhamshu091/32-Verilog-Mini-Projects.git": {
+    "name": "32-Verilog-Mini-Projects",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611525+00:00"
+  },
+  "https://github.com/siva12a/caravel_peripheral_extender.git": {
+    "name": "caravel_peripheral_extender",
+    "source": "i2c",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611528+00:00"
+  },
+  "https://github.com/circuitvalley/USB_C_Industrial_Camera_FPGA_USB3.git": {
+    "name": "USB_C_Industrial_Camera_FPGA_USB3",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611531+00:00"
+  },
+  "https://github.com/mzakharo/usb-de2-fpga.git": {
+    "name": "usb-de2-fpga",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611534+00:00"
+  },
+  "https://github.com/RobRoyce/fpga_mouse_controller_basys3.git": {
+    "name": "fpga_mouse_controller_basys3",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611537+00:00"
+  },
+  "https://github.com/dineshannayya/usb1_host.git": {
+    "name": "usb1_host",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611542+00:00"
+  },
+  "https://github.com/GOWIN-FPGA/USB3.0-Device-Controller.git": {
+    "name": "USB3.0-Device-Controller",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611548+00:00"
+  },
+  "https://github.com/Zeba-Xie/Open-USB2.0-Device-Controller.git": {
+    "name": "Open-USB2.0-Device-Controller",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611554+00:00"
+  },
+  "https://github.com/marsohod4you/UsbHost.git": {
+    "name": "UsbHost",
+    "source": "usb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611559+00:00"
+  },
+  "https://github.com/WangXuan95/FPGA-CAN.git": {
+    "name": "FPGA-CAN",
+    "source": "can",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611564+00:00"
+  },
+  "https://github.com/Tommydag/CAN-Bus-Controller.git": {
+    "name": "CAN-Bus-Controller",
+    "source": "can",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611569+00:00"
+  },
+  "https://github.com/AlbertCouchy0/POC_Design_Based_on_FPGA.git": {
+    "name": "POC_Design_Based_on_FPGA",
+    "source": "can",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611576+00:00"
+  },
+  "https://github.com/ZipCPU/wb2axip.git": {
+    "name": "wb2axip",
+    "source": "wishbone",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611581+00:00"
+  },
+  "https://github.com/olofk/wb_bfm.git": {
+    "name": "wb_bfm",
+    "source": "wishbone",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611585+00:00"
+  },
+  "https://github.com/adki/AMBA_AXI_AHB_APB.git": {
+    "name": "AMBA_AXI_AHB_APB",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611589+00:00"
+  },
+  "https://github.com/red435/verilog_APB_SPI_interface.git": {
+    "name": "verilog_APB_SPI_interface",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611592+00:00"
+  },
+  "https://github.com/Noamv7/Matrix-Multiplication-Using-Systolic-Arrays-Chip-Design-and-Verification.git": {
+    "name": "Matrix-Multiplication-Using-Systolic-Arrays-Chip-Design-and-Verification",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611595+00:00"
+  },
+  "https://github.com/YousefSherif/APB-Master-Bridge.git": {
+    "name": "APB-Master-Bridge",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611598+00:00"
+  },
+  "https://github.com/ciomagandreidaniel/Interrupt_Controller_Verilog.git": {
+    "name": "Interrupt_Controller_Verilog",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611601+00:00"
+  },
+  "https://github.com/HassanKhaled11/APB_Bus_Connected_to_GPIO_and_UART.git": {
+    "name": "APB_Bus_Connected_to_GPIO_and_UART",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611604+00:00"
+  },
+  "https://github.com/nguyentrungduong/ahblite2apb.git": {
+    "name": "ahblite2apb",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611607+00:00"
+  },
+  "https://github.com/Kanishk-K-U/AHB2APB-Bridge-Controller.git": {
+    "name": "AHB2APB-Bridge-Controller",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611610+00:00"
+  },
+  "https://github.com/amrkhalid-star902/AMBA-BUS-PROTOCOL.git": {
+    "name": "AMBA-BUS-PROTOCOL",
+    "source": "apb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611612+00:00"
+  },
+  "https://github.com/Lianghao-Yuan/AHB_Bus_Matrix.git": {
+    "name": "AHB_Bus_Matrix",
+    "source": "ahb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611615+00:00"
+  },
+  "https://github.com/Buddhimah/System-Bus-Design-Verilog.git": {
+    "name": "System-Bus-Design-Verilog",
+    "source": "ahb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611618+00:00"
+  },
+  "https://github.com/panicmarvin/cmsdk_ahb_busmatrix.git": {
+    "name": "cmsdk_ahb_busmatrix",
+    "source": "ahb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611623+00:00"
+  },
+  "https://github.com/wbbbbbb123/UVM-based-AHB-bus-SRAM-controller-design-verification-platform-design.git": {
+    "name": "UVM-based-AHB-bus-SRAM-controller-design-verification-platform-design",
+    "source": "ahb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611627+00:00"
+  },
+  "https://github.com/shalan/MS_DMAC_AHBL.git": {
+    "name": "MS_DMAC_AHBL",
+    "source": "ahb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611631+00:00"
+  },
+  "https://github.com/asimkhan8107/AMBA-AHB.git": {
+    "name": "AMBA-AHB",
+    "source": "ahb",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611634+00:00"
+  },
+  "https://github.com/secworks/aes.git": {
+    "name": "aes",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611639+00:00"
+  },
+  "https://github.com/michaelehab/AES-Verilog.git": {
+    "name": "AES-Verilog",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611643+00:00"
+  },
+  "https://github.com/pnvamshi/Hardware-Implementation-of-AES-Verilog.git": {
+    "name": "Hardware-Implementation-of-AES-Verilog",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611649+00:00"
+  },
+  "https://github.com/BalaDhinesh/Accelerating_Standard_and_Modified_AES128.git": {
+    "name": "Accelerating_Standard_and_Modified_AES128",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611654+00:00"
+  },
+  "https://github.com/ahegazy/aes.git": {
+    "name": "aes",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611657+00:00"
+  },
+  "https://github.com/sumanth-kalluri/128-Bit-AES-Encryption-and-Decryption-in-Verilog.git": {
+    "name": "128-Bit-AES-Encryption-and-Decryption-in-Verilog",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611660+00:00"
+  },
+  "https://github.com/abdelazeem201/ASIC-implementation-of-AES.git": {
+    "name": "ASIC-implementation-of-AES",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611663+00:00"
+  },
+  "https://github.com/vignesh-raghavan/AES128.git": {
+    "name": "AES128",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611666+00:00"
+  },
+  "https://github.com/Chair-for-Security-Engineering/AES_masked_BRAM.git": {
+    "name": "AES_masked_BRAM",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611670+00:00"
+  },
+  "https://github.com/AhmedSobhy01/AES-Verilog.git": {
+    "name": "AES-Verilog",
+    "source": "aes",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611674+00:00"
+  },
+  "https://github.com/secworks/sha256.git": {
+    "name": "sha256",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611677+00:00"
+  },
+  "https://github.com/secworks/sha1.git": {
+    "name": "sha1",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611679+00:00"
+  },
+  "https://github.com/secworks/sha512.git": {
+    "name": "sha512",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611686+00:00"
+  },
+  "https://github.com/Goshik92/SHA256Hasher.git": {
+    "name": "SHA256Hasher",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611689+00:00"
+  },
+  "https://github.com/antonson-j1/SHA256-Accelerator-Hardware.git": {
+    "name": "SHA256-Accelerator-Hardware",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611692+00:00"
+  },
+  "https://github.com/JeremyV2014/VerilogSHA256Miner.git": {
+    "name": "VerilogSHA256Miner",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611695+00:00"
+  },
+  "https://github.com/tharunchitipolu/SHA-256-Verilog-HDL.git": {
+    "name": "SHA-256-Verilog-HDL",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611698+00:00"
+  },
+  "https://github.com/timothympace/SHA1-Verilog.git": {
+    "name": "SHA1-Verilog",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611700+00:00"
+  },
+  "https://github.com/farooqandniaz/SHA256-fpga-ultra.git": {
+    "name": "SHA256-fpga-ultra",
+    "source": "sha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611703+00:00"
+  },
+  "https://github.com/crypt-xie/XCryptCore.git": {
+    "name": "XCryptCore",
+    "source": "rsa",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611706+00:00"
+  },
+  "https://github.com/secworks/chacha.git": {
+    "name": "chacha",
+    "source": "chacha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611708+00:00"
+  },
+  "https://github.com/diskouna/ChaCha20.git": {
+    "name": "ChaCha20",
+    "source": "chacha",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611711+00:00"
+  },
+  "https://github.com/kgpai94/ECC-Encryption-System.git": {
+    "name": "ECC-Encryption-System",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611714+00:00"
+  },
+  "https://github.com/hyperpicc/ecc.git": {
+    "name": "ecc",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611717+00:00"
+  },
+  "https://github.com/shiva-t/Elliptical-Curve-Cryptography-FPGA.git": {
+    "name": "Elliptical-Curve-Cryptography-FPGA",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611720+00:00"
+  },
+  "https://github.com/Justin5567/Elliptic-Curve-Cryptography.git": {
+    "name": "Elliptic-Curve-Cryptography",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611723+00:00"
+  },
+  "https://github.com/xurubin/ECProcessor.git": {
+    "name": "ECProcessor",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611726+00:00"
+  },
+  "https://github.com/secworks/curve25519.git": {
+    "name": "curve25519",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611729+00:00"
+  },
+  "https://github.com/liuguangxi/ec_sec2.git": {
+    "name": "ec_sec2",
+    "source": "ecc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611731+00:00"
+  },
+  "https://github.com/bradgrantham/alice5.git": {
+    "name": "alice5",
+    "source": "gpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611734+00:00"
+  },
+  "https://github.com/anan-cn/Open-Source-Network-on-Chip-Router-RTL.git": {
+    "name": "Open-Source-Network-on-Chip-Router-RTL",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611737+00:00"
+  },
+  "https://github.com/bakhshalipour/NoC-Verilog.git": {
+    "name": "NoC-Verilog",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611740+00:00"
+  },
+  "https://github.com/amonemi/ProNoC.git": {
+    "name": "ProNoC",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611742+00:00"
+  },
+  "https://github.com/TUM-LIS/lisnoc.git": {
+    "name": "lisnoc",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611745+00:00"
+  },
+  "https://github.com/CodeNameGrapefruit/SoC_CNN.git": {
+    "name": "SoC_CNN",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611749+00:00"
+  },
+  "https://github.com/jerry-D/64-bit-Universal-Floating-Point-ISA-Compute-Engine.git": {
+    "name": "64-bit-Universal-Floating-Point-ISA-Compute-Engine",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611752+00:00"
+  },
+  "https://github.com/KevinWang96/Chip-Multi-processor-System-based-on-Cardinal-Bidirectional-Ring-Network-on-chip.git": {
+    "name": "Chip-Multi-processor-System-based-on-Cardinal-Bidirectional-Ring-Network-on-chip",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611755+00:00"
+  },
+  "https://github.com/sadra-ghavami/4x4-Mesh-Grid-Network-on-Chip--NoC--in-Verilog.git": {
+    "name": "4x4-Mesh-Grid-Network-on-Chip--NoC--in-Verilog",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611758+00:00"
+  },
+  "https://github.com/kimi-michael/Ring-NoC.git": {
+    "name": "Ring-NoC",
+    "source": "noc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611763+00:00"
+  },
+  "https://github.com/prajwal1999/4x4-Swittch---Verilog.git": {
+    "name": "4x4-Swittch---Verilog",
+    "source": "crossbar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611770+00:00"
+  },
+  "https://github.com/WilsonChen003/HDLGen.git": {
+    "name": "HDLGen",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611777+00:00"
+  },
+  "https://github.com/chili-chips-ba/openCologne.git": {
+    "name": "openCologne",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611781+00:00"
+  },
+  "https://github.com/AleksandarKostovic/Riscy-SoC.git": {
+    "name": "Riscy-SoC",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611785+00:00"
+  },
+  "https://github.com/waynezv/FPGA_Ultrasound.git": {
+    "name": "FPGA_Ultrasound",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611789+00:00"
+  },
+  "https://github.com/edabk-hust/edabk_brain_soc.git": {
+    "name": "edabk_brain_soc",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611793+00:00"
+  },
+  "https://github.com/RISC-KC/basic_rv32s.git": {
+    "name": "basic_rv32s",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611798+00:00"
+  },
+  "https://github.com/chili-chips-ba/openXC7-TetriSaraj.git": {
+    "name": "openXC7-TetriSaraj",
+    "source": "soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611804+00:00"
+  },
+  "https://github.com/pulp-platform/cheshire.git": {
+    "name": "cheshire",
+    "source": "fpga-soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611807+00:00"
+  },
+  "https://github.com/regymm/quasiSoC.git": {
+    "name": "quasiSoC",
+    "source": "fpga-soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611813+00:00"
+  },
+  "https://github.com/thinkoco/c5soc_opencl.git": {
+    "name": "c5soc_opencl",
+    "source": "fpga-soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611816+00:00"
+  },
+  "https://github.com/archlabo/Frix.git": {
+    "name": "Frix",
+    "source": "fpga-soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611819+00:00"
+  },
+  "https://github.com/ultraembedded/core_soc.git": {
+    "name": "core_soc",
+    "source": "fpga-soc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611821+00:00"
+  },
+  "https://github.com/Xilinx/xup_embedded_system_design_flow.git": {
+    "name": "xup_embedded_system_design_flow",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611824+00:00"
+  },
+  "https://github.com/parimalp/Advanced-Embedded-System-Design-Flow-on-Zynq.git": {
+    "name": "Advanced-Embedded-System-Design-Flow-on-Zynq",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611827+00:00"
+  },
+  "https://github.com/AnuragSChatterjee/Multilayer-Perception-MLP-Neural-Network-Implementation-In-FPGA.git": {
+    "name": "Multilayer-Perception-MLP-Neural-Network-Implementation-In-FPGA",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611831+00:00"
+  },
+  "https://github.com/mohamedazizbelhouchet/RISC-V-PIPELINED-PROCESSOR-Implementation.git": {
+    "name": "RISC-V-PIPELINED-PROCESSOR-Implementation",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611860+00:00"
+  },
+  "https://github.com/fjpolo/CourseraFPGADesignforEmbeddedSystemsSpecialization.git": {
+    "name": "CourseraFPGADesignforEmbeddedSystemsSpecialization",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611866+00:00"
+  },
+  "https://github.com/dawsonjon/chips_v.git": {
+    "name": "chips_v",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611870+00:00"
+  },
+  "https://github.com/eriksargent/HardwareTrojanLab.git": {
+    "name": "HardwareTrojanLab",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611873+00:00"
+  },
+  "https://github.com/simoasnaghi/FPGA_PUF.git": {
+    "name": "FPGA_PUF",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611877+00:00"
+  },
+  "https://github.com/jackyangNJ/SimMIPS.git": {
+    "name": "SimMIPS",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611879+00:00"
+  },
+  "https://github.com/f-of-e/f-of-e-tools.git": {
+    "name": "f-of-e-tools",
+    "source": "embedded",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611882+00:00"
+  },
+  "https://github.com/corundum/corundum.git": {
+    "name": "corundum",
+    "source": "fpga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611889+00:00"
+  },
+  "https://github.com/analogdevicesinc/hdl.git": {
+    "name": "hdl",
+    "source": "fpga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611892+00:00"
+  },
+  "https://github.com/EttusResearch/uhd.git": {
+    "name": "uhd",
+    "source": "fpga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611896+00:00"
+  },
+  "https://github.com/pulp-platform/axi.git": {
+    "name": "axi",
+    "source": "fpga-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611899+00:00"
+  },
+  "https://github.com/hdl-util/hdmi.git": {
+    "name": "hdmi",
+    "source": "fpga-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611902+00:00"
+  },
+  "https://github.com/projf/projf-explore.git": {
+    "name": "projf-explore",
+    "source": "fpga-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611906+00:00"
+  },
+  "https://github.com/fpgasystems/Coyote.git": {
+    "name": "Coyote",
+    "source": "fpga-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611909+00:00"
+  },
+  "https://github.com/MPSU/APS.git": {
+    "name": "APS",
+    "source": "fpga-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611912+00:00"
+  },
+  "https://github.com/tymonx/logic.git": {
+    "name": "logic",
+    "source": "fpga-sv",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611915+00:00"
+  },
+  "https://github.com/open-sdr/openwifi-hw.git": {
+    "name": "openwifi-hw",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611917+00:00"
+  },
+  "https://github.com/IBM/AccDNN.git": {
+    "name": "AccDNN",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611920+00:00"
+  },
+  "https://github.com/Juniper/open-register-design-tool.git": {
+    "name": "open-register-design-tool",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611923+00:00"
+  },
+  "https://github.com/kunalg123/vsdflow.git": {
+    "name": "vsdflow",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611926+00:00"
+  },
+  "https://github.com/hkust-zhiyao/RTLLM.git": {
+    "name": "RTLLM",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611929+00:00"
+  },
+  "https://github.com/ekb0412/100DaysofRTL.git": {
+    "name": "100DaysofRTL",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611932+00:00"
+  },
+  "https://github.com/abdelazeem201/Cadence-RTL-to-GDSII-Flow.git": {
+    "name": "Cadence-RTL-to-GDSII-Flow",
+    "source": "rtl",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611935+00:00"
+  },
+  "https://github.com/projf/display_controller.git": {
+    "name": "display_controller",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611939+00:00"
+  },
+  "https://github.com/mstump/verilog-vga-controller.git": {
+    "name": "verilog-vga-controller",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611941+00:00"
+  },
+  "https://github.com/darshangm92/Implementation-of-CDMA-Transmitter-and-Receiver-using-Intel-DE2i-150-FPGA-board.git": {
+    "name": "Implementation-of-CDMA-Transmitter-and-Receiver-using-Intel-DE2i-150-FPGA-board",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611945+00:00"
+  },
+  "https://github.com/GameboxSystems/DMTV-v2.git": {
+    "name": "DMTV-v2",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611948+00:00"
+  },
+  "https://github.com/GameboxSystems/DMTV.git": {
+    "name": "DMTV",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611951+00:00"
+  },
+  "https://github.com/ChrisPVille/VGA-CharGen.git": {
+    "name": "VGA-CharGen",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611954+00:00"
+  },
+  "https://github.com/delhatch/Pure_Mandel.git": {
+    "name": "Pure_Mandel",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611957+00:00"
+  },
+  "https://github.com/jbp261/VGA-Timing-Controller.git": {
+    "name": "VGA-Timing-Controller",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611960+00:00"
+  },
+  "https://github.com/freecores/vga_lcd.git": {
+    "name": "vga_lcd",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611963+00:00"
+  },
+  "https://github.com/andrade824/VGA-Controller-IP.git": {
+    "name": "VGA-Controller-IP",
+    "source": "vga",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611966+00:00"
+  },
+  "https://github.com/stffrdhrn/adc_interface.git": {
+    "name": "adc_interface",
+    "source": "adc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611969+00:00"
+  },
+  "https://github.com/khaHesham/Serial-Peripheral-Interface.git": {
+    "name": "Serial-Peripheral-Interface",
+    "source": "adc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611972+00:00"
+  },
+  "https://github.com/suoglu/MCP4725.git": {
+    "name": "MCP4725",
+    "source": "dac",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611975+00:00"
+  },
+  "https://github.com/YosysHQ/picorv32.git": {
+    "name": "picorv32",
+    "source": "verilog-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611977+00:00"
+  },
+  "https://github.com/The-OpenROAD-Project/OpenROAD.git": {
+    "name": "OpenROAD",
+    "source": "verilog-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611981+00:00"
+  },
+  "https://github.com/nvdla/hw.git": {
+    "name": "hw",
+    "source": "verilog-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611983+00:00"
+  },
+  "https://github.com/XUANTIE-RV/wujian100_open.git": {
+    "name": "wujian100_open",
+    "source": "verilog-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611987+00:00"
+  },
+  "https://github.com/alexforencich/verilog-axi.git": {
+    "name": "verilog-axi",
+    "source": "verilog-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611989+00:00"
+  },
+  "https://github.com/adam-maj/tiny-gpu.git": {
+    "name": "tiny-gpu",
+    "source": "sv-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611992+00:00"
+  },
+  "https://github.com/verilator/verilator.git": {
+    "name": "verilator",
+    "source": "sv-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611995+00:00"
+  },
+  "https://github.com/lowRISC/opentitan.git": {
+    "name": "opentitan",
+    "source": "sv-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.611998+00:00"
+  },
+  "https://github.com/aws/aws-fpga.git": {
+    "name": "aws-fpga",
+    "source": "sv-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612001+00:00"
+  },
+  "https://github.com/itsfrank/MinecraftHDL.git": {
+    "name": "MinecraftHDL",
+    "source": "sv-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612004+00:00"
+  },
+  "https://github.com/openhwgroup/cv32e40p.git": {
+    "name": "cv32e40p",
+    "source": "sv-top",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612007+00:00"
+  },
+  "https://github.com/pulp-platform/adv_dbg_if.git": {
+    "name": "adv_dbg_if",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612009+00:00"
+  },
+  "https://github.com/pulp-platform/jtag_dpi.git": {
+    "name": "jtag_dpi",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612012+00:00"
+  },
+  "https://github.com/pulp-platform/apb_event_unit.git": {
+    "name": "apb_event_unit",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612015+00:00"
+  },
+  "https://github.com/pulp-platform/apb_gpio.git": {
+    "name": "apb_gpio",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612018+00:00"
+  },
+  "https://github.com/pulp-platform/apb_i2c.git": {
+    "name": "apb_i2c",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612021+00:00"
+  },
+  "https://github.com/pulp-platform/apb_pulpino.git": {
+    "name": "apb_pulpino",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612024+00:00"
+  },
+  "https://github.com/pulp-platform/apb_spi_master.git": {
+    "name": "apb_spi_master",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612028+00:00"
+  },
+  "https://github.com/pulp-platform/apb_timer.git": {
+    "name": "apb_timer",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612031+00:00"
+  },
+  "https://github.com/pulp-platform/apb_uart.git": {
+    "name": "apb_uart",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612034+00:00"
+  },
+  "https://github.com/pulp-platform/axi2apb.git": {
+    "name": "axi2apb",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612037+00:00"
+  },
+  "https://github.com/pulp-platform/axi_mem_if_DP.git": {
+    "name": "axi_mem_if_DP",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612040+00:00"
+  },
+  "https://github.com/pulp-platform/axi_node.git": {
+    "name": "axi_node",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612044+00:00"
+  },
+  "https://github.com/pulp-platform/axi_slice.git": {
+    "name": "axi_slice",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612049+00:00"
+  },
+  "https://github.com/pulp-platform/axi_slice_dc.git": {
+    "name": "axi_slice_dc",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612055+00:00"
+  },
+  "https://github.com/pulp-platform/axi_spi_master.git": {
+    "name": "axi_spi_master",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612061+00:00"
+  },
+  "https://github.com/pulp-platform/axi_spi_slave.git": {
+    "name": "axi_spi_slave",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612066+00:00"
+  },
+  "https://github.com/pulp-platform/apb_fll_if.git": {
+    "name": "apb_fll_if",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612070+00:00"
+  },
+  "https://github.com/pulp-platform/core2axi.git": {
+    "name": "core2axi",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612075+00:00"
+  },
+  "https://github.com/pulp-platform/apb_node.git": {
+    "name": "apb_node",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612081+00:00"
+  },
+  "https://github.com/pulp-platform/apb2per.git": {
+    "name": "apb2per",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612087+00:00"
+  },
+  "https://github.com/pulp-platform/apb_uart_sv.git": {
+    "name": "apb_uart_sv",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612091+00:00"
+  },
+  "https://github.com/pulp-platform/fpu.git": {
+    "name": "fpu",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612094+00:00"
+  },
+  "https://github.com/pulp-platform/apb_adv_timer.git": {
+    "name": "apb_adv_timer",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612097+00:00"
+  },
+  "https://github.com/pulp-platform/L2_tcdm_hybrid_interco.git": {
+    "name": "L2_tcdm_hybrid_interco",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612100+00:00"
+  },
+  "https://github.com/pulp-platform/apb_interrupt_cntrl.git": {
+    "name": "apb_interrupt_cntrl",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612103+00:00"
+  },
+  "https://github.com/pulp-platform/common_cells.git": {
+    "name": "common_cells",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612106+00:00"
+  },
+  "https://github.com/pulp-platform/tech_cells_generic.git": {
+    "name": "tech_cells_generic",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612109+00:00"
+  },
+  "https://github.com/pulp-platform/jtag_pulp.git": {
+    "name": "jtag_pulp",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612112+00:00"
+  },
+  "https://github.com/pulp-platform/scm.git": {
+    "name": "scm",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612115+00:00"
+  },
+  "https://github.com/pulp-platform/udma_core.git": {
+    "name": "udma_core",
+    "source": "org:pulp-platform",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612117+00:00"
+  },
+  "https://github.com/openhwgroup/cve2.git": {
+    "name": "cve2",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612120+00:00"
+  },
+  "https://github.com/openhwgroup/core-v-mcu.git": {
+    "name": "core-v-mcu",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612123+00:00"
+  },
+  "https://github.com/openhwgroup/cvw.git": {
+    "name": "cvw",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612125+00:00"
+  },
+  "https://github.com/openhwgroup/timer_unit.git": {
+    "name": "timer_unit",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612128+00:00"
+  },
+  "https://github.com/openhwgroup/cv32e40x.git": {
+    "name": "cv32e40x",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612131+00:00"
+  },
+  "https://github.com/openhwgroup/cv32e40s.git": {
+    "name": "cv32e40s",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612133+00:00"
+  },
+  "https://github.com/openhwgroup/core-v-xif.git": {
+    "name": "core-v-xif",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612136+00:00"
+  },
+  "https://github.com/openhwgroup/cv32e41p.git": {
+    "name": "cv32e41p",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612138+00:00"
+  },
+  "https://github.com/openhwgroup/cva5.git": {
+    "name": "cva5",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612142+00:00"
+  },
+  "https://github.com/openhwgroup/core-v-mcu-uvm.git": {
+    "name": "core-v-mcu-uvm",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612147+00:00"
+  },
+  "https://github.com/openhwgroup/advanced-riscv-verification-methodologies.git": {
+    "name": "advanced-riscv-verification-methodologies",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612152+00:00"
+  },
+  "https://github.com/openhwgroup/cva5-accelerators.git": {
+    "name": "cva5-accelerators",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612157+00:00"
+  },
+  "https://github.com/openhwgroup/cv-hpdcache.git": {
+    "name": "cv-hpdcache",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612161+00:00"
+  },
+  "https://github.com/openhwgroup/cv-mesh.git": {
+    "name": "cv-mesh",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612166+00:00"
+  },
+  "https://github.com/openhwgroup/cv-hpdcache-verif.git": {
+    "name": "cv-hpdcache-verif",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612170+00:00"
+  },
+  "https://github.com/openhwgroup/cvw-arch-verif.git": {
+    "name": "cvw-arch-verif",
+    "source": "org:openhwgroup",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612173+00:00"
+  },
+  "https://github.com/ucb-bar/sha3.git": {
+    "name": "sha3",
+    "source": "org:ucb-bar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612176+00:00"
+  },
+  "https://github.com/ucb-bar/fpga-spartan6.git": {
+    "name": "fpga-spartan6",
+    "source": "org:ucb-bar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612179+00:00"
+  },
+  "https://github.com/ucb-bar/nvdla-wrapper.git": {
+    "name": "nvdla-wrapper",
+    "source": "org:ucb-bar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612182+00:00"
+  },
+  "https://github.com/ucb-bar/caliptra-aes-acc.git": {
+    "name": "caliptra-aes-acc",
+    "source": "org:ucb-bar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612185+00:00"
+  },
+  "https://github.com/ucb-bar/rocket-pcb.git": {
+    "name": "rocket-pcb",
+    "source": "org:ucb-bar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612188+00:00"
+  },
+  "https://github.com/ucb-bar/MaDa.git": {
+    "name": "MaDa",
+    "source": "org:ucb-bar",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612190+00:00"
+  },
+  "https://github.com/chipsalliance/VeeRwolf.git": {
+    "name": "VeeRwolf",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612193+00:00"
+  },
+  "https://github.com/chipsalliance/sv-tests.git": {
+    "name": "sv-tests",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612196+00:00"
+  },
+  "https://github.com/chipsalliance/yosys-f4pga-plugins.git": {
+    "name": "yosys-f4pga-plugins",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612199+00:00"
+  },
+  "https://github.com/chipsalliance/verilator.git": {
+    "name": "verilator",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612202+00:00"
+  },
+  "https://github.com/chipsalliance/Cores-VeeR-EH2.git": {
+    "name": "Cores-VeeR-EH2",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612205+00:00"
+  },
+  "https://github.com/chipsalliance/aib-phy-hardware.git": {
+    "name": "aib-phy-hardware",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612207+00:00"
+  },
+  "https://github.com/chipsalliance/UHDM-integration-tests.git": {
+    "name": "UHDM-integration-tests",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612211+00:00"
+  },
+  "https://github.com/chipsalliance/f4pga-examples.git": {
+    "name": "f4pga-examples",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612214+00:00"
+  },
+  "https://github.com/chipsalliance/f4pga-xc-fasm2bels.git": {
+    "name": "f4pga-xc-fasm2bels",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612217+00:00"
+  },
+  "https://github.com/chipsalliance/uvm-verilator.git": {
+    "name": "uvm-verilator",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612219+00:00"
+  },
+  "https://github.com/chipsalliance/caravel-swerv-el2.git": {
+    "name": "caravel-swerv-el2",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612222+00:00"
+  },
+  "https://github.com/chipsalliance/fpga-interchange-tests.git": {
+    "name": "fpga-interchange-tests",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612225+00:00"
+  },
+  "https://github.com/chipsalliance/aib-protocols.git": {
+    "name": "aib-protocols",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612227+00:00"
+  },
+  "https://github.com/chipsalliance/synlig.git": {
+    "name": "synlig",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612230+00:00"
+  },
+  "https://github.com/chipsalliance/verible-formatter-action.git": {
+    "name": "verible-formatter-action",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612234+00:00"
+  },
+  "https://github.com/chipsalliance/rocket-pcb.git": {
+    "name": "rocket-pcb",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612236+00:00"
+  },
+  "https://github.com/chipsalliance/caliptra-rtl.git": {
+    "name": "caliptra-rtl",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612239+00:00"
+  },
+  "https://github.com/chipsalliance/synlig-logs.git": {
+    "name": "synlig-logs",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612242+00:00"
+  },
+  "https://github.com/chipsalliance/caliptra-ss.git": {
+    "name": "caliptra-ss",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612245+00:00"
+  },
+  "https://github.com/chipsalliance/adams-bridge.git": {
+    "name": "adams-bridge",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612247+00:00"
+  },
+  "https://github.com/chipsalliance/i3c-core-rdl.git": {
+    "name": "i3c-core-rdl",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612250+00:00"
+  },
+  "https://github.com/chipsalliance/i3c-core.git": {
+    "name": "i3c-core",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612253+00:00"
+  },
+  "https://github.com/chipsalliance/caliptra-infra.git": {
+    "name": "caliptra-infra",
+    "source": "org:chipsalliance",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612256+00:00"
+  },
+  "https://github.com/lowRISC/fpga-zynq.git": {
+    "name": "fpga-zynq",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612259+00:00"
+  },
+  "https://github.com/lowRISC/lowrisc-chip.git": {
+    "name": "lowrisc-chip",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612262+00:00"
+  },
+  "https://github.com/lowRISC/socip.git": {
+    "name": "socip",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612266+00:00"
+  },
+  "https://github.com/lowRISC/flexpret.git": {
+    "name": "flexpret",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612269+00:00"
+  },
+  "https://github.com/lowRISC/greth-library.git": {
+    "name": "greth-library",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612274+00:00"
+  },
+  "https://github.com/lowRISC/minion_subsystem.git": {
+    "name": "minion_subsystem",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612281+00:00"
+  },
+  "https://github.com/lowRISC/dma_axi.git": {
+    "name": "dma_axi",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612286+00:00"
+  },
+  "https://github.com/lowRISC/lowrisc-vcu108.git": {
+    "name": "lowrisc-vcu108",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612291+00:00"
+  },
+  "https://github.com/lowRISC/ariane.git": {
+    "name": "ariane",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612297+00:00"
+  },
+  "https://github.com/lowRISC/uvm-components.git": {
+    "name": "uvm-components",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612304+00:00"
+  },
+  "https://github.com/lowRISC/axi_mem_if.git": {
+    "name": "axi_mem_if",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612310+00:00"
+  },
+  "https://github.com/lowRISC/cfmath.git": {
+    "name": "cfmath",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612315+00:00"
+  },
+  "https://github.com/lowRISC/tech_cells_generic.git": {
+    "name": "tech_cells_generic",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612319+00:00"
+  },
+  "https://github.com/lowRISC/common_cells.git": {
+    "name": "common_cells",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612322+00:00"
+  },
+  "https://github.com/lowRISC/ariane-ethernet.git": {
+    "name": "ariane-ethernet",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612325+00:00"
+  },
+  "https://github.com/lowRISC/OpenIP.git": {
+    "name": "OpenIP",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612328+00:00"
+  },
+  "https://github.com/lowRISC/axi_node.git": {
+    "name": "axi_node",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612331+00:00"
+  },
+  "https://github.com/lowRISC/fpnew.git": {
+    "name": "fpnew",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612334+00:00"
+  },
+  "https://github.com/lowRISC/fpga-support.git": {
+    "name": "fpga-support",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612337+00:00"
+  },
+  "https://github.com/lowRISC/axi_riscv_atomics.git": {
+    "name": "axi_riscv_atomics",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612339+00:00"
+  },
+  "https://github.com/lowRISC/riscv-dbg-1.git": {
+    "name": "riscv-dbg-1",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612342+00:00"
+  },
+  "https://github.com/lowRISC/rv_plic.git": {
+    "name": "rv_plic",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612345+00:00"
+  },
+  "https://github.com/lowRISC/axi.git": {
+    "name": "axi",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612348+00:00"
+  },
+  "https://github.com/lowRISC/gsoc-sim-mem.git": {
+    "name": "gsoc-sim-mem",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612352+00:00"
+  },
+  "https://github.com/lowRISC/muntjac.git": {
+    "name": "muntjac",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612355+00:00"
+  },
+  "https://github.com/lowRISC/ml4dv.git": {
+    "name": "ml4dv",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612358+00:00"
+  },
+  "https://github.com/lowRISC/cheriot-ibex.git": {
+    "name": "cheriot-ibex",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612361+00:00"
+  },
+  "https://github.com/lowRISC/cheriot-ibex-dv.git": {
+    "name": "cheriot-ibex-dv",
+    "source": "org:lowRISC",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612365+00:00"
+  },
+  "https://github.com/bespoke-silicon-group/bsg_pipeclean_suite.git": {
+    "name": "bsg_pipeclean_suite",
+    "source": "org:bespoke-silicon-group",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612370+00:00"
+  },
+  "https://github.com/bespoke-silicon-group/basejump_stl.git": {
+    "name": "basejump_stl",
+    "source": "org:bespoke-silicon-group",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612376+00:00"
+  },
+  "https://github.com/bespoke-silicon-group/bsg_manycore.git": {
+    "name": "bsg_manycore",
+    "source": "org:bespoke-silicon-group",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612382+00:00"
+  },
+  "https://github.com/bespoke-silicon-group/raw_benchmark_suite.git": {
+    "name": "raw_benchmark_suite",
+    "source": "org:bespoke-silicon-group",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612388+00:00"
+  },
+  "https://github.com/bespoke-silicon-group/bsg_motherboards.git": {
+    "name": "bsg_motherboards",
+    "source": "org:bespoke-silicon-group",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612393+00:00"
+  },
+  "https://github.com/analogdevicesinc/testbenches.git": {
+    "name": "testbenches",
+    "source": "org:analogdevicesinc",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612400+00:00"
+  },
+  "https://github.com/YosysHQ/yosys-oldtests.git": {
+    "name": "yosys-oldtests",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612406+00:00"
+  },
+  "https://github.com/YosysHQ/yosys-bigsim.git": {
+    "name": "yosys-bigsim",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612410+00:00"
+  },
+  "https://github.com/YosysHQ/yosys-bench.git": {
+    "name": "yosys-bench",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612413+00:00"
+  },
+  "https://github.com/YosysHQ/yosys-tests.git": {
+    "name": "yosys-tests",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612416+00:00"
+  },
+  "https://github.com/YosysHQ/nextpnr-tests.git": {
+    "name": "nextpnr-tests",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612418+00:00"
+  },
+  "https://github.com/YosysHQ/apicula.git": {
+    "name": "apicula",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612421+00:00"
+  },
+  "https://github.com/YosysHQ/riscv-formal.git": {
+    "name": "riscv-formal",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612424+00:00"
+  },
+  "https://github.com/YosysHQ/nerv.git": {
+    "name": "nerv",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612427+00:00"
+  },
+  "https://github.com/YosysHQ/scy.git": {
+    "name": "scy",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612429+00:00"
+  },
+  "https://github.com/YosysHQ/prjpeppercorn-test-cases.git": {
+    "name": "prjpeppercorn-test-cases",
+    "source": "org:YosysHQ",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612432+00:00"
+  },
+  "https://github.com/nvdla/vp_awsfpga.git": {
+    "name": "vp_awsfpga",
+    "source": "org:nvdla",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612436+00:00"
+  },
+  "https://github.com/vortexgpgpu/vortex.git": {
+    "name": "vortex",
+    "source": "org:vortexgpgpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612440+00:00"
+  },
+  "https://github.com/vortexgpgpu/skybox.git": {
+    "name": "skybox",
+    "source": "org:vortexgpgpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612445+00:00"
+  },
+  "https://github.com/vortexgpgpu/hip.git": {
+    "name": "hip",
+    "source": "org:vortexgpgpu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612449+00:00"
+  },
+  "https://github.com/corundum/verilog-ethernet.git": {
+    "name": "verilog-ethernet",
+    "source": "org:corundum",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612455+00:00"
+  },
+  "https://github.com/corundum/verilog-pcie.git": {
+    "name": "verilog-pcie",
+    "source": "org:corundum",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612462+00:00"
+  },
+  "https://github.com/corundum/verilog-axi.git": {
+    "name": "verilog-axi",
+    "source": "org:corundum",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612466+00:00"
+  },
+  "https://github.com/lnis-uofu/OpenFPGA.git": {
+    "name": "OpenFPGA",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612471+00:00"
+  },
+  "https://github.com/lnis-uofu/LSOracle.git": {
+    "name": "LSOracle",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612478+00:00"
+  },
+  "https://github.com/lnis-uofu/JPEG_LS.git": {
+    "name": "JPEG_LS",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612484+00:00"
+  },
+  "https://github.com/lnis-uofu/SOFA.git": {
+    "name": "SOFA",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612489+00:00"
+  },
+  "https://github.com/lnis-uofu/Caravel-SOFA-HD.git": {
+    "name": "Caravel-SOFA-HD",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612496+00:00"
+  },
+  "https://github.com/lnis-uofu/Caravel-SOFA-CHD.git": {
+    "name": "Caravel-SOFA-CHD",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612503+00:00"
+  },
+  "https://github.com/lnis-uofu/Caravel-QLSOFA-HD.git": {
+    "name": "Caravel-QLSOFA-HD",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612508+00:00"
+  },
+  "https://github.com/lnis-uofu/Caravel-QLAP3.git": {
+    "name": "Caravel-QLAP3",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612512+00:00"
+  },
+  "https://github.com/lnis-uofu/OpenROAD-flow-scripts.git": {
+    "name": "OpenROAD-flow-scripts",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612517+00:00"
+  },
+  "https://github.com/lnis-uofu/OpenROAD.git": {
+    "name": "OpenROAD",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612522+00:00"
+  },
+  "https://github.com/lnis-uofu/SOFA-Plus-eFPGA.git": {
+    "name": "SOFA-Plus-eFPGA",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612527+00:00"
+  },
+  "https://github.com/lnis-uofu/skywater_template.git": {
+    "name": "skywater_template",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612531+00:00"
+  },
+  "https://github.com/lnis-uofu/FPGA_Secured_Bitstream.git": {
+    "name": "FPGA_Secured_Bitstream",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612534+00:00"
+  },
+  "https://github.com/lnis-uofu/tsmc_template.git": {
+    "name": "tsmc_template",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612537+00:00"
+  },
+  "https://github.com/lnis-uofu/OpenPhySyn.git": {
+    "name": "OpenPhySyn",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612540+00:00"
+  },
+  "https://github.com/lnis-uofu/testchip_4t1r.git": {
+    "name": "testchip_4t1r",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612543+00:00"
+  },
+  "https://github.com/lnis-uofu/GF12_template.git": {
+    "name": "GF12_template",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612546+00:00"
+  },
+  "https://github.com/lnis-uofu/ECE_5710_6710_F24.git": {
+    "name": "ECE_5710_6710_F24",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612549+00:00"
+  },
+  "https://github.com/lnis-uofu/ECE_6710_5710_Project_Template.git": {
+    "name": "ECE_6710_5710_Project_Template",
+    "source": "org:lnis-uofu",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612552+00:00"
+  },
+  "https://github.com/syntacore/fpga-sdk-prj.git": {
+    "name": "fpga-sdk-prj",
+    "source": "org:syntacore",
+    "cloned": false,
+    "discovered_at": "2026-02-20T17:56:28.612555+00:00"
+  },
+  "https://github.com/cliffordwolf/picorv32.git": {
+    "name": "picorv32",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612558+00:00",
+    "cloned_at": "2026-02-20T17:56:28.616771+00:00"
+  },
+  "https://github.com/stnolting/neorv32.git": {
+    "name": "neorv32",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612563+00:00",
+    "cloned_at": "2026-02-20T17:56:28.618156+00:00"
+  },
+  "https://github.com/freechipsproject/rocket-chip.git": {
+    "name": "rocket-chip",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612569+00:00",
+    "cloned_at": "2026-02-20T17:56:35.738974+00:00"
+  },
+  "https://github.com/chipsalliance/Cores-SweRV.git": {
+    "name": "Cores-SweRV",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612574+00:00",
+    "cloned_at": "2026-02-20T17:56:38.663914+00:00"
+  },
+  "https://github.com/openhwgroup/cva6.git": {
+    "name": "cva6",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612578+00:00",
+    "cloned_at": "2026-02-20T17:57:03.887153+00:00"
+  },
+  "https://github.com/ucb-bar/gemmini.git": {
+    "name": "gemmini",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612581+00:00",
+    "cloned_at": "2026-02-20T17:57:07.466169+00:00"
+  },
+  "https://github.com/ucb-bar/chipyard.git": {
+    "name": "chipyard",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612584+00:00",
+    "cloned_at": "2026-02-20T17:57:18.524650+00:00"
+  },
+  "https://github.com/alexforencich/verilog-dsp.git": {
+    "name": "verilog-dsp",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612588+00:00",
+    "cloned_at": "2026-02-20T17:57:20.574195+00:00"
+  },
+  "https://github.com/alexforencich/verilog-i2c.git": {
+    "name": "verilog-i2c",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612593+00:00",
+    "cloned_at": "2026-02-20T17:57:22.911011+00:00"
+  },
+  "https://github.com/YosysHQ/yosys.git": {
+    "name": "yosys",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612598+00:00",
+    "cloned_at": "2026-02-20T17:57:48.637495+00:00"
+  },
+  "https://github.com/enjoy-digital/litex.git": {
+    "name": "litex",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612603+00:00",
+    "cloned_at": "2026-02-20T17:57:58.764344+00:00"
+  },
+  "https://github.com/miaow-gpu/miaow.git": {
+    "name": "miaow",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612608+00:00",
+    "cloned_at": "2026-02-20T17:57:58.765785+00:00"
+  },
+  "https://github.com/pulp-platform/pulpissimo.git": {
+    "name": "pulpissimo",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612613+00:00",
+    "cloned_at": "2026-02-20T17:58:12.276036+00:00"
+  },
+  "https://github.com/XUANTIE-RV/openc910.git": {
+    "name": "openc910",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612617+00:00",
+    "cloned_at": "2026-02-20T17:58:12.277540+00:00"
+  },
+  "https://github.com/parallella/oh.git": {
+    "name": "oh",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612619+00:00",
+    "cloned_at": "2026-02-20T17:58:12.279386+00:00"
+  },
+  "https://github.com/BrunoLevy/learn-fpga.git": {
+    "name": "learn-fpga",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612623+00:00",
+    "cloned_at": "2026-02-20T17:58:46.216864+00:00"
+  },
+  "https://github.com/rsd-devel/RSD.git": {
+    "name": "RSD",
+    "source": "curated",
+    "cloned": true,
+    "discovered_at": "2026-02-20T17:56:28.612626+00:00",
+    "cloned_at": "2026-02-20T17:58:57.816687+00:00"
+  }
+}
