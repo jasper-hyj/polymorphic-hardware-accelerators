@@ -1,24 +1,35 @@
 # Polymorphic Hardware Accelerator — RTL Similarity Analyzer
 
-Gate-level structural comparison of Verilog / SystemVerilog RTL projects using Icarus Verilog, with cross-domain surprise analysis and module-level interface compatibility scoring.
+Gate-level structural comparison of Verilog / SystemVerilog RTL projects using Icarus Verilog, with cross-domain surprise analysis, module-level interface compatibility scoring, and **Polymorphic Heterogeneous Architecture (PHA) synthesis** — automatically proposing how multiple Domain-Specific Accelerators can be merged into a single area-efficient polymorphic design.
 
 ## Project layout
 
 ```
 run.py                    # CLI entry point
+config.yaml               # ← NEW: all tunable settings in one editable file
 src/
-  config.py               # All tunable settings (AnalysisConfig)
+  config.py               # Settings dataclass (loads config.yaml + CLI overrides)
   discovery.py            # Local scan + GitHub discovery & clone (additive registry)
   iverilog_analyzer.py    # iverilog → VVP netlist parser → gate counts + graph
   similarity.py           # Gate-type cosine + structural + n-gram similarity matrices
   anomaly.py              # Robust Z-score anomaly detection
   surprise.py             # Cross-domain surprise analysis + pattern semantics
   interface_analyzer.py   # Port-list parser → cross-project compatibility scoring
-  report.py               # Verbal (.txt), visual (PNG @ 300 DPI), CSV outputs
+  pha_analyzer.py         # PHA synthesis: cluster DSAs → shared/merged/unique components
+  diagram_serializer.py   # Architecture → structured text + string-based comparison
+  string_algorithms.py    # LCS, alignment, substring algorithms for diagram strings
+  llm_analyzer.py         # Optional LLM-assisted PHA analysis
+  report.py               # Orchestrates verbal (.txt), visual (PNG), CSV outputs
+  report_verbal.py        # Structured text report + executive summary
+  report_figures.py       # matplotlib/seaborn figure generation
 verilog_proj/             # RTL projects go here (one sub-directory per project)
   .discovery_registry.json  # Additive registry of all discovered GitHub repos
 output/                   # Generated reports and figures (git-ignored)
   run_YYYY-MM-DD_HH-MM-SS/  # Timestamped subfolder per run
+    executive_summary.txt    # ← NEW: one-page overview of all findings
+    report.txt               # Full detailed report
+    *.csv                    # All data tables
+    fig_*.png                # Publication-quality figures
 Dockerfile
 docker-compose.yml
 requirements.txt
@@ -44,6 +55,27 @@ docker compose run rtl-analyzer --github --github-query "topic:fpga language:ver
 # 5. Verbose output (shows per-project progress, n-gram counts, pair progress)
 docker compose run rtl-analyzer --verbose
 ```
+
+### Configuration
+
+Edit `config.yaml` to adjust analysis parameters without long CLI commands:
+
+```yaml
+# Tune similarity weights (auto-normalised to sum to 1.0)
+gate_type_weight: 0.50
+structural_weight: 0.25
+partial_weight: 0.25
+
+# PHA synthesis thresholds
+pha_threshold: 0.35
+pha_merge_jaccard: 0.60
+
+# Skip expensive analysis phases
+skip_interface: false
+skip_surprise: false
+```
+
+The YAML file is mounted read-only into Docker — just edit and re-run. CLI flags always override YAML values.
 
 Set `GITHUB_TOKEN` in your environment for 30 search requests/min instead of 10 (the default unauthenticated limit). The token is forwarded automatically via `docker-compose.yml`.
 
@@ -76,13 +108,40 @@ python run.py --no-surprise --no-interface  # skip the heavier analyses
 | `--min-surprise`     | `0.15`          | Minimum surprise score (similarity × domain-dissimilarity) to report      |
 | `--no-interface`     | off             | Skip interface / port-compatibility analysis                              |
 | `--min-compat`       | `0.40`          | Minimum normalised port-match score to report a module pair               |
+| `--no-pha`           | off             | Skip PHA synthesis analysis                                               |
+| `--pha-threshold`    | `0.35`          | Min pairwise similarity to cluster DSAs for PHA merging                   |
+| `--pha-merge-jaccard`| `0.60`          | Min n-gram Jaccard to merge (fold) components in a PHA                    |
 | `--gate-weight`      | `0.50`          | Weight for gate-type cosine similarity                                    |
 | `--struct-weight`    | `0.25`          | Weight for structural graph similarity                                    |
 | `--partial-weight`   | `0.25`          | Weight for partial gate-pattern n-gram Jaccard                            |
 | `--ngram-n`          | `3`             | Gate-sequence length for n-gram partial matching                          |
 | `--zscore-threshold` | `2.0`           | Robust Z-score threshold for anomaly flagging                             |
 | `--dpi`              | `300`           | Figure resolution in DPI                                                  |
+| `--no-cache`         | off             | Disable caching — recompute everything from scratch                       |
+| `--clear-cache`      | off             | Delete all cached artefacts before running                                |
 | `-v` / `--verbose`   | off             | Enable DEBUG logging (per-project progress, n-gram counts, pair progress) |
+
+## Caching
+
+Gate extraction and similarity matrix computation are **automatically cached** between runs. The cache is keyed by a SHA-256 digest of source file contents, so:
+
+- **Unchanged projects** are loaded instantly from `.cache/gates/` (no iverilog or regex re-parsing).
+- **Unchanged project sets** with the same similarity weights reuse the 4 pairwise similarity DataFrames from `.cache/similarity/`.
+
+On a typical 211-project run, the second invocation skips ~15 min of gate extraction and ~10 min of similarity computation.
+
+```bash
+# Normal run (cache enabled by default)
+docker compose run rtl-analyzer
+
+# Force fresh analysis
+docker compose run rtl-analyzer --no-cache
+
+# Wipe the cache before running
+docker compose run rtl-analyzer --clear-cache
+```
+
+The cache is safe to delete at any time (`rm -rf .cache/`). It is git-ignored and mounted as a persistent Docker volume.
 
 ## Outputs
 
@@ -105,6 +164,9 @@ Each run writes to a timestamped subfolder, e.g. `output/run_2026-02-20_17-06-21
 | `domain_classification.csv`    | Domain label assigned to every project *(skipped if `--no-surprise`)*                                                                      |
 | `interface_compatibility.csv`  | Compatible module pairs with rename/resize recipes and effort rating *(skipped if `--no-interface`)*                                       |
 | `module_reusability.csv`       | Per-module reusability score based on protocol compliance, port shape prevalence, and interface simplicity *(skipped if `--no-interface`)* |
+| `pha_clusters.csv`             | PHA cluster summary: members, domains, component counts, area savings *(skipped if `--no-pha`)*              |
+| `pha_components.csv`           | Per-component breakdown (shared / merged / unique) for each PHA cluster *(skipped if `--no-pha`)*            |
+| `pha_unified_interfaces.csv`   | Unified interface signals (common vs muxed) per cluster *(skipped if `--no-pha`)*                            |
 
 ### Figures (PNG, configurable DPI)
 
@@ -119,6 +181,7 @@ Each run writes to a timestamped subfolder, e.g. `output/run_2026-02-20_17-06-21
 | `fig_anomaly_scores.png`        | Anomaly Z-score bar chart *(only if anomalies detected)*                      |
 | `fig_surprise_map.png`          | Scatter plot of surprise score vs combined similarity *(only if pairs found)* |
 | `fig_interface_reusability.png` | Module reusability score chart *(only if pairs found)*                        |
+| `fig_pha_synthesis.png`         | PHA component decomposition + area savings + unified interface *(only if clusters found)* |
 
 ## Performance tips
 
@@ -156,4 +219,11 @@ The code already applies a **port-count upper-bound pre-filter** before calling 
 
 10. **Interface compatibility** — every `.v`/`.sv` file is parsed for module port lists (ANSI and old-style, with comment stripping). Each module pair across different projects is scored by name-normalised port match fraction (stripping `i_`, `o_`, `_n`, etc.). Pairs above `--min-compat` are ranked by effort: *zero* (drop-in swap), *low* (thin assign wrapper), *medium* (adapter module), or *high* (rework required). Standard bus protocols (AXI4-Full/Lite/Stream, AHB, APB, Wishbone, SPI, I2C, UART, PCIe) are auto-detected.
 
-11. **Reporting** — verbal report with ranked tables and per-pair explanations, publication-quality figures, and full CSV exports for all analyses.
+11. **PHA synthesis** — the combined similarity matrix is clustered (agglomerative, single-linkage, threshold `--pha-threshold` default 0.35) to find groups of ≥ 2 DSAs suitable for polymorphic merging.  Within each cluster:
+    - **Shared components** — gate n-gram patterns present in *every* member are instantiated once, eliminating (N−1)× redundant copies.
+    - **Merged components** — similar patterns (Jaccard ≥ `--pha-merge-jaccard`) from different members are folded into a single configurable block with a mode-select mux (overhead 5–20%).
+    - **Unique components** — DSA-specific patterns are retained behind a configuration layer.
+    - **Unified interface** — per-DSA interconnect port lists are merged into a single polymorphic port block: common signals pass through directly, subset-only signals are multiplexed.
+    - **Area estimation** — shared blocks counted once + merged blocks + mux overhead + unique blocks yield the PHA gate total; the ratio vs. the sum of individual DSAs gives the area savings.
+
+12. **Reporting** — verbal report with ranked tables and per-pair explanations, publication-quality figures, and full CSV exports for all analyses.

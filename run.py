@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Optional
 
 from src.config import AnalysisConfig
+from src.cache import AnalysisCache, project_content_hash, similarity_config_hash
 from src.discovery import ProjectDiscovery
 from src.iverilog_analyzer import IVerilogAnalyzer
 from src.similarity import SimilarityEngine
@@ -106,6 +107,25 @@ def parse_args() -> argparse.Namespace:
         help="Minimum n-gram Jaccard to merge components in a PHA (default: 0.60)",
     )
     p.add_argument(
+        "--diagram-strings", action="store_true",
+        help="Enable diagram-string serialisation for PHA clusters.  Each project's "
+             "architecture is converted to a structured text representation and compared "
+             "using LCS, sequence alignment, and substring matching.",
+    )
+    p.add_argument(
+        "--llm-api-key", default=None,
+        help="OpenAI-compatible API key for LLM-assisted PHA analysis.  "
+             "Alternatively set OPENAI_API_KEY env var.",
+    )
+    p.add_argument(
+        "--llm-model", default="gpt-4o-mini",
+        help="LLM model name for PHA analysis (default: gpt-4o-mini)",
+    )
+    p.add_argument(
+        "--llm-base-url", default=None,
+        help="Custom base URL for an OpenAI-compatible API endpoint",
+    )
+    p.add_argument(
         "--gate-weight", type=float, default=0.50,
         help="Weight for gate-type cosine similarity (default: 0.50)",
     )
@@ -130,6 +150,18 @@ def parse_args() -> argparse.Namespace:
         help="Figure resolution in DPI (default: 300)",
     )
     p.add_argument(
+        "--config", default="config.yaml",
+        help="Path to YAML configuration file (default: config.yaml)",
+    )
+    p.add_argument(
+        "--no-cache", action="store_true",
+        help="Disable caching — recompute everything from scratch",
+    )
+    p.add_argument(
+        "--clear-cache", action="store_true",
+        help="Delete the cache directory before running",
+    )
+    p.add_argument(
         "-v", "--verbose", action="store_true",
         help="Enable verbose logging",
     )
@@ -151,24 +183,45 @@ def main() -> int:
     setup_logging(args.verbose)
     log = logging.getLogger(__name__)
 
-    # ── Build config ──────────────────────────────────────────────────
-    run_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    run_output_dir = Path(args.output_dir) / f"run_{run_stamp}"
+    # ── Build config (YAML base → CLI overrides) ─────────────────────
+    yaml_path = Path(args.config)
+    try:
+        cfg = AnalysisConfig.from_yaml(yaml_path)
+        log.info("Loaded configuration from %s", yaml_path)
+    except Exception:
+        cfg = AnalysisConfig()
 
-    cfg = AnalysisConfig(
-        project_dir=Path(args.project_dir),
-        output_dir=run_output_dir,
-        github_max_repos=args.github_max,
-        gate_type_weight=args.gate_weight,
-        structural_weight=args.struct_weight,
-        partial_weight=args.partial_weight,
-        ngram_n=args.ngram_n,
-        anomaly_zscore_threshold=args.zscore_threshold,
-        figure_dpi=args.dpi,
-        verbose=args.verbose,
-    )
+    # Apply CLI overrides (only explicitly-provided flags)
+    run_stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    cfg.output_dir = Path(args.output_dir) / f"run_{run_stamp}"
+    cfg.project_dir = Path(args.project_dir)
+    cfg.github_max_repos = args.github_max
+    cfg.gate_type_weight = args.gate_weight
+    cfg.structural_weight = args.struct_weight
+    cfg.partial_weight = args.partial_weight
+    cfg.ngram_n = args.ngram_n
+    cfg.anomaly_zscore_threshold = args.zscore_threshold
+    cfg.figure_dpi = args.dpi
+    cfg.verbose = args.verbose
+    cfg.pha_threshold = args.pha_threshold
+    cfg.pha_merge_jaccard = args.pha_merge_jaccard
+    cfg.min_surprise = args.min_surprise
+    cfg.min_compat = args.min_compat
+    cfg.use_diagram_strings = args.diagram_strings
+    cfg.llm_model = args.llm_model
+    cfg.skip_anomaly = args.no_anomaly
+    cfg.skip_surprise = args.no_surprise
+    cfg.skip_interface = args.no_interface
+    cfg.skip_pha = args.no_pha
+    cfg.use_cache = not args.no_cache
+    cfg.clear_cache = args.clear_cache
     if args.github_token:
         cfg.github_token = args.github_token
+    if args.llm_api_key:
+        cfg.llm_api_key = args.llm_api_key
+    if args.llm_base_url:
+        cfg.llm_base_url = args.llm_base_url
+    cfg.__post_init__()
 
     # ── Discovery ─────────────────────────────────────────────────────
     discovery = ProjectDiscovery(cfg)
@@ -188,15 +241,74 @@ def main() -> int:
 
     log.info("Analysing %d project(s) …", len(project_paths))
 
-    # ── Gate-level analysis ───────────────────────────────────────────
+    # ── Cache setup ───────────────────────────────────────────────────
+    cache = AnalysisCache(cfg.cache_dir, enabled=cfg.use_cache)
+    if cfg.clear_cache:
+        removed = AnalysisCache.clear(cfg.cache_dir)
+        log.info("Cleared cache (%d file(s) removed).", removed)
+        cache = AnalysisCache(cfg.cache_dir, enabled=cfg.use_cache)
+
+    # ── Gate-level analysis (with caching) ────────────────────────────
+    from collections import Counter as _Counter
+    from src.iverilog_analyzer import ProjectAnalysis as _PA
     analyzer = IVerilogAnalyzer(cfg)
     projects = []
+    content_hashes: dict = {}  # project_name → content SHA
+    cache_hits = 0
+
     for i, path in enumerate(project_paths, 1):
         log.info("[%d/%d] %s", i, len(project_paths), path.name)
-        pa = analyzer.analyze_project(path)
+
+        # Compute content hash for cache key
+        source_files = analyzer._collect_sources(path)
+        if not source_files:
+            pa = _PA(name=path.name, path=path, error="No Verilog source files found")
+            projects.append(pa)
+            log.warning("  Skipped (no Verilog sources)")
+            continue
+
+        c_hash = project_content_hash(source_files)
+        content_hashes[path.name] = c_hash
+
+        # Try cache
+        cached = None
+        if cache.enabled:
+            cached = cache.gates.load(path.name, c_hash)
+
+        if cached is not None:
+            pa = _PA(
+                name=path.name,
+                path=path,
+                source_files=source_files,
+                gate_counts=_Counter(cached["gate_counts"]),
+                graph=cache.gates.to_graph(cached),
+                modules=cached.get("modules", []),
+                line_count=cached.get("line_count", 0),
+                used_iverilog=cached.get("used_iverilog", False),
+            )
+            cache_hits += 1
+            log.info(
+                "  %s: %d gates, %d nodes, %d edges [cached]",
+                pa.name, pa.total_gates,
+                pa.graph.number_of_nodes(),
+                pa.graph.number_of_edges(),
+            )
+        else:
+            pa = analyzer.analyze_project(path)
+            # Save to cache
+            if cache.enabled and not pa.error:
+                cache.gates.save(
+                    pa.name, c_hash,
+                    pa.gate_counts, pa.graph, pa.modules,
+                    pa.line_count, pa.used_iverilog,
+                )
+
         projects.append(pa)
         if pa.error:
             log.warning("  Skipped (%s)", pa.error)
+
+    if cache_hits > 0:
+        log.info("Cache: %d/%d project(s) loaded from cache.", cache_hits, len(project_paths))
 
     analysed = [p for p in projects if p.total_gates > 0 or p.graph.number_of_nodes() > 0]
     if len(analysed) < 2:
@@ -206,12 +318,31 @@ def main() -> int:
         )
         return 1
 
-    # ── Similarity ────────────────────────────────────────────────────
-    log.info("Computing pairwise similarity …")
+    # ── Similarity (with caching) ─────────────────────────────────────
     sim_engine = SimilarityEngine(cfg)
-    df_combined, df_gate, df_struct, df_ngram = sim_engine.compute_matrix(
-        analysed, ngram_n=cfg.ngram_n
+    sim_cache_key = similarity_config_hash(
+        content_hashes,
+        cfg.gate_type_weight, cfg.structural_weight,
+        getattr(cfg, "partial_weight", 0.25), cfg.ngram_n,
     )
+
+    cached_sim = None
+    if cache.enabled:
+        cached_sim = cache.similarity.load(sim_cache_key)
+
+    if cached_sim is not None:
+        df_combined, df_gate, df_struct, df_ngram = cached_sim
+        log.info("Loaded similarity matrices from cache.")
+    else:
+        log.info("Computing pairwise similarity …")
+        df_combined, df_gate, df_struct, df_ngram = sim_engine.compute_matrix(
+            analysed, ngram_n=cfg.ngram_n
+        )
+        if cache.enabled:
+            cache.similarity.save(
+                sim_cache_key, df_combined, df_gate, df_struct, df_ngram,
+            )
+
     log.info("Extracting partial gate-pattern matches …")
     partial_matches = sim_engine.partial_matches_table(
         analysed, ngram_n=cfg.ngram_n, top_pairs=15, top_patterns=8
@@ -219,10 +350,10 @@ def main() -> int:
 
     # ── Surprise / cross-domain analysis ────────────────────────────
     surprise_report: Optional[SurpriseReport] = None
-    if not args.no_surprise and len(analysed) >= 3:
+    if not cfg.skip_surprise and len(analysed) >= 3:
         log.info("Running cross-domain surprise analysis …")
         surprise_report = SurpriseAnalyzer(
-            min_surprise=args.min_surprise,
+            min_surprise=cfg.min_surprise,
             ngram_n=cfg.ngram_n,
         ).analyse(analysed, df_combined)
         if surprise_report.pairs:
@@ -234,15 +365,16 @@ def main() -> int:
                 surprise_report.pairs[0].surprise_score,
             )
         else:
-            log.info("No surprising pairs found above threshold %.2f.", args.min_surprise)
+            log.info("No surprising pairs found above threshold %.2f.", cfg.min_surprise)
 
     # ── Interface compatibility analysis ────────────────────────────
     interface_report: Optional[InterfaceReport] = None
-    if not args.no_interface and len(analysed) >= 2:
+    if not cfg.skip_interface and len(analysed) >= 2:
         log.info("Running interface compatibility analysis …")
         interface_report = InterfaceAnalyzer(
-            min_compatibility=args.min_compat,
+            min_compatibility=cfg.min_compat,
             max_workers=cfg.max_workers,
+            max_modules_per_project=cfg.max_modules_per_project,
         ).analyse(analysed)
         if interface_report.compatible_pairs:
             top = interface_report.compatible_pairs[0]
@@ -256,16 +388,21 @@ def main() -> int:
             )
         else:
             log.info("No compatible module pairs found above threshold %.0f%%.",
-                     args.min_compat * 100)
+                     cfg.min_compat * 100)
 
     # ── PHA synthesis analysis ─────────────────────────────────────────
     pha_report: Optional[PHAReport] = None
-    if not args.no_pha and len(analysed) >= 2:
+    if not cfg.skip_pha and len(analysed) >= 2:
         log.info("Running Polymorphic Heterogeneous Architecture (PHA) synthesis …")
         pha_report = PHAAnalyzer(
-            cluster_threshold=args.pha_threshold,
-            merge_jaccard=args.pha_merge_jaccard,
+            cluster_threshold=cfg.pha_threshold,
+            merge_jaccard=cfg.pha_merge_jaccard,
             ngram_n=cfg.ngram_n,
+            use_diagram_strings=cfg.use_diagram_strings,
+            max_diagram_cluster_size=cfg.max_diagram_cluster_size,
+            llm_api_key=cfg.llm_api_key or "",
+            llm_model=cfg.llm_model,
+            llm_base_url=cfg.llm_base_url or "",
         ).analyse(analysed, df_combined, interface_report)
         if pha_report.clusters:
             top = pha_report.clusters[0]
@@ -278,11 +415,11 @@ def main() -> int:
             )
         else:
             log.info("No PHA clusters found above threshold %.2f.",
-                     args.pha_threshold)
+                     cfg.pha_threshold)
 
     # ── Anomaly detection ─────────────────────────────────────────────
     anomalies = []
-    if not args.no_anomaly and len(analysed) >= 3:
+    if not cfg.skip_anomaly and len(analysed) >= 3:
         log.info("Running anomaly detection …")
         anomalies = AnomalyDetector(cfg).detect(analysed)
         if anomalies:

@@ -31,7 +31,7 @@ import pandas as pd
 log = logging.getLogger(__name__)
 
 from .iverilog_analyzer import ProjectAnalysis
-from .similarity import _extract_ngrams, _jaccard_sim, _shared_patterns
+from .similarity import extract_ngrams, jaccard_sim, shared_patterns
 
 
 # ── Domain taxonomy ───────────────────────────────────────────────────
@@ -92,12 +92,19 @@ DOMAIN_DISTANCE: Dict[Tuple[str, str], float] = {
 }
 
 
+# Build a normalised (sorted-key) lookup so both orderings resolve.
+_DOMAIN_DISTANCE_NORM: Dict[Tuple[str, str], float] = {}
+for (_d1, _d2), _v in DOMAIN_DISTANCE.items():
+    _key = tuple(sorted([_d1, _d2]))
+    _DOMAIN_DISTANCE_NORM[_key] = _v
+
+
 def _domain_distance(d1: str, d2: str) -> float:
     """Return domain dissimilarity in [0, 1]; 0 = same domain."""
     if d1 == d2:
         return 0.0
     key = tuple(sorted([d1, d2]))
-    return DOMAIN_DISTANCE.get(key, 1.0)   # type: ignore[arg-type]
+    return _DOMAIN_DISTANCE_NORM.get(key, 1.0)   # type: ignore[arg-type]
 
 
 def classify_domain(project: ProjectAnalysis) -> str:
@@ -241,7 +248,7 @@ class SurpriseAnalyzer:
         )
         ngram_bags = {}
         for idx, p in enumerate(projects, 1):
-            bag = _extract_ngrams(p, self.ngram_n)
+            bag = extract_ngrams(p, self.ngram_n)
             ngram_bags[p.name] = bag
             log.debug(
                 "    [%d/%d] %s: %d distinct n-gram type(s)",
@@ -275,7 +282,7 @@ class SurpriseAnalyzer:
                 if surprise < self.min_surprise:
                     continue
 
-                shared = _shared_patterns(ngram_bags[a], ngram_bags[b], top_n=12)
+                shared = shared_patterns(ngram_bags[a], ngram_bags[b], top_n=12)
                 # Parse patterns back to tuples for semantic lookup
                 interps: List[Tuple[str, str]] = []
                 for pat_str, ca, cb in shared:
@@ -304,6 +311,14 @@ class SurpriseAnalyzer:
                 )
 
         pairs.sort(key=lambda p: p.surprise_score, reverse=True)
+        # Cap output to the most surprising pairs to keep reports tractable
+        max_pairs = 500
+        if len(pairs) > max_pairs:
+            log.info(
+                "  Capping surprise pairs from %d to top %d by score.",
+                len(pairs), max_pairs,
+            )
+            pairs = pairs[:max_pairs]
         log.info(
             "  Surprise analysis complete: %d surprising pair(s) found "
             "(min_surprise=%.2f, min_similarity=%.2f).",

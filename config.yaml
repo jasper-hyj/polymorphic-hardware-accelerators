@@ -1,0 +1,75 @@
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │  Polymorphic Hardware Accelerator — Configuration                   │
+# │                                                                     │
+# │  Edit this file to tune analysis parameters between runs.           │
+# │  CLI flags always override values set here.                         │
+# │  Delete any key to revert it to its built-in default.               │
+# └─────────────────────────────────────────────────────────────────────┘
+
+# ── Paths ─────────────────────────────────────────────────────────────
+project_dir: verilog_proj           # directory containing RTL sub-projects
+output_dir: output                  # base output dir (timestamped sub-folders)
+
+# ── Icarus Verilog ────────────────────────────────────────────────────
+iverilog_bin: iverilog
+vvp_bin: vvp
+iverilog_timeout: 120               # seconds per compilation attempt
+
+# ── GitHub discovery ──────────────────────────────────────────────────
+# github_token: ""                  # or set GITHUB_TOKEN env var
+github_min_stars: 50
+github_max_repos: 30
+clone_depth: 1
+
+# ── Similarity weights ───────────────────────────────────────────────
+# These three values are auto-normalised to sum to 1.0.
+gate_type_weight: 0.50              # gate-type cosine similarity
+structural_weight: 0.25             # structural graph similarity
+partial_weight: 0.25                # n-gram Jaccard partial matching
+ngram_n: 3                          # gate-sequence length for n-grams
+
+# ── Anomaly detection ────────────────────────────────────────────────
+anomaly_zscore_threshold: 3.0       # robust Z-score threshold (log-transformed)
+
+# ── PHA synthesis ────────────────────────────────────────────────────
+pha_threshold: 0.80                 # min pairwise similarity to cluster
+max_diagram_cluster_size: 30        # cap cluster members for diagram-string phase
+pha_merge_jaccard: 0.60             # min n-gram Jaccard to merge components
+
+# ── Surprise / interface ─────────────────────────────────────────────
+min_surprise: 0.30                  # min surprise score to report
+min_compat: 0.40                    # min port-match score for interface pairs
+max_modules_per_project: 150        # cap modules per project (keeps O(M²) tractable)
+
+# ── Report settings ──────────────────────────────────────────────────
+figure_dpi: 300
+figure_format: png                  # png or pdf
+font_family: serif
+font_size: 11
+colormap: YlOrRd                    # matplotlib colormap for heatmaps
+
+# ── Diagram strings / LLM ───────────────────────────────────────────
+use_diagram_strings: true           # enable BFS-token structural comparison
+# llm_api_key: ""                   # or set OPENAI_API_KEY env var
+llm_model: gpt-4o-mini
+# llm_base_url: ""                  # custom OpenAI-compatible endpoint
+
+# ── Analysis toggles ────────────────────────────────────────────────
+# Set to true to skip these phases entirely.
+skip_anomaly: false
+skip_surprise: false
+skip_interface: false
+skip_pha: false
+
+# ── Performance ──────────────────────────────────────────────────────
+# max_workers: 4                    # defaults to CPU count
+verbose: false
+
+# ── Cache ────────────────────────────────────────────────────────────
+# File-based cache speeds up repeated runs when source files haven't
+# changed.  Caches gate-extraction results per project (keyed by
+# SHA-256 of source files) and similarity matrices (keyed by project
+# set + weight/n-gram parameters).  Safe to delete at any time.
+cache_dir: .cache                   # directory for cached artefacts
+use_cache: true                     # set false to disable caching
+# Pass --clear-cache on CLI to wipe the cache before a run.

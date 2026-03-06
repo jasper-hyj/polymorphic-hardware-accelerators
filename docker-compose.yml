@@ -5,8 +5,14 @@ services:
     volumes:
       # Writable so --github can clone new repos into the directory
       - ./verilog_proj:/app/verilog_proj
+      # Demo projects for focused analysis runs
+      - ./demo_projects:/app/demo_projects
       # Reports and figures land here on the host
       - ./output:/app/output
+      # Mount config.yaml so you can tweak parameters without rebuilding
+      - ./config.yaml:/app/config.yaml:ro
+      # Persistent cache for gate-extraction and similarity matrices
+      - ./.cache:/app/.cache
     environment:
       # Optional: set your GitHub token for higher API rate limits
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}

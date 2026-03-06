@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ── Application code ──────────────────────────────────────────────────
 COPY run.py .
+COPY config.yaml .
 COPY src/ src/
 
 # ── Volumes expected at runtime ───────────────────────────────────────

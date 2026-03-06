@@ -1,5 +1,9 @@
 """Research-grade reporting: verbal, visual, and CSV outputs.
 
+Orchestration module — delegates heavy lifting to:
+  * :mod:`report_verbal`  — structured text report
+  * :mod:`report_figures` — matplotlib/seaborn figures
+
 Output directory layout
 -----------------------
 output/
@@ -17,19 +21,14 @@ output/
 
 from __future__ import annotations
 
-import datetime
 import logging
-import textwrap
 from pathlib import Path
 from typing import List, Optional
 
 import matplotlib
 matplotlib.use("Agg")               # non-interactive backend
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-import numpy as np
 import pandas as pd
-import seaborn as sns
 
 from .anomaly import Anomaly, AnomalyDetector
 from .config import AnalysisConfig
@@ -39,10 +38,10 @@ from .pha_analyzer import PHAAnalyzer, PHAReport
 from .similarity import SimilarityEngine
 from .surprise import SurpriseAnalyzer, SurpriseReport
 
-log = logging.getLogger(__name__)
+from . import report_figures
+from . import report_verbal
 
-_SECTION = "=" * 72
-_SUBSEC  = "-" * 72
+log = logging.getLogger(__name__)
 
 
 class ReportGenerator:
@@ -86,27 +85,34 @@ class ReportGenerator:
 
         top_pairs = SimilarityEngine.top_pairs(df_combined, n=15)
 
+        # CSV tables
         self._write_csv(
             projects, df_combined, df_gate, df_struct, df_ngram,
             top_pairs, partial_matches, anomalies, surprise_report,
             interface_report, pha_report,
         )
-        self._write_verbal(
-            projects, df_combined, df_ngram, partial_matches,
+
+        # Verbal text report
+        report_verbal.write_verbal(
+            self.cfg, projects, df_combined, df_ngram, partial_matches,
             top_pairs, anomalies, surprise_report, interface_report,
             pha_report,
         )
-        self._write_heatmaps(df_combined, df_gate, df_struct, df_ngram)
-        self._write_gate_distribution(projects)
-        self._write_partial_match_chart(partial_matches)
+
+        # Figures
+        report_figures.write_heatmaps(
+            self.cfg, df_combined, df_gate, df_struct, df_ngram,
+        )
+        report_figures.write_gate_distribution(self.cfg, projects)
+        report_figures.write_partial_match_chart(self.cfg, partial_matches)
         if surprise_report and surprise_report.pairs:
-            self._write_surprise_scatter(surprise_report)
+            report_figures.write_surprise_scatter(self.cfg, surprise_report)
         if interface_report and interface_report.compatible_pairs:
-            self._write_interface_chart(interface_report)
+            report_figures.write_interface_chart(self.cfg, interface_report)
         if anomalies:
-            self._write_anomaly_chart(anomalies)
+            report_figures.write_anomaly_chart(self.cfg, anomalies)
         if pha_report and pha_report.clusters:
-            self._write_pha_charts(pha_report)
+            report_figures.write_pha_charts(self.cfg, pha_report)
 
         log.info("Reports written to %s", self.cfg.output_dir)
 
@@ -175,951 +181,79 @@ class ReportGenerator:
             )
 
         if pha_report and pha_report.clusters:
-            pha = PHAAnalyzer()
-            pha.clusters_to_dataframe(pha_report).to_csv(
+            PHAAnalyzer.clusters_to_dataframe(pha_report).to_csv(
                 out / "pha_clusters.csv", index=False
             )
-            df_comp = pha.components_to_dataframe(pha_report)
+            df_comp = PHAAnalyzer.components_to_dataframe(pha_report)
             if not df_comp.empty:
                 df_comp.to_csv(out / "pha_components.csv", index=False)
-            df_iface = pha.interfaces_to_dataframe(pha_report)
+            df_iface = PHAAnalyzer.interfaces_to_dataframe(pha_report)
             if not df_iface.empty:
                 df_iface.to_csv(out / "pha_unified_interfaces.csv", index=False)
 
-    # ── Verbal report ─────────────────────────────────────────────────
+            # ── Diagram-string CSV outputs ──
+            self._write_diagram_string_csvs(pha_report, out)
 
-    def _write_verbal(
+    # ── Diagram-string CSV helper ─────────────────────────────────────
+
+    def _write_diagram_string_csvs(
         self,
-        projects: List[ProjectAnalysis],
-        df_combined: pd.DataFrame,
-        df_ngram: pd.DataFrame,
-        partial_matches: pd.DataFrame,
-        top_pairs: pd.DataFrame,
-        anomalies: List[Anomaly],
-        surprise_report: Optional[SurpriseReport] = None,
-        interface_report: Optional[InterfaceReport] = None,
-        pha_report: Optional[PHAReport] = None,
+        pha_report: PHAReport,
+        out: Path,
     ) -> None:
-        lines: List[str] = []
-        ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M UTC")
-
-        def h1(title: str):
-            lines.extend(["", _SECTION, f"  {title}", _SECTION])
-
-        def h2(title: str):
-            lines.extend(["", _SUBSEC, f"  {title}", _SUBSEC])
-
-        def para(text: str, width: int = 70):
-            lines.append(textwrap.fill(text, width=width))
-
-        # ── Header ────────────────────────────────────────────────
-        lines.append("POLYMORPHIC HARDWARE ACCELERATOR RTL SIMILARITY ANALYSIS")
-        lines.append(f"Generated: {ts}")
-        lines.append(f"Projects analysed: {len(projects)}")
-        lines.append(
-            f"Similarity weights: gate-type={self.cfg.gate_type_weight:.0%}, "
-            f"structural={self.cfg.structural_weight:.0%}"
-        )
-
-        # ── 1. Dataset summary ────────────────────────────────────
-        h1("1. DATASET SUMMARY")
-        iverilog_used = sum(1 for p in projects if p.used_iverilog)
-        para(
-            f"The dataset comprises {len(projects)} RTL projects harvested from "
-            f"local directories. Gate-level netlist extraction via Icarus Verilog "
-            f"(iverilog) succeeded for {iverilog_used} out of {len(projects)} "
-            f"projects; the remainder were analysed using a regex-based RTL scanner."
-        )
-
-        total_gates = sum(p.total_gates for p in projects)
-        total_lines = sum(p.line_count for p in projects)
-        lines.append("")
-        lines.append(f"  Total source lines : {total_lines:,}")
-        lines.append(f"  Total gate count   : {total_gates:,}")
-        lines.append(f"  Avg gates/project  : {total_gates/max(1,len(projects)):,.0f}")
-
-        # ── 2. Per-project table ───────────────────────────────────
-        h2("2a. Per-Project Statistics")
-        col_w = max(len(p.name) for p in projects) + 2
-        header = (
-            f"{'Project':<{col_w}} {'Files':>6} {'Lines':>8} "
-            f"{'Gates':>8} {'DFF':>6} {'AND':>6} {'Nodes':>7} {'Edges':>7} "
-            f"{'Backend':>10}"
-        )
-        lines.append(header)
-        lines.append("-" * len(header))
-        for p in sorted(projects, key=lambda x: x.total_gates, reverse=True):
-            be = "iverilog" if p.used_iverilog else "regex"
-            lines.append(
-                f"{p.name:<{col_w}} {len(p.source_files):>6} {p.line_count:>8,} "
-                f"{p.total_gates:>8,} {p.gate_counts.get('DFF',0):>6} "
-                f"{p.gate_counts.get('AND',0):>6} "
-                f"{p.graph.number_of_nodes():>7} {p.graph.number_of_edges():>7} "
-                f"{be:>10}"
-            )
-
-        # ── 3. Similarity results ──────────────────────────────────
-        h1("2. SIMILARITY ANALYSIS")
-        para(
-            "Pairwise combined similarity is computed as a weighted combination: "
-            f"{self.cfg.gate_type_weight:.0%} gate-type cosine similarity "
-            f"(distribution of AND/OR/NOT/XOR/DFF/… gate types) and "
-            f"{self.cfg.structural_weight:.0%} structural graph similarity "
-            "(density, clustering, degree-entropy, component count)."
-        )
-
-        h2("Top-15 Most Similar Project Pairs")
-        lines.append(top_pairs.to_string(float_format=lambda x: f"{x:.4f}"))
-
-        # Overall matrix stats
-        vals = df_combined.values.copy()
-        np.fill_diagonal(vals, np.nan)
-        flat = vals[~np.isnan(vals)]
-        lines.append("")
-        lines.append(f"  Matrix statistics (off-diagonal):")
-        lines.append(f"    Mean     : {np.nanmean(flat):.4f}")
-        lines.append(f"    Median   : {np.nanmedian(flat):.4f}")
-        lines.append(f"    Std dev  : {np.nanstd(flat):.4f}")
-        lines.append(f"    Min      : {np.nanmin(flat):.4f}")
-        lines.append(f"    Max      : {np.nanmax(flat):.4f}")
-
-        # ── 3. Partial gate-pattern matching ─────────────────────────
-        h1("3. PARTIAL GATE-PATTERN MATCHING")
-        para(
-            "Gate n-gram Jaccard similarity measures shared sub-circuit patterns "
-            "between projects. N-grams are short sequences of gate types extracted "
-            "from graph traversal (e.g. AND\u2192XOR\u2192DFF). The Jaccard score is "
-            "intersection/union of weighted n-gram bags — a high score indicates "
-            "common design idioms or potential IP reuse even when total gate counts differ."
-        )
-
-        h2("Top Shared Gate Patterns (Project Pairs)")
-        if not partial_matches.empty:
-            # Pivot to show one row per pair with top patterns
-            pair_summary = (
-                partial_matches.groupby(["project_a", "project_b", "jaccard_similarity"])
-                ["shared_gate_pattern"]
-                .apply(lambda x: ", ".join(x.head(4)))
-                .reset_index()
-                .sort_values("jaccard_similarity", ascending=False)
-            )
-            lines.append(pair_summary.to_string(index=False))
-            lines.append("")
-            lines.append("Full shared-pattern breakdown: see partial_gate_patterns.csv")
-        else:
-            lines.append("  No shared gate patterns detected between any project pair.")
-
-        # Top-10 n-gram Jaccard pairs
-        h2("N-gram Jaccard Similarity — Top Pairs")
-        lines.append(SimilarityEngine.top_pairs(df_ngram, n=10).to_string(
-            float_format=lambda x: f"{x:.4f}"
-        ))
-
-        # ── 4. Gate-type distribution ─────────────────────────────
-        h1("4. GATE-TYPE DISTRIBUTION")
-        gate_totals = {g: sum(p.gate_counts.get(g, 0) for p in projects) for g in GATE_TYPES}
-        total = sum(gate_totals.values()) or 1
-        for g, cnt in sorted(gate_totals.items(), key=lambda x: -x[1]):
-            bar = "#" * int(40 * cnt / total)
-            lines.append(f"  {g:<12} {cnt:>8,}  ({100*cnt/total:5.1f}%)  {bar}")
-
-        # ── 5. Anomalies ───────────────────────────────────────────
-        h1("5. ANOMALY DETECTION")
-        if anomalies:
-            para(
-                f"Anomaly detection (robust Z-score threshold "
-                f"{self.cfg.anomaly_zscore_threshold}) flagged "
-                f"{len(anomalies)} project(s) as statistical outliers:"
-            )
-            for a in anomalies:
-                lines.append(f"\n  [{a.project_name}]  Z-score: {a.zscore:.2f}")
-                lines.append(f"    {a.description}")
-        else:
-            para(
-                "No anomalies detected. All projects fall within "
-                f"{self.cfg.anomaly_zscore_threshold} robust standard deviations "
-                "of the feature-space median."
-            )
-
-        # ── 6. Surprising cross-domain similarities ────────────────
-        h1("6. SURPRISING SIMILARITIES (CROSS-DOMAIN ANALYSIS)")
-        if surprise_report and surprise_report.pairs:
-            para(
-                "The following project pairs are structurally similar despite "
-                "coming from different hardware domains.  The surprise score "
-                "= combined_similarity × domain_dissimilarity; pairs near 1.0 "
-                "are the most unexpected findings.  Shared gate-sequence patterns "
-                "are mapped to known functional circuit blocks to explain WHY "
-                "the similarity exists."
-            )
-            lines.append("")
-
-            # Domain classification table
-            h2("Domain Classification")
-            col_w = max(len(n) for n in surprise_report.domain_map) + 2
-            lines.append(f"  {'Project':<{col_w}} Domain")
-            lines.append(f"  {'-' * col_w} {'-' * 30}")
-            for proj, domain in sorted(surprise_report.domain_map.items()):
-                lines.append(f"  {proj:<{col_w}} {domain}")
-
-            lines.append("")
-            h2("Top Surprising Pairs (ranked by surprise score)")
-
-            for rank, sp in enumerate(surprise_report.pairs, 1):
-                lines.append(f"\n  [{rank}] {sp.project_a}  ↔  {sp.project_b}")
-                lines.append(f"      Domain A : {sp.domain_a}")
-                lines.append(f"      Domain B : {sp.domain_b}")
-                lines.append(
-                    f"      Similarity : {sp.combined_similarity:.4f}   "
-                    f"Domain distance : {sp.domain_dissimilarity:.2f}   "
-                    f"Surprise score : {sp.surprise_score:.4f}"
-                )
-                if sp.pattern_interpretations:
-                    lines.append("      Shared functional blocks identified:")
-                    seen: set = set()
-                    for pat, meaning in sp.pattern_interpretations[:5]:
-                        if meaning in seen:
-                            continue
-                        seen.add(meaning)
-                        lines.append(f"        • [{pat}]  {meaning}")
-                lines.append("")
-                # Full explanation, wrapped
-                for expl_line in sp.explanation.split("  "):
-                    if expl_line.strip():
-                        lines.append(
-                            "      " + textwrap.fill(
-                                expl_line.strip(), width=68,
-                                subsequent_indent="      "
-                            )
-                        )
-                lines.append("")
-        elif surprise_report:
-            para(
-                "No cross-domain pairs exceeded the surprise score threshold. "
-                "This may indicate that all projects in the current dataset "
-                "share the same hardware domain, or that no pair has both high "
-                "structural similarity and high domain dissimilarity. "
-                "Try adding projects from more diverse domains (e.g. mix CPUs, "
-                "image codecs, crypto cores, and communication IPs)."
-            )
-        else:
-            lines.append("  (Surprise analysis was not run.)")
-
-        # ── 7. Interface compatibility & reusability ──────────────────────
-        h1("7. INTERFACE COMPATIBILITY & REUSABILITY ANALYSIS")
-        if interface_report and interface_report.compatible_pairs:
-            total_mods = len(interface_report.modules)
-            total_pairs = len(interface_report.compatible_pairs)
-            proto_projects = {
-                proto: projs
-                for proto, projs in interface_report.protocol_coverage.items()
-                if projs
-            }
-            para(
-                f"Port-level interface analysis parsed {total_mods} module "
-                f"declarations across {len(projects)} projects and identified "
-                f"{total_pairs} cross-project module pairs with ≥40\u202f% port "
-                f"compatibility after signal-name normalisation.  These pairs "
-                f"can potentially be reused in each other\u2019s designs by "
-                f"changing only the top-level signal connections."
-            )
-
-            # Protocol coverage
-            if proto_projects:
-                lines.append("")
-                h2("Standard Protocol Coverage")
-                para(
-                    "Modules speaking documented bus protocols are directly "
-                    "interoperable on a shared bus without any adapter layer."
-                )
-                for proto, projs in sorted(
-                    proto_projects.items(), key=lambda kv: -len(kv[1])
-                ):
-                    lines.append(
-                        f"  {proto:<20} detected in {len(projs)} project(s): "
-                        + ", ".join(projs[:6])
-                        + ("\u2026" if len(projs) > 6 else "")
-                    )
-
-            # Top reusable modules (score-ranked)
-            lines.append("")
-            h2("Top Reusable Modules (by reusability score)")
-            df_r = interface_report.reusability_scores
-            top_mods = df_r.head(15)
-            col_mod  = max(len(str(r["module"]))  for _, r in top_mods.iterrows()) + 2
-            col_proj = max(len(str(r["project"])) for _, r in top_mods.iterrows()) + 2
-            lines.append(
-                f"  {'Module':<{col_mod}} {'Project':<{col_proj}} "
-                f"{'Score':>6}  {'Ports':>5}  {'Protocol'}"
-            )
-            lines.append(f"  {'-'*(col_mod+col_proj+30)}")
-            for _, row in top_mods.iterrows():
-                lines.append(
-                    f"  {str(row['module']):<{col_mod}} "
-                    f"{str(row['project']):<{col_proj}} "
-                    f"{row['reusability_score']:>6.3f}  "
-                    f"{int(row['port_count']):>5}  "
-                    f"{row['protocols'] or '(no standard protocol)'}"
-                )
-
-            # Compatible pairs
-            lines.append("")
-            h2("Top Compatible Module Pairs (ranked by port match score)")
-            effort_order = {"zero": 0, "low": 1, "medium": 2, "high": 3}
-            sorted_pairs = sorted(
-                interface_report.compatible_pairs[:20],
-                key=lambda cp: (effort_order[cp.effort], -cp.name_match_score)
-            )
-            for rank, cp in enumerate(sorted_pairs, 1):
-                lines.append(
-                    f"\n  [{rank}] {cp.module_a.project}::{cp.module_a.name}  "
-                    f"↔  {cp.module_b.project}::{cp.module_b.name}"
-                )
-                lines.append(
-                    f"      Compatibility : {cp.name_match_score:.1%}  "
-                    f"(exact={cp.port_match_score:.1%})   "
-                    f"Effort : {cp.effort.upper()}"
-                )
-                if cp.shared_protocols:
-                    lines.append(
-                        f"      Shared protocol: {', '.join(cp.shared_protocols)}"
-                    )
-                if cp.rename_recipe:
-                    top_r = cp.rename_recipe[:4]
-                    lines.append(
-                        f"      Rename recipe ({len(cp.rename_recipe)} signal(s)): "
-                        + ", ".join(f"'{a}'→'{b}'" for a, b in top_r)
-                        + ("\u2026" if len(cp.rename_recipe) > 4 else "")
-                    )
-                if cp.resize_recipe:
-                    top_w = cp.resize_recipe[:3]
-                    lines.append(
-                        f"      Width changes  ({len(cp.resize_recipe)} signal(s)): "
-                        + ", ".join(f"'{n}' {wa}b→{wb}b" for n, wa, wb in top_w)
-                    )
-                lines.append("")
-                for expl_line in cp.explanation.split("  "):
-                    if expl_line.strip():
-                        lines.append(
-                            "      " + textwrap.fill(
-                                expl_line.strip(), width=68,
-                                subsequent_indent="      ",
-                            )
-                        )
-                lines.append("")
-        elif interface_report:
-            para(
-                "No cross-project module pairs exceeded the compatibility threshold. "
-                "All modules may have idiosyncratic port naming conventions or "
-                "very different port counts.  Consider lowering --min-compat."
-            )
-        else:
-            lines.append("  (Interface analysis was not run.)")
-
-        # ── 8. PHA synthesis ──────────────────────────────────────────────
-        h1("8. POLYMORPHIC HETEROGENEOUS ARCHITECTURE (PHA) SYNTHESIS")
-        if pha_report and pha_report.clusters:
-            para(
-                f"The PHA synthesis analysis clustered {pha_report.total_projects} "
-                f"Domain-Specific Accelerators into {len(pha_report.clusters)} "
-                f"candidate Polymorphic Heterogeneous Architecture(s).  For each "
-                f"cluster, shared gate-pattern components are instantiated once, "
-                f"similar components are merged into configurable blocks with "
-                f"mode-select multiplexers, and unique components are retained "
-                f"behind a configuration layer.  Per-DSA interconnect interfaces "
-                f"are unified into a single polymorphic port block."
-            )
-            lines.append(f"  Clustering threshold : {pha_report.clustering_threshold:.2f}")
-            lines.append(f"  Merge Jaccard threshold : {pha_report.merge_jaccard_threshold:.2f}")
-            if pha_report.unclustered_projects:
-                lines.append(
-                    f"  Unclustered projects ({len(pha_report.unclustered_projects)}): "
-                    + ", ".join(pha_report.unclustered_projects[:10])
-                    + ("\u2026" if len(pha_report.unclustered_projects) > 10 else "")
-                )
-
-            for c in pha_report.clusters:
-                h2(f"PHA Cluster {c.cluster_id} — {len(c.member_projects)} DSAs")
-                lines.append(f"  Members : {', '.join(c.member_projects)}")
-                lines.append(
-                    f"  Domains : {', '.join(sorted(set(c.member_domains.values())))}"
-                )
-                lines.append(f"  Avg similarity : {c.avg_similarity:.4f}")
-                lines.append("")
-
-                # Component breakdown
-                lines.append(f"  Component Decomposition:")
-                lines.append(
-                    f"    Shared (identical across all members) : "
-                    f"{len(c.shared_components)} block(s)"
-                )
-                if c.shared_components:
-                    for fc in c.shared_components[:8]:
-                        label = f" — {fc.semantic_label}" if fc.semantic_label else ""
-                        lines.append(
-                            f"      • [{fc.pattern_str}]{label}  "
-                            f"(×{sum(fc.occurrences.values())} total)"
-                        )
-
-                lines.append(
-                    f"    Merged (folded with mux) : "
-                    f"{len(c.merged_components)} pair(s)"
-                )
-                if c.merged_components:
-                    for mc in c.merged_components[:5]:
-                        lines.append(
-                            f"      • {mc.merged_name}  "
-                            f"Jaccard={mc.jaccard:.3f}  "
-                            f"mux overhead={mc.mux_overhead:.1%}  "
-                            f"projects: {', '.join(mc.projects_involved)}"
-                        )
-
-                total_unique = sum(len(v) for v in c.unique_components.values())
-                lines.append(
-                    f"    Unique (DSA-specific) : {total_unique} block(s) "
-                    f"across {len(c.unique_components)} project(s)"
-                )
-                for pname, comps in list(c.unique_components.items())[:3]:
-                    lines.append(f"      {pname}: {len(comps)} block(s)")
-                    for fc in comps[:3]:
-                        label = f" — {fc.semantic_label}" if fc.semantic_label else ""
-                        lines.append(f"        • [{fc.pattern_str}]{label}")
-
-                # Unified interface
-                if c.unified_interface:
-                    ui = c.unified_interface
-                    lines.append("")
-                    lines.append(f"  Unified Interface (J+K+L → J+K+L):")
-                    lines.append(
-                        f"    Common signals (pass-through) : "
-                        f"{len(ui.common_signals)}"
-                    )
-                    lines.append(
-                        f"    Muxed signals (mode-dependent) : "
-                        f"{len(ui.muxed_signals)}"
-                    )
-                    lines.append(
-                        f"    Total port count : {ui.total_port_count}"
-                    )
-                    if ui.protocol:
-                        lines.append(f"    Common protocol : {ui.protocol}")
-
-                # Area estimates
-                lines.append("")
-                lines.append(f"  Resource Estimation:")
-                lines.append(
-                    f"    Individual DSA total : {c.individual_gate_total:,} gates"
-                )
-                lines.append(
-                    f"    PHA estimated total  : {c.pha_gate_total:,} gates"
-                )
-                lines.append(
-                    f"    Area savings         : {c.area_savings_pct:.1f}%"
-                )
-                lines.append(
-                    f"    Breakdown — shared: {c.shared_gate_count:,}  "
-                    f"merged: {c.merged_gate_count:,}  "
-                    f"unique: {c.unique_gate_count:,}"
-                )
-
-                # Full explanation
-                lines.append("")
-                for expl_line in c.explanation.split("  "):
-                    if expl_line.strip():
-                        lines.append(
-                            "    " + textwrap.fill(
-                                expl_line.strip(), width=68,
-                                subsequent_indent="    "
-                            )
-                        )
-                lines.append("")
-        elif pha_report:
-            para(
-                "No PHA clusters could be formed.  No project pair exceeded "
-                f"the clustering threshold of {pha_report.clustering_threshold:.2f}.  "
-                "Consider lowering --pha-threshold or adding more structurally "
-                "similar projects."
-            )
-        else:
-            lines.append("  (PHA synthesis analysis was not run.)")
-
-        # ── 9. Methodology note ───────────────────────────────────────────
-        h1("9. METHODOLOGY")
-        para(
-            "Gate-level information was extracted by compiling each project "
-            "with Icarus Verilog (iverilog -g2012) and parsing the resulting "
-            "VVP intermediate representation.  Each `.functor` directive encodes "
-            "one logic gate and its four input connections; these are collected "
-            "into a directed NetworkX graph.  For projects that do not compile "
-            "cleanly, a regex scan of the raw RTL source files provides a "
-            "fallback gate-type count."
-        )
-        lines.append("")
-        para(
-            "Three similarity metrics are computed: (1) cosine similarity over "
-            "gate-type count vectors, (2) structural L1 similarity over graph "
-            "topology features (density, clustering, degree-entropy, component "
-            "count), and (3) weighted Jaccard similarity over gate-type n-gram "
-            "bags (default n=3) extracted via BFS traversal of the gate graph. "
-            "The combined score is a weighted average of all three.  "
-            "The surprise score multiplies combined similarity by domain "
-            "dissimilarity (Jaccard distance of domain label sets) to surface "
-            "structurally similar but architecturally unrelated project pairs."
-        )
-        lines.extend(["", _SECTION])
-
-        # Write
-        report_path = self.cfg.output_dir / "report.txt"
-        report_path.write_text("\n".join(lines), encoding="utf-8")
-        log.info("Verbal report → %s", report_path)
-
-    # ── Figures ───────────────────────────────────────────────────────
-
-    def _heatmap_fig(
-        self,
-        df: pd.DataFrame,
-        title: str,
-    ) -> plt.Figure:
-        n = len(df)
-        size = max(6, min(n * 0.55, 22))
-        fig, ax = plt.subplots(figsize=(size, size * 0.85))
-        mask = np.zeros_like(df.values, dtype=bool)
-        np.fill_diagonal(mask, True)
-        sns.heatmap(
-            df,
-            ax=ax,
-            mask=mask,
-            cmap=self.cfg.colormap,
-            vmin=0, vmax=1,
-            annot=(n <= 20),
-            fmt=".2f",
-            linewidths=0.3,
-            linecolor="white",
-            cbar_kws={"label": "Similarity", "shrink": 0.8},
-        )
-        ax.set_title(title, pad=14, fontweight="bold")
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-        fig.tight_layout()
-        return fig
-
-    def _write_heatmaps(
-        self,
-        df_combined: pd.DataFrame,
-        df_gate: pd.DataFrame,
-        df_struct: pd.DataFrame,
-        df_ngram: pd.DataFrame,
-    ) -> None:
-        pairs = [
-            (df_combined, "Combined Similarity (gate-type + structural + n-gram)",
-             "fig_heatmap_combined"),
-            (df_gate,    "Gate-Type Cosine Similarity",
-             "fig_heatmap_gate"),
-            (df_struct,  "Structural Graph Similarity",
-             "fig_heatmap_structural"),
-            (df_ngram,   "Partial Gate-Pattern N-gram Similarity (Jaccard)",
-             "fig_heatmap_ngram"),
-        ]
-        for df, title, stem in pairs:
-            fig = self._heatmap_fig(df, title)
-            path = self.cfg.output_dir / f"{stem}.{self.cfg.figure_format}"
-            fig.savefig(path)
-            plt.close(fig)
-            log.info("Figure → %s", path)
-
-    def _write_gate_distribution(self, projects: List[ProjectAnalysis]) -> None:
-        names = [p.name for p in projects]
-        data = np.array(
-            [[p.gate_counts.get(g, 0) for g in GATE_TYPES] for p in projects],
-            dtype=float,
-        )
-        # Normalise rows to percentages
-        row_totals = data.sum(axis=1, keepdims=True)
-        row_totals[row_totals == 0] = 1
-        data_pct = 100 * data / row_totals
-
-        n_proj = len(projects)
-        fig_h = max(5, n_proj * 0.4)
-        fig, ax = plt.subplots(figsize=(12, fig_h))
-
-        cmap = plt.get_cmap("tab20")
-        colors = [cmap(i / len(GATE_TYPES)) for i in range(len(GATE_TYPES))]
-        lefts = np.zeros(n_proj)
-        for gi, (gate, color) in enumerate(zip(GATE_TYPES, colors)):
-            vals = data_pct[:, gi]
-            ax.barh(names, vals, left=lefts, height=0.72, color=color, label=gate)
-            lefts += vals
-
-        ax.set_xlabel("Gate-type composition (%)")
-        ax.set_title("Gate-Type Distribution per Project", fontweight="bold")
-        ax.xaxis.set_major_formatter(ticker.PercentFormatter())
-        ax.legend(
-            title="Gate Type",
-            bbox_to_anchor=(1.01, 1),
-            loc="upper left",
-            fontsize=8,
-        )
-        ax.invert_yaxis()
-        fig.tight_layout()
-        path = self.cfg.output_dir / f"fig_gate_distribution.{self.cfg.figure_format}"
-        fig.savefig(path)
-        plt.close(fig)
-        log.info("Figure → %s", path)
-
-    def _write_partial_match_chart(self, partial_matches: pd.DataFrame) -> None:
-        """Bubble chart: x=project_a, y=project_b, size=min_shared gate patterns."""
-        if partial_matches.empty:
-            return
-
-        # One row per pair (aggregate: total shared patterns, mean jaccard)
-        pair_df = (
-            partial_matches.groupby(["project_a", "project_b", "jaccard_similarity"])
-            .agg(total_patterns=("min_shared", "sum"), pattern_count=("shared_gate_pattern", "count"))
-            .reset_index()
-            .sort_values("jaccard_similarity", ascending=False)
-            .head(30)
-        )
-
-        fig, ax = plt.subplots(figsize=(13, 6))
-        scatter = ax.scatter(
-            pair_df["project_a"],
-            pair_df["project_b"],
-            s=pair_df["pattern_count"] * 60 + 30,
-            c=pair_df["jaccard_similarity"],
-            cmap="YlOrRd",
-            vmin=0, vmax=1,
-            alpha=0.85,
-            edgecolors="0.3",
-            linewidths=0.5,
-        )
-        cb = fig.colorbar(scatter, ax=ax, pad=0.02)
-        cb.set_label("Jaccard Similarity")
-        ax.set_xlabel("Project A")
-        ax.set_ylabel("Project B")
-        ax.set_title(
-            "Partial Gate-Pattern Matches\n(bubble size = number of shared n-gram types)",
-            fontweight="bold",
-        )
-        plt.xticks(rotation=35, ha="right")
-        plt.yticks(rotation=0)
-        fig.tight_layout()
-        path = self.cfg.output_dir / f"fig_partial_patterns.{self.cfg.figure_format}"
-        fig.savefig(path)
-        plt.close(fig)
-        log.info("Figure → %s", path)
-
-    def _write_interface_chart(self, interface_report: "InterfaceReport") -> None:
-        """Two-panel figure: (top) reusability scatter per module;
-        (bottom) protocol coverage bar chart."""
-        import numpy as np
-
-        df = interface_report.reusability_scores
-        if df.empty:
-            return
-
-        proto_cov = {
-            p: projs
-            for p, projs in interface_report.protocol_coverage.items()
-            if projs
-        }
-
-        fig, (ax_top, ax_bot) = plt.subplots(
-            2, 1, figsize=(13, 12),
-            gridspec_kw={"height_ratios": [3, 1]},
-        )
-
-        # ── Top panel: reusability scatter ───────────────────────────
-        # Assign unique colour per protocol; grey for "none"
-        all_protos = sorted(proto_cov.keys())
-        cmap_vals  = plt.cm.tab10(np.linspace(0, 0.9, max(len(all_protos), 1)))
-        proto_color = {p: cmap_vals[i] for i, p in enumerate(all_protos)}
-        proto_color["(none)"] = (0.7, 0.7, 0.7, 0.85)
-
-        def _proto_label(row_protos: str) -> str:
-            if not row_protos:
-                return "(none)"
-            return row_protos.split(",")[0].strip()
-
-        df = df.copy()
-        df["_proto_label"] = df["protocols"].apply(_proto_label)
-        df["_color"] = df["_proto_label"].map(
-            lambda p: proto_color.get(p, proto_color["(none)"])
-        )
-        sizes = 80 + 400 * (
-            df["same_signature_modules"] /
-            max(df["same_signature_modules"].max(), 1)
-        )
-
-        scatter = ax_top.scatter(
-            df["port_count"], df["reusability_score"],
-            s=sizes, c=list(df["_color"]),
-            alpha=0.82, edgecolors="white", linewidths=0.5,
-        )
-
-        # Label top-15 by reusability score
-        for _, row in df.head(15).iterrows():
-            ax_top.annotate(
-                f"{row['project'][:10]}::{row['module'][:14]}",
-                (row["port_count"], row["reusability_score"]),
-                fontsize=6.5, ha="left", va="bottom",
-                xytext=(4, 3), textcoords="offset points",
-            )
-
-        ax_top.set_xlabel("Port count", fontsize=10)
-        ax_top.set_ylabel("Reusability score", fontsize=10)
-        ax_top.set_title(
-            "Module Reusability Map  "
-            "(upper-left = small interface + standard protocol = most reusable)",
-            fontweight="bold",
-        )
-        ax_top.set_ylim(-0.05, 1.05)
-
-        # Legend for protocols
-        legend_handles = [
-            plt.Line2D(
-                [0], [0], marker="o", color="w",
-                markerfacecolor=proto_color.get(p, proto_color["(none)"]),
-                markersize=8, label=p,
-            )
-            for p in all_protos + (["(none)"] if "(none)" in df["_proto_label"].values else [])
-        ]
-        if legend_handles:
-            ax_top.legend(
-                handles=legend_handles, title="Protocol",
-                fontsize=8, title_fontsize=8,
-                loc="upper right", framealpha=0.85,
-            )
-
-        # Bubble-size legend
-        for sz_label, sz_val in [(1, 80), (5, 280), (10, 480)]:
-            ax_top.scatter([], [], s=sz_val, color="grey", alpha=0.5,
-                           label=f"{sz_label} sharing same port shape")
-        ax_top.legend(
-            *ax_top.get_legend_handles_labels(),
-            fontsize=7, loc="lower right", framealpha=0.8,
-        )
-
-        # ── Bottom panel: protocol project coverage ──────────────────
-        if proto_cov:
-            protos  = sorted(proto_cov, key=lambda p: -len(proto_cov[p]))
-            counts  = [len(proto_cov[p]) for p in protos]
-            colors  = [proto_color.get(p, proto_color["(none)"]) for p in protos]
-            bars    = ax_bot.barh(protos, counts, color=colors,
-                                  edgecolor="white", linewidth=0.7)
-            for bar, cnt in zip(bars, counts):
-                ax_bot.text(
-                    bar.get_width() + 0.1, bar.get_y() + bar.get_height() / 2,
-                    str(cnt), va="center", fontsize=8,
-                )
-            ax_bot.set_xlabel("Number of projects with this protocol", fontsize=9)
-            ax_bot.set_title("Standard Protocol Coverage", fontweight="bold")
-            ax_bot.set_xlim(0, max(counts) + 2)
-        else:
-            ax_bot.text(0.5, 0.5, "No standard protocols detected",
-                        ha="center", va="center", transform=ax_bot.transAxes)
-            ax_bot.axis("off")
-
-        fig.tight_layout(pad=3.0)
-        path = self.cfg.output_dir / f"fig_interface_reusability.{self.cfg.figure_format}"
-        fig.savefig(path)
-        plt.close(fig)
-        log.info("Figure → %s", path)
-
-    def _write_surprise_scatter(self, surprise_report: "SurpriseReport") -> None:
-        """Scatter plot: combined_similarity (x) vs domain_dissimilarity (y),
-        bubble size ∝ surprise_score, colour-mapped to surprise_score."""
-        pairs = surprise_report.pairs
-        if not pairs:
-            return
-
-        import numpy as np
-
-        xs    = [p.combined_similarity   for p in pairs]
-        ys    = [p.domain_dissimilarity  for p in pairs]
-        ss    = [p.surprise_score        for p in pairs]
-        names = [
-            f"{p.project_a[:10]}↔{p.project_b[:10]}" for p in pairs
-        ]
-
-        ss_arr  = np.array(ss)
-        sizes   = 200 + 1800 * (ss_arr / ss_arr.max() if ss_arr.max() > 0 else ss_arr)
-
-        fig, ax = plt.subplots(figsize=(9, 7))
-        sc = ax.scatter(
-            xs, ys, s=sizes, c=ss_arr,
-            cmap="YlOrRd", edgecolors="grey", linewidths=0.6, alpha=0.85,
-        )
-        cbar = fig.colorbar(sc, ax=ax, pad=0.02)
-        cbar.set_label("Surprise score", fontsize=9)
-
-        for name, x, y in zip(names, xs, ys):
-            ax.annotate(
-                name, (x, y),
-                fontsize=7.5, ha="center", va="bottom",
-                xytext=(0, 6), textcoords="offset points",
-            )
-
-        ax.set_xlabel("Combined Similarity", fontsize=10)
-        ax.set_ylabel("Domain Dissimilarity", fontsize=10)
-        ax.set_title(
-            "Surprise Map — High Surprise = upper-right corner",
-            fontweight="bold",
-        )
-        ax.set_xlim(-0.05, 1.05)
-        ax.set_ylim(-0.05, 1.05)
-
-        # Reference lines
-        ax.axhline(0.5, color="steelblue", linestyle=":", linewidth=0.8, alpha=0.6)
-        ax.axvline(0.5, color="steelblue", linestyle=":", linewidth=0.8, alpha=0.6)
-        ax.text(0.97, 0.97, "High\nSurprise", transform=ax.transAxes,
-                ha="right", va="top", fontsize=8, color="firebrick", alpha=0.7)
-
-        fig.tight_layout()
-        path = self.cfg.output_dir / f"fig_surprise_map.{self.cfg.figure_format}"
-        fig.savefig(path)
-        plt.close(fig)
-        log.info("Figure → %s", path)
-
-    def _write_anomaly_chart(self, anomalies: List[Anomaly]) -> None:
-        names  = [a.project_name for a in anomalies]
-        scores = [a.zscore for a in anomalies]
-
-        fig, ax = plt.subplots(figsize=(max(6, len(anomalies) * 0.9), 5))
-        bars = ax.bar(names, scores, color="tomato", edgecolor="white", linewidth=0.8)
-        ax.axhline(
-            self.cfg.anomaly_zscore_threshold,
-            color="navy", linestyle="--", linewidth=1.2,
-            label=f"Threshold = {self.cfg.anomaly_zscore_threshold}",
-        )
-        ax.set_ylabel("Max Robust Z-Score")
-        ax.set_title("Anomaly Detection — Outlier Z-Scores", fontweight="bold")
-        ax.legend()
-        for bar, score in zip(bars, scores):
-            ax.text(
-                bar.get_x() + bar.get_width() / 2,
-                bar.get_height() + 0.05,
-                f"{score:.2f}",
-                ha="center", va="bottom", fontsize=9,
-            )
-        plt.xticks(rotation=30, ha="right")
-        fig.tight_layout()
-        path = self.cfg.output_dir / f"fig_anomaly_scores.{self.cfg.figure_format}"
-        fig.savefig(path)
-        plt.close(fig)
-        log.info("Figure → %s", path)
-
-    def _write_pha_charts(self, pha_report: "PHAReport") -> None:
-        """Multi-panel figure for PHA synthesis results.
-
-        Panel 1: Stacked bar chart showing shared/merged/unique gate breakdown
-                 per cluster.
-        Panel 2: Area savings comparison (individual vs PHA).
-        Panel 3: Unified interface composition per cluster.
+        """Write CSV files for diagram-string serialisation and comparisons.
+
+        Produces up to two files:
+          • diagram_strings.csv  — one row per project per cluster
+          • diagram_comparisons.csv — one row per pairwise comparison
         """
-        clusters = pha_report.clusters
-        if not clusters:
-            return
-
-        n_panels = 2 + (1 if any(c.unified_interface for c in clusters) else 0)
-        fig, axes = plt.subplots(
-            n_panels, 1,
-            figsize=(max(10, len(clusters) * 2.5), 5 * n_panels),
-            gridspec_kw={"height_ratios": [2, 2] + ([1.5] if n_panels == 3 else [])},
-        )
-        if n_panels == 1:
-            axes = [axes]
-
-        # ── Panel 1: Component breakdown stacked bar ─────────────────
-        ax = axes[0]
-        labels = [f"PHA-{c.cluster_id}\n({len(c.member_projects)} DSAs)"
-                  for c in clusters]
-        shared_vals  = [c.shared_gate_count  for c in clusters]
-        merged_vals  = [c.merged_gate_count  for c in clusters]
-        unique_vals  = [c.unique_gate_count  for c in clusters]
-        x = np.arange(len(clusters))
-        w = 0.5
-
-        ax.bar(x, shared_vals, w, label="Shared (1× instance)", color="#4CAF50")
-        ax.bar(x, merged_vals, w, bottom=shared_vals,
-               label="Merged (configurable + mux)", color="#FF9800")
-        bottoms_2 = [s + m for s, m in zip(shared_vals, merged_vals)]
-        ax.bar(x, unique_vals, w, bottom=bottoms_2,
-               label="Unique (DSA-specific)", color="#F44336")
-
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels, fontsize=9)
-        ax.set_ylabel("Estimated gate count")
-        ax.set_title(
-            "PHA Component Decomposition\n"
-            "(Shared hardware counted once → area savings)",
-            fontweight="bold",
-        )
-        ax.legend(fontsize=8, loc="upper right")
-        for i, c in enumerate(clusters):
-            ax.text(i, shared_vals[i] + merged_vals[i] + unique_vals[i] + 5,
-                    f"{c.pha_gate_total:,}g",
-                    ha="center", va="bottom", fontsize=8, fontweight="bold")
-
-        # ── Panel 2: Individual vs PHA area comparison ───────────────
-        ax2 = axes[1]
-        indiv = [c.individual_gate_total for c in clusters]
-        pha   = [c.pha_gate_total         for c in clusters]
-        x2 = np.arange(len(clusters))
-        w2 = 0.35
-
-        bars_i = ax2.bar(x2 - w2/2, indiv, w2, label="Individual DSAs (sum)",
-                         color="#78909C", edgecolor="white")
-        bars_p = ax2.bar(x2 + w2/2, pha,   w2, label="PHA (merged)",
-                         color="#26A69A", edgecolor="white")
-
-        for i, c in enumerate(clusters):
-            ax2.annotate(
-                f"-{c.area_savings_pct:.0f}%",
-                xy=(i + w2/2, pha[i]),
-                xytext=(0, 8), textcoords="offset points",
-                ha="center", fontsize=10, fontweight="bold", color="#D32F2F",
+        # ── Diagram strings table ──
+        ds_rows = []
+        for c in pha_report.clusters:
+            for pname, ds in c.diagram_strings.items():
+                ds_rows.append({
+                    "cluster_id": c.cluster_id,
+                    "project": pname,
+                    "domain": ds.domain,
+                    "total_gates": ds.total_gates,
+                    "n_modules": ds.n_modules,
+                    "line_count": ds.line_count,
+                    "token_count": len(ds.tokens),
+                    "compact_head": ds.compact[:120],
+                    "block_sequence_head": ds.block_sequence[:200],
+                    "interface_summary": ds.interface_summary[:200],
+                })
+        if ds_rows:
+            pd.DataFrame(ds_rows).to_csv(
+                out / "diagram_strings.csv", index=False,
             )
 
-        ax2.set_xticks(x2)
-        ax2.set_xticklabels(labels, fontsize=9)
-        ax2.set_ylabel("Total gate count")
-        ax2.set_title(
-            "Area Efficiency: Individual DSAs vs. Polymorphic Architecture",
-            fontweight="bold",
-        )
-        ax2.legend(fontsize=8)
+        # ── Diagram comparisons table ──
+        cmp_rows = []
+        for c in pha_report.clusters:
+            for cmp in c.diagram_comparisons:
+                cmp_rows.append({
+                    "cluster_id": c.cluster_id,
+                    "project_a": cmp.project_a,
+                    "project_b": cmp.project_b,
+                    "lcs_length": cmp.lcs_length,
+                    "lcs_ratio": cmp.lcs_ratio,
+                    "alignment_identity_pct": cmp.alignment.identity_pct,
+                    "alignment_matches": cmp.alignment.matches,
+                    "alignment_mismatches": cmp.alignment.mismatches,
+                    "alignment_gaps": cmp.alignment.gaps,
+                    "alignment_normalised_score": cmp.alignment.normalised_score,
+                    "longest_common_substr_len": cmp.longest_common_substr.length,
+                    "longest_common_substr_label": (
+                        cmp.longest_common_substr.semantic_label or ""
+                    ),
+                    "shared_substrings_count": len(cmp.shared_substrings),
+                    "shared_blocks": ", ".join(cmp.shared_blocks),
+                    "mergeable_candidates_count": len(cmp.mergeable_candidates),
+                    "overall_string_similarity": cmp.overall_string_similarity,
+                })
+        if cmp_rows:
+            pd.DataFrame(cmp_rows).to_csv(
+                out / "diagram_comparisons.csv", index=False,
+            )
 
-        # ── Panel 3: Unified interface composition ───────────────────
-        if n_panels == 3:
-            ax3 = axes[2]
-            common_counts = []
-            muxed_counts = []
-            c_labels = []
-            for c in clusters:
-                if c.unified_interface:
-                    common_counts.append(len(c.unified_interface.common_signals))
-                    muxed_counts.append(len(c.unified_interface.muxed_signals))
-                    proto_str = (f"\n({c.unified_interface.protocol})"
-                                 if c.unified_interface.protocol else "")
-                    c_labels.append(f"PHA-{c.cluster_id}{proto_str}")
-
-            if c_labels:
-                x3 = np.arange(len(c_labels))
-                ax3.bar(x3, common_counts, 0.5,
-                        label="Common (pass-through)", color="#42A5F5")
-                ax3.bar(x3, muxed_counts, 0.5, bottom=common_counts,
-                        label="Muxed (mode-dependent)", color="#FFA726")
-                ax3.set_xticks(x3)
-                ax3.set_xticklabels(c_labels, fontsize=9)
-                ax3.set_ylabel("Signal count")
-                ax3.set_title(
-                    "Unified Interface Composition (J+K+L merged port block)",
-                    fontweight="bold",
-                )
-                ax3.legend(fontsize=8)
-
-        fig.tight_layout(pad=3.0)
-        path = self.cfg.output_dir / f"fig_pha_synthesis.{self.cfg.figure_format}"
-        fig.savefig(path)
-        plt.close(fig)
-        log.info("Figure → %s", path)

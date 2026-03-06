@@ -82,10 +82,15 @@ _STRIP_SUFFIX = re.compile(
 )
 
 
-def _normalise(name: str) -> str:
+def normalise_signal_name(name: str) -> str:
+    """Strip common I/O prefixes/suffixes and lower-case a signal name."""
     name = _STRIP_PREFIX.sub("", name)
     name = _STRIP_SUFFIX.sub("", name)
     return name.lower()
+
+
+# Keep short alias for internal use
+_normalise = normalise_signal_name
 
 
 # ── Data model ────────────────────────────────────────────────────────
@@ -412,10 +417,12 @@ class InterfaceAnalyzer:
         min_compatibility: float = 0.40,
         max_pairs: int = 300,
         max_workers: int = 0,
+        max_modules_per_project: int = 150,
     ):
         self.min_ports = min_ports
         self.min_compatibility = min_compatibility
         self.max_pairs = max_pairs
+        self.max_modules_per_project = max_modules_per_project
         # 0 → use all logical CPUs
         self.max_workers = max_workers or os.cpu_count() or 1
 
@@ -451,19 +458,45 @@ class InterfaceAnalyzer:
             len(all_modules), len(projects),
         )
 
-        # Protocol coverage
+        # ── Cap modules per project to keep O(M²) tractable ──
+        mods_by_proj_raw: Dict[str, List[ModuleInfo]] = defaultdict(list)
+        for mi in all_modules:
+            mods_by_proj_raw[mi.project].append(mi)
+
+        capped_modules: List[ModuleInfo] = []
+        cap = self.max_modules_per_project
+        for proj, mods in mods_by_proj_raw.items():
+            if len(mods) > cap:
+                # Prefer modules with more ports (richer interface → more interesting)
+                mods.sort(key=lambda m: m.port_count, reverse=True)
+                kept = mods[:cap]
+                log.info(
+                    "  %s: capped from %d → %d modules (keeping top by port count)",
+                    proj, len(mods), cap,
+                )
+            else:
+                kept = mods
+            capped_modules.extend(kept)
+
+        if len(capped_modules) < len(all_modules):
+            log.info(
+                "  After per-project cap (%d): %d → %d module interfaces.",
+                cap, len(all_modules), len(capped_modules),
+            )
+
+        # Protocol coverage (use full set for reporting)
         proto_coverage: Dict[str, List[str]] = defaultdict(list)
         for mi in all_modules:
             for proto in mi.protocols:
                 if mi.project not in proto_coverage[proto]:
                     proto_coverage[proto].append(mi.project)
 
-        # Signature clusters
+        # Signature clusters (use full set for reporting)
         sig_clusters: Dict[str, List[ModuleInfo]] = defaultdict(list)
         for mi in all_modules:
             sig_clusters[str(mi.signature())].append(mi)
 
-        # Reusability scores
+        # Reusability scores (use full set)
         total = max(len(all_modules), 1)
         reuse_rows = []
         for mi in all_modules:
@@ -486,9 +519,9 @@ class InterfaceAnalyzer:
             .reset_index(drop=True)
         )
 
-        # Cross-project compatibility pairs
+        # Cross-project compatibility pairs (use CAPPED set)
         mods_by_proj: Dict[str, List[ModuleInfo]] = defaultdict(list)
-        for mi in all_modules:
+        for mi in capped_modules:
             mods_by_proj[mi.project].append(mi)
 
         proj_list = list(mods_by_proj.keys())

@@ -26,7 +26,7 @@ from __future__ import annotations
 import logging
 import math
 from collections import Counter
-from typing import Dict, FrozenSet, List, Set, Tuple
+from typing import Dict, List, Tuple
 
 import networkx as nx
 import numpy as np
@@ -64,7 +64,6 @@ def _graph_features(pa: ProjectAnalysis) -> np.ndarray:
 
     # Clustering (treat directed graph as undirected for clustering)
     try:
-        import networkx as nx
         ug = g.to_undirected()
         clustering = nx.average_clustering(ug) if n > 0 else 0.0
     except Exception:
@@ -85,7 +84,6 @@ def _graph_features(pa: ProjectAnalysis) -> np.ndarray:
 
     # Number of weakly-connected components (normalised)
     try:
-        import networkx as nx
         n_components = nx.number_weakly_connected_components(g) if n > 0 else 1
     except Exception:
         n_components = 1
@@ -104,7 +102,7 @@ def _structural_sim(a: np.ndarray, b: np.ndarray) -> float:
 
 # ── Partial gate-pattern (n-gram) extraction ──────────────────────────
 
-def _extract_ngrams(pa: ProjectAnalysis, n: int = 3) -> Counter:
+def extract_ngrams(pa: ProjectAnalysis, n: int = 3) -> Counter:
     """Extract gate-type n-grams via BFS on the connectivity graph.
 
     For each node in the graph, follow outgoing edges up to depth *n-1*
@@ -153,7 +151,7 @@ def _extract_ngrams(pa: ProjectAnalysis, n: int = 3) -> Counter:
     return ngrams
 
 
-def _jaccard_sim(a: Counter, b: Counter) -> float:
+def jaccard_sim(a: Counter, b: Counter) -> float:
     """Weighted Jaccard similarity: sum(min) / sum(max) over shared n-grams."""
     all_keys = set(a.keys()) | set(b.keys())
     if not all_keys:
@@ -163,7 +161,7 @@ def _jaccard_sim(a: Counter, b: Counter) -> float:
     return numerator / denominator if denominator > 0 else 0.0
 
 
-def _shared_patterns(
+def shared_patterns(
     a: Counter,
     b: Counter,
     top_n: int = 10,
@@ -214,7 +212,7 @@ class SimilarityEngine:
         )
         ngram_bags: list = []
         for idx, p in enumerate(projects, 1):
-            bag = _extract_ngrams(p, ngram_n)
+            bag = extract_ngrams(p, ngram_n)
             ngram_bags.append(bag)
             log.debug(
                 "    [%d/%d] %s: %d distinct n-gram type(s)",
@@ -234,7 +232,7 @@ class SimilarityEngine:
             for j in range(i + 1, n):
                 gs = _cosine_sim(gate_vecs[i], gate_vecs[j])
                 ss = _structural_sim(struct_vecs[i], struct_vecs[j])
-                ns = _jaccard_sim(ngram_bags[i], ngram_bags[j])
+                ns = jaccard_sim(ngram_bags[i], ngram_bags[j])
                 gate_mat[i, j]   = gate_mat[j, i]   = gs
                 struct_mat[i, j] = struct_mat[j, i] = ss
                 ngram_mat[i, j]  = ngram_mat[j, i]  = ns
@@ -245,11 +243,20 @@ class SimilarityEngine:
                         done, total_pairs, 100 * done / total_pairs,
                     )
 
-        # Combined: split weights 3 ways if partial_weight is defined,
-        # otherwise fall back to gate + structural only.
-        pw = getattr(self.cfg, "partial_weight", 0.25)
-        gw = self.cfg.gate_type_weight * (1 - pw)
-        sw = self.cfg.structural_weight * (1 - pw)
+        # Combined: normalise the three weights so they always sum to 1.0.
+        gw_raw = self.cfg.gate_type_weight
+        sw_raw = self.cfg.structural_weight
+        pw_raw = getattr(self.cfg, "partial_weight", 0.25)
+        total_w = gw_raw + sw_raw + pw_raw
+        if total_w <= 0:
+            total_w = 1.0
+        gw = gw_raw / total_w
+        sw = sw_raw / total_w
+        pw = pw_raw / total_w
+        log.info(
+            "  Combining matrices (gate=%.2f, struct=%.2f, ngram=%.2f)",
+            gw, sw, pw,
+        )
         combined_mat = gw * gate_mat + sw * struct_mat + pw * ngram_mat
 
         df_gate     = pd.DataFrame(gate_mat,     index=names, columns=names)
@@ -280,7 +287,7 @@ class SimilarityEngine:
         )
         ngram_bags = []
         for idx, p in enumerate(projects, 1):
-            bag = _extract_ngrams(p, ngram_n)
+            bag = extract_ngrams(p, ngram_n)
             ngram_bags.append(bag)
             log.debug(
                 "    [%d/%d] %s: %d distinct n-gram type(s)",
@@ -294,7 +301,7 @@ class SimilarityEngine:
         pair_scores = []
         for i in range(n_proj):
             for j in range(i + 1, n_proj):
-                score = _jaccard_sim(ngram_bags[i], ngram_bags[j])
+                score = jaccard_sim(ngram_bags[i], ngram_bags[j])
                 if score > 0:
                     pair_scores.append((score, i, j))
 
@@ -304,7 +311,7 @@ class SimilarityEngine:
         pair_scores.sort(reverse=True)
         rows = []
         for score, i, j in pair_scores[:top_pairs]:
-            shared = _shared_patterns(ngram_bags[i], ngram_bags[j], top_patterns)
+            shared = shared_patterns(ngram_bags[i], ngram_bags[j], top_patterns)
             for pattern, ca, cb in shared:
                 rows.append(
                     {

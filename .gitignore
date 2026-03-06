@@ -10,6 +10,7 @@ build/
 output/
 analysis_cache/
 context_db/
+.cache/
 
 # Cloned repos — re-clone with --github
 verilog_proj/*/

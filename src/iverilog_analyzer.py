@@ -172,17 +172,20 @@ class IVerilogAnalyzer:
         project_root: Path,
     ) -> bool:
         """Run iverilog; return True on success."""
-        # Build include-dir flags for every subdirectory containing headers
-        inc_dirs = {"-I", str(project_root)}
-        for src in sources:
-            inc_dirs.update(["-I", str(src.parent)])
+        # Build include-dir flags — each unique directory needs its own -I
+        seen_dirs: set[str] = set()
+        inc_flags: List[str] = []
+        for d in [project_root] + [s.parent for s in sources]:
+            ds = str(d)
+            if ds not in seen_dirs:
+                seen_dirs.add(ds)
+                inc_flags.extend(["-I", ds])
 
         cmd = [
             self.cfg.iverilog_bin,
             "-o", str(out_vvp),
             "-g2012",           # SystemVerilog 2012
-            "-s", "__top__",    # if no top specified, iverilog picks first
-            *sorted(inc_dirs),
+            *inc_flags,
             *[str(s) for s in sources[:200]],  # cap at 200 files
         ]
         try:
@@ -195,18 +198,30 @@ class IVerilogAnalyzer:
             )
             if result.returncode == 0:
                 return True
-            # Some projects compile partially — try without -s flag
-            cmd2 = [c for c in cmd if c != "-s" and c != "__top__"]
+            log.debug(
+                "iverilog pass-1 failed for %s (rc=%d): %s",
+                project_root.name, result.returncode,
+                (result.stderr or "")[:500],
+            )
+            # Retry with -Wall to pick up additional diagnostics
+            cmd2 = [cmd[0], "-Wall"] + cmd[1:]
             result2 = subprocess.run(
                 cmd2, capture_output=True, text=True,
                 timeout=self.cfg.iverilog_timeout,
                 cwd=str(project_root),
             )
-            return result2.returncode == 0
+            if result2.returncode == 0:
+                return True
+            log.debug(
+                "iverilog pass-2 failed for %s (rc=%d): %s",
+                project_root.name, result2.returncode,
+                (result2.stderr or "")[:500],
+            )
+            return False
         except subprocess.TimeoutExpired:
             log.debug("iverilog timed out for %s", project_root.name)
         except FileNotFoundError:
-            pass
+            log.debug("iverilog binary not found: %s", self.cfg.iverilog_bin)
         return False
 
     # ── VVP parser ────────────────────────────────────────────────────
@@ -332,7 +347,9 @@ class IVerilogAnalyzer:
         total = 0
         for src in sources:
             try:
-                total += sum(1 for _ in src.open(errors="replace"))
+                # Read entire file at once — much faster than iterating lines
+                data = src.read_bytes()
+                total += data.count(b"\n") + (1 if data and not data.endswith(b"\n") else 0)
             except OSError:
                 pass
         return total
