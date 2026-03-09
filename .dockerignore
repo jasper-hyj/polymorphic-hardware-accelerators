@@ -1,5 +1,9 @@
 .git
 .gitignore
+.devcontainer/
+.vscode/
+.github/
+.cache/
 output/
 __pycache__/
 *.pyc

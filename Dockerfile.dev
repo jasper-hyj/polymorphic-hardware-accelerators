@@ -1,0 +1,42 @@
+# ── Dev container image ─────────────────────────────────────────────
+# Same base as production but keeps the source tree as a bind mount
+# so edits are reflected instantly (no COPY step).
+FROM python:3.12-slim
+
+# System dependencies (build tools + make + dev headers + timezone)
+# Note: Building iverilog from source instead of debian package for latest SystemVerilog support
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        openssh-client \
+        build-essential \
+        make \
+        python3-dev \
+        pkg-config \
+        tzdata \
+        autoconf \
+        bison \
+        flex \
+    gperf \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Build iverilog from latest source (better SystemVerilog support than v12.0 package)
+RUN git clone --depth 1 https://github.com/steveicarus/iverilog.git /tmp/iverilog && \
+    cd /tmp/iverilog && \
+    autoconf && \
+    ./configure --prefix=/usr/local && \
+    make -j$(nproc) && \
+    make install && \
+    ldconfig && \
+    rm -rf /tmp/iverilog
+
+WORKDIR /app
+
+# Pre-install Python deps so container startup is fast.
+# The postCreateCommand in devcontainer.json re-runs pip install
+# to pick up any new requirements, but this layer caches the bulk.
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# No COPY of source — the workspace is bind-mounted by the dev container.
+# No ENTRYPOINT — interactive shell by default.

@@ -69,10 +69,12 @@ class AnalysisConfig:
     llm_base_url: str = ""
 
     # --- Analysis flags -------------------------------------------------
-    skip_anomaly: bool = False
-    skip_surprise: bool = False
-    skip_interface: bool = False
-    skip_pha: bool = False
+    run_similarity: bool = True
+    run_anomaly: bool = True
+    run_surprise: bool = True
+    run_interface: bool = True
+    run_pha: bool = True
+    run_edit_distance: bool = False
 
     # --- Cache ----------------------------------------------------------
     cache_dir: Path = field(default_factory=lambda: Path(".cache"))

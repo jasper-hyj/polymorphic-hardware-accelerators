@@ -15,8 +15,11 @@ python run.py --project-dir /path/to/rtl_projects
 # Only specific GitHub repos (comma-separated search query)
 python run.py --github --github-query "topic:risc-v language:verilog stars:>200"
 
-# Skip anomaly detection
-python run.py --no-anomaly
+# Run only anomaly detection
+python run.py --anomaly
+
+# Run all analyses
+python run.py --all
 
 # Verbose logging
 python run.py -v
@@ -40,6 +43,8 @@ from src.anomaly import AnomalyDetector
 from src.surprise import SurpriseAnalyzer, SurpriseReport
 from src.interface_analyzer import InterfaceAnalyzer, InterfaceReport
 from src.pha_analyzer import PHAAnalyzer, PHAReport
+from src.edit_distance import (EditDistanceAnalyzer, edit_distance_matrix,
+                               format_executive_summary)
 from src.report import ReportGenerator
 
 
@@ -74,29 +79,51 @@ def parse_args() -> argparse.Namespace:
         help="Maximum number of NEW repos to clone per run (default: 30). "
              "Previously discovered repos are queued and cloned on future runs.",
     )
+    # ── Analysis inclusion flags ───────────────────────────────────────
     p.add_argument(
-        "--no-anomaly", action="store_true",
-        help="Skip anomaly detection",
+        "--all", action="store_true", dest="run_all",
+        help="Enable all analyses (similarity, anomaly, surprise, interface, "
+             "PHA, edit distance). If no analysis flags are given, this is "
+             "the default behaviour (without edit distance).",
     )
     p.add_argument(
-        "--no-surprise", action="store_true",
-        help="Skip surprise / cross-domain analysis",
+        "--similarity", action="store_true",
+        help="Include similarity analysis (gate-type, structural, n-gram)",
+    )
+    p.add_argument(
+        "--anomaly", action="store_true",
+        help="Include anomaly detection",
+    )
+    p.add_argument(
+        "--surprise", action="store_true",
+        help="Include cross-domain surprise analysis",
     )
     p.add_argument(
         "--min-surprise", type=float, default=0.15,
         help="Minimum surprise score to report a pair (default: 0.15)",
     )
     p.add_argument(
-        "--no-interface", action="store_true",
-        help="Skip interface / port-compatibility analysis",
+        "--interface", action="store_true",
+        help="Include interface / port-compatibility analysis",
     )
     p.add_argument(
         "--min-compat", type=float, default=0.40,
         help="Minimum normalised port-match score to report a pair (default: 0.40)",
     )
     p.add_argument(
-        "--no-pha", action="store_true",
-        help="Skip Polymorphic Heterogeneous Architecture (PHA) synthesis analysis",
+        "--pha", action="store_true",
+        help="Include Polymorphic Heterogeneous Architecture (PHA) synthesis analysis",
+    )
+    p.add_argument(
+        "--edit-distance", action="store_true",
+        help="Include hardware edit distance analysis. "
+             "Shows how many operations (add/delete/change gates, add/delete "
+             "modules, rewire) are needed to transform one project into another.",
+    )
+    p.add_argument(
+        "--ed-max-projects", type=int, default=0,
+        help="Max projects to include in edit-distance analysis (0 = all). "
+             "Useful for large project directories to avoid O(n^2) blowup.",
     )
     p.add_argument(
         "--pha-threshold", type=float, default=0.35,
@@ -209,10 +236,29 @@ def main() -> int:
     cfg.min_compat = args.min_compat
     cfg.use_diagram_strings = args.diagram_strings
     cfg.llm_model = args.llm_model
-    cfg.skip_anomaly = args.no_anomaly
-    cfg.skip_surprise = args.no_surprise
-    cfg.skip_interface = args.no_interface
-    cfg.skip_pha = args.no_pha
+    # ── Analysis selection ────────────────────────────────────────────
+    # If any individual analysis flag is passed on the CLI, run only
+    # those analyses (overriding YAML config).  If --all is passed, run
+    # everything.  If no analysis flags are given, use YAML defaults.
+    _analysis_flags = [
+        args.similarity, args.anomaly, args.surprise,
+        args.interface, args.pha, args.edit_distance,
+    ]
+    if args.run_all:
+        cfg.run_similarity = True
+        cfg.run_anomaly = True
+        cfg.run_surprise = True
+        cfg.run_interface = True
+        cfg.run_pha = True
+        cfg.run_edit_distance = True
+    elif any(_analysis_flags):
+        cfg.run_similarity = args.similarity
+        cfg.run_anomaly = args.anomaly
+        cfg.run_surprise = args.surprise
+        cfg.run_interface = args.interface
+        cfg.run_pha = args.pha
+        cfg.run_edit_distance = args.edit_distance
+    # else: keep YAML / default config values
     cfg.use_cache = not args.no_cache
     cfg.clear_cache = args.clear_cache
     if args.github_token:
@@ -318,6 +364,70 @@ def main() -> int:
         )
         return 1
 
+    # ── Fast-path: edit-distance only ─────────────────────────────────
+    # When *all* other analyses are disabled and only --edit-distance is
+    # requested, skip the expensive similarity computation entirely.
+    need_similarity = (
+        cfg.run_similarity or cfg.run_anomaly
+        or cfg.run_surprise or cfg.run_interface
+        or cfg.run_pha
+    )
+    ed_only = cfg.run_edit_distance and not need_similarity
+
+    if ed_only:
+        log.info("Edit-distance-only mode — skipping similarity computation.")
+        proj_paths = [p.path for p in analysed]
+
+        # Optionally limit the number of projects
+        ed_max = args.ed_max_projects
+        if ed_max and ed_max > 0 and len(proj_paths) > ed_max:
+            log.info(
+                "Limiting edit-distance analysis to %d / %d projects "
+                "(use --ed-max-projects 0 to include all).",
+                ed_max, len(proj_paths),
+            )
+            proj_paths = proj_paths[:ed_max]
+
+        n_pairs = len(proj_paths) * (len(proj_paths) - 1) // 2
+        log.info(
+            "Computing pairwise hardware edit distances for %d project(s) "
+            "(%d pair(s)) …",
+            len(proj_paths), n_pairs,
+        )
+        ed_names, ed_matrix, ed_results = edit_distance_matrix(proj_paths)
+
+        # Executive summary
+        exec_summary = format_executive_summary(ed_names, ed_matrix, ed_results)
+        log.info("\n" + exec_summary)
+
+        # Per-pair detail
+        if len(ed_results) <= 30:
+            for result in ed_results:
+                log.info("\n" + result.summary)
+                log.info("\n" + result.step_by_step)
+        else:
+            log.info(
+                "Skipping per-pair detail in console (%d pairs). "
+                "Full details in the report file.",
+                len(ed_results),
+            )
+
+        # Save report
+        cfg.output_dir.mkdir(parents=True, exist_ok=True)
+        ed_report_path = cfg.output_dir / "edit_distance_report.txt"
+        with open(ed_report_path, "w", encoding="utf-8") as f:
+            f.write(exec_summary + "\n\n")
+            f.write("\n")
+            f.write("=" * 72 + "\n")
+            f.write("  DETAILED PAIR-BY-PAIR ANALYSIS\n")
+            f.write("=" * 72 + "\n\n")
+            for result in ed_results:
+                f.write(result.summary + "\n\n")
+                f.write(result.step_by_step + "\n\n")
+        log.info("Edit distance report saved to %s", ed_report_path)
+        log.info("Done.")
+        return 0
+
     # ── Similarity (with caching) ─────────────────────────────────────
     sim_engine = SimilarityEngine(cfg)
     sim_cache_key = similarity_config_hash(
@@ -350,7 +460,7 @@ def main() -> int:
 
     # ── Surprise / cross-domain analysis ────────────────────────────
     surprise_report: Optional[SurpriseReport] = None
-    if not cfg.skip_surprise and len(analysed) >= 3:
+    if cfg.run_surprise and len(analysed) >= 3:
         log.info("Running cross-domain surprise analysis …")
         surprise_report = SurpriseAnalyzer(
             min_surprise=cfg.min_surprise,
@@ -369,7 +479,7 @@ def main() -> int:
 
     # ── Interface compatibility analysis ────────────────────────────
     interface_report: Optional[InterfaceReport] = None
-    if not cfg.skip_interface and len(analysed) >= 2:
+    if cfg.run_interface and len(analysed) >= 2:
         log.info("Running interface compatibility analysis …")
         interface_report = InterfaceAnalyzer(
             min_compatibility=cfg.min_compat,
@@ -392,7 +502,7 @@ def main() -> int:
 
     # ── PHA synthesis analysis ─────────────────────────────────────────
     pha_report: Optional[PHAReport] = None
-    if not cfg.skip_pha and len(analysed) >= 2:
+    if cfg.run_pha and len(analysed) >= 2:
         log.info("Running Polymorphic Heterogeneous Architecture (PHA) synthesis …")
         pha_report = PHAAnalyzer(
             cluster_threshold=cfg.pha_threshold,
@@ -417,9 +527,62 @@ def main() -> int:
             log.info("No PHA clusters found above threshold %.2f.",
                      cfg.pha_threshold)
 
+    # ── Edit distance analysis ─────────────────────────────────────────
+    if cfg.run_edit_distance and len(analysed) >= 2:
+        proj_paths = [p.path for p in analysed]
+
+        # Optionally limit the number of projects to keep runtime sane
+        ed_max = args.ed_max_projects
+        if ed_max and ed_max > 0 and len(proj_paths) > ed_max:
+            log.info(
+                "Limiting edit-distance analysis to %d / %d projects "
+                "(use --ed-max-projects 0 to include all).",
+                ed_max, len(proj_paths),
+            )
+            proj_paths = proj_paths[:ed_max]
+
+        n_pairs = len(proj_paths) * (len(proj_paths) - 1) // 2
+        log.info(
+            "Computing pairwise hardware edit distances for %d project(s) "
+            "(%d pair(s)) …",
+            len(proj_paths), n_pairs,
+        )
+        ed_names, ed_matrix, ed_results = edit_distance_matrix(proj_paths)
+
+        # Build executive summary
+        exec_summary = format_executive_summary(ed_names, ed_matrix, ed_results)
+        log.info("\n" + exec_summary)
+
+        # Print each pair detail (limit detail output for large runs)
+        show_detail = len(ed_results) <= 30
+        if show_detail:
+            for result in ed_results:
+                log.info("\n" + result.summary)
+                log.info("\n" + result.step_by_step)
+        else:
+            log.info(
+                "Skipping per-pair detail in console (%d pairs). "
+                "Full details in the report file.",
+                len(ed_results),
+            )
+
+        # Save to output
+        cfg.output_dir.mkdir(parents=True, exist_ok=True)
+        ed_report_path = cfg.output_dir / "edit_distance_report.txt"
+        with open(ed_report_path, "w", encoding="utf-8") as f:
+            f.write(exec_summary + "\n\n")
+            f.write("\n")
+            f.write("=" * 72 + "\n")
+            f.write("  DETAILED PAIR-BY-PAIR ANALYSIS\n")
+            f.write("=" * 72 + "\n\n")
+            for result in ed_results:
+                f.write(result.summary + "\n\n")
+                f.write(result.step_by_step + "\n\n")
+        log.info("Edit distance report saved to %s", ed_report_path)
+
     # ── Anomaly detection ─────────────────────────────────────────────
     anomalies = []
-    if not cfg.skip_anomaly and len(analysed) >= 3:
+    if cfg.run_anomaly and len(analysed) >= 3:
         log.info("Running anomaly detection …")
         anomalies = AnomalyDetector(cfg).detect(analysed)
         if anomalies:

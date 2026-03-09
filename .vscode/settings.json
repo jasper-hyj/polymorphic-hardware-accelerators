@@ -1,0 +1,10 @@
+{
+    "makefile.configureOnOpen": true,
+    "dev.containers.mountWaylandSocket": false,
+    "remote.containers.mountWaylandSocket": false,
+    "dev.containers.forwardWSLServices": false,
+    "remote.containers.forwardWSLServices": false,
+    "dev.containers.gpuAvailability": "none",
+    "dev.containers.executeInWSL": false,
+    "remote.containers.executeInWSL": false
+}

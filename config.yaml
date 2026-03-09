@@ -55,11 +55,15 @@ llm_model: gpt-4o-mini
 # llm_base_url: ""                  # custom OpenAI-compatible endpoint
 
 # ── Analysis toggles ────────────────────────────────────────────────
-# Set to true to skip these phases entirely.
-skip_anomaly: false
-skip_surprise: false
-skip_interface: false
-skip_pha: false
+# Set to true to include these analyses.  CLI flags override these values.
+# When any CLI analysis flag is passed (e.g. --anomaly), only those
+# analyses run — these YAML values are ignored in that case.
+run_similarity: true
+run_anomaly: true
+run_surprise: true
+run_interface: true
+run_pha: true
+run_edit_distance: false
 
 # ── Performance ──────────────────────────────────────────────────────
 # max_workers: 4                    # defaults to CPU count

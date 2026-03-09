@@ -1,53 +1,86 @@
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │  Polymorphic Hardware Accelerator — Docker Compose                  │
+# │                                                                     │
+# │  Each service maps to one (or all) analysis phases.                 │
+# │  Usage:  docker compose run <service> [extra-flags]                 │
+# └─────────────────────────────────────────────────────────────────────┘
+
+x-common: &common
+  build: .
+  image: rtl-analyzer:latest
+  volumes:
+    - ./verilog_proj:/app/verilog_proj
+    - ./demo_projects:/app/demo_projects
+    - ./output:/app/output
+    - ./config.yaml:/app/config.yaml:ro
+    - ./.cache:/app/.cache
+  environment:
+    - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+    - OMP_NUM_THREADS=0
+  cpu_shares: 1024
+  shm_size: "2g"
+  ulimits:
+    nofile:
+      soft: 1048576
+      hard: 1048576
+    memlock:
+      soft: -1
+      hard: -1
+  deploy:
+    resources:
+      reservations:
+        cpus: "1.0"
+        memory: "512m"
+
 services:
+  # ── All analyses (full pipeline) ───────────────────────────────────
   rtl-analyzer:
-    build: .
-    image: rtl-analyzer:latest
+    <<: *common
+    command: ["--all"]
+
+  # ── Individual analyses ────────────────────────────────────────────
+  similarity:
+    <<: *common
+    command: ["--similarity"]
+
+  anomaly:
+    <<: *common
+    command: ["--anomaly"]
+
+  surprise:
+    <<: *common
+    command: ["--surprise"]
+
+  interface:
+    <<: *common
+    command: ["--interface"]
+
+  pha:
+    <<: *common
+    command: ["--pha"]
+
+  edit-distance:
+    <<: *common
+    command: ["--edit-distance", "--ed-max-projects", "20"]
+
+  # ── Interactive development shell ──────────────────────────────────
+  # Usage:  docker compose run dev
+  #         make local-demo   (inside the shell)
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: rtl-analyzer-dev:latest
     volumes:
-      # Writable so --github can clone new repos into the directory
-      - ./verilog_proj:/app/verilog_proj
-      # Demo projects for focused analysis runs
-      - ./demo_projects:/app/demo_projects
-      # Reports and figures land here on the host
-      - ./output:/app/output
-      # Mount config.yaml so you can tweak parameters without rebuilding
-      - ./config.yaml:/app/config.yaml:ro
-      # Persistent cache for gate-extraction and similarity matrices
-      - ./.cache:/app/.cache
+      - .:/app
+      - rtl-cache:/app/.cache
     environment:
-      # Optional: set your GitHub token for higher API rate limits
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      # Let Python multiprocessing use all logical CPUs
-      - OMP_NUM_THREADS=0
-    # Default: analyse whatever is in verilog_proj/
-    # Override at `docker compose run rtl-analyzer --github` etc.
-    command: []
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
 
-    # ── Resource policy: use everything available ──────────────────
-    # No CPU or memory caps → container can consume 100 % of host
-    # resources.  cpu_shares gives it the highest scheduling priority
-    # relative to any other containers that happen to be running.
-    cpu_shares: 1024        # range 2-1024; 1024 = highest priority
-
-    # Shared-memory pool for Python multiprocessing queues / numpy
-    shm_size: "2g"
-
-    # Raise kernel file-descriptor and memory-lock limits so large
-    # analysis runs (thousands of Verilog files, many open sockets
-    # during GitHub cloning) don't hit the default OS caps.
-    ulimits:
-      nofile:
-        soft: 1048576
-        hard: 1048576
-      memlock:
-        soft: -1            # unlimited memory lock
-        hard: -1
-
-    deploy:
-      resources:
-        # No limits section → container is uncapped.
-        # Reservations tell the scheduler to prefer a host that can
-        # actually supply these resources (relevant if you ever move
-        # to Swarm or a multi-node setup).
-        reservations:
-          cpus: "1.0"
-          memory: "512m"
+volumes:
+  rtl-cache:

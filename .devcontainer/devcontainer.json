@@ -1,0 +1,51 @@
+{
+  "name": "Polymorphic Hardware Accelerators",
+  "build": {
+    "context": "..",
+    "dockerfile": "../Dockerfile.dev"
+  },
+  "workspaceFolder": "/app",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/app,type=bind",
+  "runArgs": [
+    "--pull=never"
+  ],
+
+  // Persist cache and output across rebuilds
+  // Share host timezone with container
+  "mounts": [
+    "source=polymorphic-hardware-accelerators-cache,target=/app/.cache,type=volume",
+    "source=/etc/timezone,target=/etc/timezone,type=bind,readonly=true",
+    "source=/etc/localtime,target=/etc/localtime,type=bind,readonly=true"
+  ],
+
+  "forwardPorts": [],
+
+  "containerEnv": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "mshr-h.veriloghdl"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python3",
+        "python.analysis.typeCheckingMode": "basic",
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "postCreateCommand": "pip install --no-cache-dir --upgrade pip setuptools wheel && pip install --no-cache-dir -r requirements.txt && python -c 'import src; print(\"Polymorphic Hardware Accelerators environment ready.\")'",
+
+  "remoteUser": "root"
+}
