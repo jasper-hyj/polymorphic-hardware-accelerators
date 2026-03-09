@@ -172,6 +172,10 @@ class IVerilogAnalyzer:
         project_root: Path,
     ) -> bool:
         """Run iverilog; return True on success."""
+        project_root = project_root.resolve()
+        sources = [s.resolve() for s in sources]
+        out_vvp = out_vvp.resolve()
+
         # Build include-dir flags — each unique directory needs its own -I
         seen_dirs: set[str] = set()
         inc_flags: List[str] = []
@@ -226,14 +230,11 @@ class IVerilogAnalyzer:
 
     # ── VVP parser ────────────────────────────────────────────────────
 
-    # Pattern: L_<hex_addr> .functor <TYPE> <WIDTH>, <inputs…>;
+    # Pattern: <addr> .functor <TYPE> <WIDTH>, <inputs...>;
+    # Input tokens may be functor refs (L_*), net refs (v*_*), output refs (o*),
+    # or constants like C4<1>/c4<z>.
     _FUNCTOR_RE = re.compile(
-        r"^(L_\w+)\s+\.functor\s+(\w+)\s+\d+,\s*"   # addr and type
-        r"(v?\w+(?:_\d+)?)"                            # input 0
-        r"(?:,\s*(v?\w+(?:_\d+)?))?"                  # input 1 (opt)
-        r"(?:,\s*(v?\w+(?:_\d+)?))?"                  # input 2 (opt)
-        r"(?:,\s*(v?\w+(?:_\d+)?))?"                  # input 3 (opt)
-        r"\s*;",
+        r"^\s*(\S+)\s+\.functor\s+(\w+)\s+\d+,\s*([^;]+);",
         re.MULTILINE,
     )
     # .var  /  .net  lines give signal driver address
@@ -242,7 +243,7 @@ class IVerilogAnalyzer:
         re.MULTILINE,
     )
     # .scope module declarations
-    _SCOPE_RE = re.compile(r"^\s*\.scope\s+module\s+\"(\w+)\"", re.MULTILINE)
+    _SCOPE_RE = re.compile(r"^\s*\.scope\s+module,?\s+\"([^\"]+)\"", re.MULTILINE)
 
     def _parse_vvp(
         self, text: str
@@ -264,15 +265,20 @@ class IVerilogAnalyzer:
             graph.add_node(addr, gate_type=gate_type)
 
             # ── 2. Add EDGES from each input to this functor ───────
-            # Inputs look like "v0x55a1b2c3d4_0" (v + functor addr + _bit)
-            for group_idx in range(3, 7):
-                inp = m.group(group_idx)
-                if inp is None:
+            # Inputs may look like "v0x55a1b2c3d4_0", "L_...", "o...", or constants.
+            input_tokens = [tok.strip() for tok in m.group(3).split(",")]
+            for inp in input_tokens:
+                if not inp:
                     continue
-                if inp.startswith("C"):   # constant — skip
+                if inp.startswith(("C", "c")):   # constant — skip
                     continue
-                # Extract the functor address from "v<addr>_<bit>"
-                src_addr = inp if inp.startswith("L_") else "L_" + inp.lstrip("v").split("_")[0]
+                # Extract a stable source identifier from common VVP token forms.
+                if inp.startswith("L_") or inp.startswith("o"):
+                    src_addr = inp
+                elif inp.startswith("v"):
+                    src_addr = inp.split("_")[0]
+                else:
+                    src_addr = inp
                 if src_addr in addr_to_type or src_addr != addr:
                     graph.add_edge(src_addr, addr)
 
